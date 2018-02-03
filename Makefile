@@ -1,6 +1,7 @@
 
 BUILDDIR := build
 PROGRAM := $(BUILDDIR)/chip8.prg
+DISK := $(BUILDDIR)/chip8.d64
 SOURCES := source
 INCLUDES := include
 LIBS :=
@@ -43,7 +44,7 @@ endef
 ################################################################################
 
 .SUFFIXES:
-.PHONY: all clean
+.PHONY: all disk clean 
 all: $(PROGRAM)
 
 $(foreach file,$(sfiles),$(eval $(call depend,$(file))))
@@ -56,7 +57,10 @@ $(BUILDDIR):
 
 $(PROGRAM): $(BUILDDIR) $(OBJDIR) $(ofiles)
 	$(LD)  $(LDFLAGS) $(ofiles) $(LIBS) -o $@ 
-
+	
+disk: $(PROGRAM)
+	c1541 -format chip8,id d64 $(DISK) -attach $(DISK) -write $(PROGRAM) chip8	
+	
 clean:
 	$(RMDIR) $(OBJDIR)
 	$(RMDIR) $(BUILDDIR)
