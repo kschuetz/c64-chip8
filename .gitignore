@@ -1,3 +1,6 @@
-*.tws
 build/
 obj/
+*.tws
+*.prj
+*.pui
+*.ps1
