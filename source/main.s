@@ -3,12 +3,11 @@
 
 .importzp arg_move_to, arg_move_from, arg_move_size
 .import move_up
-.import invaders_rom, invaders_rom_size
 .import RenderScreenLine, copy_double_buffer
 .import program_start
 .import build_chip8_screen_charset	
-.import initialize, clear_screen
-.import build_bundle_index
+.import initialize, clear_screen, clear_ram
+.import build_bundle_index, load_bundled_rom
 	
 .export bundle_end
 
@@ -81,22 +80,12 @@ inst_irq:
 			lda $1		    ; switch out BASIC ROM
 			and #$fe
 			sta $1
-
-			lda #<invaders_rom
-			sta arg_move_from
-			lda #>invaders_rom
-			sta arg_move_from + 1
-			lda #<program_start
-			sta arg_move_to
-			lda #>program_start
-			sta arg_move_to + 1
-			lda #<invaders_rom_size
-			sta arg_move_size
-			lda #>invaders_rom_size
-			sta arg_move_size + 1
-			jsr move_up
-
 			jsr build_bundle_index
+			
+			jsr clear_ram
+			ldy #7	; load space invaders for now
+			jsr load_bundled_rom
+
 			jsr build_chip8_screen_charset
 			jsr initialize
 

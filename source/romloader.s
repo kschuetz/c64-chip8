@@ -1,10 +1,16 @@
-.export bundle_count, bundle_index_low, bundle_index_high, build_bundle_index
+.export bundle_count, bundle_index_low, bundle_index_high, build_bundle_index, load_bundled_rom
 
-.import bundle_start
-.importzp zp0, zp1, zp2, zp3
+.import bundle_start, program_start, move_up
+.importzp zp0, zp1, zp2, zp3, zp4, zp5
 
 .include "defines.s"
 .include "common.s"
+
+.struct BundleNode
+	next .addr
+	title .byte title_length
+	data .byte
+.endstruct
 
 .bss
 
@@ -48,4 +54,33 @@ bundle_index_high: 	.res max_bundled_roms
 			bmi @loop	
 			
 			rts				
+.endproc
+
+
+; y - index of bundle to load
+.proc load_bundled_rom
+			clc
+			lda bundle_index_low, y
+			sta zp2
+			adc #<BundleNode::data
+			sta zp0
+			lda bundle_index_high, y
+			sta zp3
+			adc #>BundleNode::data
+			sta zp1
+									; zp2:zp3 contains pointer to BundleNode
+									; zp0:zp1 contains pointer to start of rom data
+									; now we need the size
+			ldy #0
+			sec
+			lda (zp2), y
+			sbc zp0
+			sta zp4
+			iny
+			lda (zp2), y
+			sbc zp1
+			sta zp5
+									; zp4:zp5 contains size
+			istore zp2, program_start						
+			jmp move_up							 
 .endproc

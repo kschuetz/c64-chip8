@@ -1,5 +1,4 @@
 .export bundle_start
-.export invaders_rom, invaders_rom_size
 
 .include "defines.s"
 
@@ -26,9 +25,7 @@ bundle_start:
 		bundle "roms/CONNECT4", "CONNECT 4"
 		bundle "roms/GUESS", "GUESS"
 		bundle "roms/HIDDEN", "HIDDEN"
-invaders_start:
 		bundle "roms/INVADERS", "INVADERS"
-invaders_end:
 		bundle "roms/KALEID", "KALEID"
 		bundle "roms/MAZE", "MAZE"
 		bundle "roms/MERLIN", "MERLIN"
@@ -44,7 +41,3 @@ invaders_end:
 		bundle "roms/VBRIX", "VBRIX"
 		bundle "roms/VERS", "VERS"
 		bundle "roms/WIPEOFF", "WIPEOFF"
-
-
-invaders_rom = invaders_start + 2 + title_length
-invaders_rom_size = invaders_end - invaders_rom
