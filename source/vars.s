@@ -1,18 +1,5 @@
 .exportzp reg_v, reg_pc, reg_i, reg_sp
 .exportzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7
-.export ram, stack_low, stack_high, program_start
-.exportzp ram_page
-.export physical_screen, chip8_screen_charset		
-	
-.include "common.s"
-
-ram = $c000
-ram_page = >ram
-program_start = ram + $0200
-stack_low = $af00		; low bytes of return addresses
-stack_high = $ae00	        ; high bytes of return addresses
-physical_screen = $b000
-chip8_screen_charset = $b400	
 
 .zeropage
 
