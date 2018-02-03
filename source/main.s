@@ -8,6 +8,7 @@
 .import program_start
 .import build_chip8_screen_charset	
 .import initialize, clear_screen
+.import build_bundle_index
 	
 .export bundle_end
 
@@ -77,28 +78,29 @@ inst_irq:
 
 .proc init
 	
-	      lda $1		    ; switch out BASIC ROM
-	      and #$fe
-	      sta $1
+			lda $1		    ; switch out BASIC ROM
+			and #$fe
+			sta $1
 
-	      lda #<invaders_rom
-	      sta arg_move_from
-	      lda #>invaders_rom
-	      sta arg_move_from + 1
-	      lda #<program_start
-	      sta arg_move_to
-	      lda #>program_start
-	      sta arg_move_to + 1
-	      lda #<invaders_rom_size
-	      sta arg_move_size
-	      lda #>invaders_rom_size
-	      sta arg_move_size + 1
-	      jsr move_up
+			lda #<invaders_rom
+			sta arg_move_from
+			lda #>invaders_rom
+			sta arg_move_from + 1
+			lda #<program_start
+			sta arg_move_to
+			lda #>program_start
+			sta arg_move_to + 1
+			lda #<invaders_rom_size
+			sta arg_move_size
+			lda #>invaders_rom_size
+			sta arg_move_size + 1
+			jsr move_up
 
-	      jsr build_chip8_screen_charset
-	      jsr initialize
+			jsr build_bundle_index
+			jsr build_chip8_screen_charset
+			jsr initialize
 
-	      rts
+			rts
     
 .endproc
 
