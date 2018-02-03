@@ -80,7 +80,7 @@ inst_irq:
 	      lda $1		    ; switch out BASIC ROM
 	      and #$fe
 	      sta $1
-	      
+
 	      lda #<invaders_rom
 	      sta arg_move_from
 	      lda #>invaders_rom
@@ -99,19 +99,11 @@ inst_irq:
 	      jsr initialize
 
 	      rts
-
-	      
-baz:
-	      
-	      
+    
 .endproc
-
-	
-
 
 .segment "BUNDLEEND"
 bundle_end:	
 	      .word 0
-	
-	
-		
+	      
+	      

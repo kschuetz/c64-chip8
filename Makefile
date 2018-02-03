@@ -62,5 +62,5 @@ disk: $(PROGRAM)
 	c1541 -format chip8,id d64 $(DISK) -attach $(DISK) -write $(PROGRAM) chip8	
 	
 clean:
-	$(RMDIR) $(OBJDIR)
-	$(RMDIR) $(BUILDDIR)
+	$(RM) $(OBJDIR)/*
+	$(RM) $(BUILDDIR)/*

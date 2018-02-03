@@ -1,5 +1,7 @@
 .exportzp reg_v, reg_pc, reg_i, reg_sp
 .exportzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7
+		
+.include "common.s"
 
 .zeropage
 
@@ -17,18 +19,3 @@ reg_v:	.res 16
 reg_pc:	.res 2
 reg_i:	.res 2
 reg_sp:	.res 1
-
-
-	
-	
-	
-	
-	
-
-
-	
-
-
-
-	
-	

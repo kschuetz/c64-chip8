@@ -1,6 +1,6 @@
 .export clear_screen
 
-.import chip8_physical_screen_origin
+.import chip8_screen_origin
 
 .include "defines.s"
 
@@ -8,7 +8,7 @@
 		lda #6
 		ldy #chip8_screen_physical_width
 @loop:	.repeat chip8_screen_physical_height, i
-			sta chip8_physical_screen_origin + 40 * i, y
+			sta chip8_screen_origin + 40 * i, y
 		.endrepeat
 		dey
 		bpl @loop
