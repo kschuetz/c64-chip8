@@ -7,3 +7,10 @@
 .define title_length 16
 
 .define max_bundled_roms 32
+
+.define chrome_bgcolor 0
+
+default_screen_bgcolor = 11
+default_screen_fgcolor = 13
+
+vic_bank_base = $8000

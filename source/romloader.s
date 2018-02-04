@@ -3,7 +3,6 @@
 .import bundle_start, program_start, move_up
 .importzp zp0, zp1, zp2, zp3, zp4, zp5
 
-.include "defines.s"
 .include "common.s"
 
 .struct BundleNode

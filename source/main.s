@@ -5,11 +5,12 @@
 .import move_up
 .import RenderScreenLine, copy_double_buffer
 .import program_start
-.import build_chip8_screen_charset	
+.import init_charsets	
 .import initialize, clear_screen, clear_ram
 .import build_bundle_index, load_bundled_rom
+.import setup_irq
 	
-.export bundle_end
+.export start, bundle_end
 
 	
 .segment "LOADADDR"
@@ -31,9 +32,9 @@ head:	      .word @next
 
 start:
 	      jsr   init
-	      jsr   inst_irq
-	      lda   #65
-	      jsr   $ffd2
+	      jsr   setup_irq
+;	      lda   #65
+;	      jsr   $ffd2
 :	      jmp :-
 	
 	
@@ -76,22 +77,20 @@ inst_irq:
 .endproc
 
 .proc init
-	
-			lda $1		    ; switch out BASIC ROM
-			and #$fe
-			sta $1
+			
 			jsr build_bundle_index
 			
 			jsr clear_ram
 			ldy #7	; load space invaders for now
 			jsr load_bundled_rom
 
-			jsr build_chip8_screen_charset
+			jsr init_charsets
 			jsr initialize
 
 			rts
     
 .endproc
+
 
 .segment "BUNDLEEND"
 bundle_end:	

@@ -1,12 +1,15 @@
 .include "common.s"
 	
-.import chip8_screen_charset
-.importzp zp0, zp1
-.import fill
+.import screen_charset, chrome_charset
+.importzp zp0, zp2, zp4
+.import fill, move_up
 
-	.export build_chip8_screen_charset
+.export init_charsets
 
 
+.rodata
+chrome_charset_data:	
+			.incbin "data/chrome-charset.bin"
 	
 
 .rodata
@@ -35,9 +38,21 @@ row_bits:
 	.byte xx, xx
 
 .code
-	
-.proc build_chip8_screen_charset
-	istore zp0, (chip8_screen_charset + 16 * 8)
+
+.proc init_charsets
+	jsr init_chrome_charset
+	jmp build_screen_charset
+.endproc
+
+.proc init_chrome_charset
+	istore zp0, chrome_charset_data
+	istore zp2, chrome_charset
+	istore zp4, $0800
+	jmp move_up
+.endproc	
+		
+.proc build_screen_charset
+	istore zp0, (screen_charset + 16 * 8)
 	ldy #$7f
 	ldx #$07
 	lda #0
@@ -47,7 +62,7 @@ row_bits:
 	ldx #0
 @loop:	lda row_bits, x
 	.repeat 4
-		sta chip8_screen_charset, y
+		sta screen_charset, y
 		iny
 	.endrep
 	inx
@@ -56,3 +71,4 @@ row_bits:
 	
 	rts
 .endproc
+
