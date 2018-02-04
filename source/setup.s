@@ -2,7 +2,9 @@
 .export initialize
 
 .import clear_screen, physical_screen, screen_charset, chrome_charset, start, build_screen_margins
+.import build_bundle_index, clear_ram, load_bundled_rom, init_charsets
 .import update_screen_color
+.import build_chrome
 .importzp screen_bgcolor, screen_fgcolor
 
 .include "common.s"
@@ -23,11 +25,20 @@
 .endproc
 
 .proc initialize
+			jsr build_bundle_index
+			jsr clear_ram
+			
+			ldy #7	; load space invaders for now
+			jsr load_bundled_rom
+
+			jsr init_charsets
 			jsr init_vars
+			
 			lda screen_fgcolor
 			jsr update_screen_color
 			jsr clear_screen
 			jsr build_screen_margins
+			jsr build_chrome
 			jsr init_vic
 			lda #$1f    ;Disable CIA IRQ's
 			sta $dc0d

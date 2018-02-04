@@ -2,6 +2,7 @@
 .exportzp ram_page
 .export physical_screen, chip8_screen_origin, chip8_screen_color_origin
 .export screen_charset, chrome_charset
+.export chrome_origin, chrome_color_origin
 .exportzp ram_page
 
 .include "common.s"
@@ -17,4 +18,7 @@ chrome_charset = $a800
 
 chip8_screen_origin = physical_screen + 40 * chip8_screen_offset_y + chip8_screen_offset_x
 
-chip8_screen_color_origin = COLORRAM + 40 * chip8_screen_offset_y + chip8_screen_offset_x
+chip8_screen_color_origin = COLOR_RAM + 40 * chip8_screen_offset_y + chip8_screen_offset_x
+
+chrome_origin = physical_screen + 40 * (chip8_screen_offset_y + chip8_screen_physical_height + 1)
+chrome_color_origin = COLOR_RAM + 40 * (chip8_screen_offset_y + chip8_screen_physical_height + 1)

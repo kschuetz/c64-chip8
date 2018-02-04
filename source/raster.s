@@ -4,7 +4,7 @@
 
 .include "common.s"
 
-irq_vector = $fffe
+
 
 
 .zeropage
@@ -30,8 +30,8 @@ irq_service:
 			sty raster_index
 			lda #<irq1
 			ldx #>irq1
-			sta irq_vector
-			stx irq_vector + 1
+			sta IRQ_VECTOR
+			stx IRQ_VECTOR + 1
 			lda $d011
 			and #$7f
 			sta $d011

@@ -42,7 +42,7 @@ screen_fgcolor: .res 1
 			sta zp2
 			jsr @go
 				; set color ram of margins to 0
-			istore zp0, (COLORRAM + 40 * chip8_screen_offset_y)
+			istore zp0, (COLOR_RAM + 40 * chip8_screen_offset_y)
 			lda #0
 			sta zp2
 @go:		ldx #chip8_screen_physical_height
