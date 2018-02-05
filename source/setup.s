@@ -5,6 +5,8 @@
 .import build_bundle_index, clear_ram, load_bundled_rom, init_charsets
 .import update_screen_color
 .import build_chrome
+.import active_bundle, display_rom_title
+.import build_decimal_table
 .importzp screen_bgcolor, screen_fgcolor
 
 .include "common.s"
@@ -25,6 +27,7 @@
 .endproc
 
 .proc initialize
+			jsr build_decimal_table
 			jsr build_bundle_index
 			jsr clear_ram
 			
@@ -39,6 +42,8 @@
 			jsr clear_screen
 			jsr build_screen_margins
 			jsr build_chrome
+			lda active_bundle
+			jsr display_rom_title
 			jsr init_vic
 			lda #$1f    ;Disable CIA IRQ's
 			sta $dc0d

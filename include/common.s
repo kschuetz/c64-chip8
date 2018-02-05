@@ -17,3 +17,9 @@
 		lda #<((@screen << 4) | (@charset & 14))
 		sta VMCSB
 .endmacro 
+
+.struct BundleNode
+	next .addr
+	title .byte title_length
+	data .byte
+.endstruct

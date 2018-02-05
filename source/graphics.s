@@ -43,11 +43,11 @@ screen_fgcolor: .res 1
 			jsr @go
 				; set color ram of margins to 0
 			istore zp0, (COLOR_RAM + 40 * chip8_screen_offset_y)
-			lda #0
+			lda #chrome_bgcolor
 			sta zp2
 @go:		ldx #chip8_screen_physical_height
 @loop:		lda zp2
-			ldy #chip8_screen_offset_x
+			ldy #chip8_screen_offset_x - 1
 @1:			sta (zp0), y
 			dey
 			bpl @1

@@ -1,21 +1,20 @@
 .export bundle_count, bundle_index_low, bundle_index_high, build_bundle_index, load_bundled_rom
+.export active_bundle
 
 .import bundle_start, program_start, move_up
+.import decimal_table_low, decimal_table_high
 .importzp zp0, zp1, zp2, zp3, zp4, zp5
 
 .include "common.s"
 
-.struct BundleNode
-	next .addr
-	title .byte title_length
-	data .byte
-.endstruct
-
 .bss
 
 bundle_count: 		.res 1
-bundle_index_low: 	.res max_bundled_roms				; points to title
+bundle_count_decimal: .res 2
+active_bundle:		.res 1
+bundle_index_low: 	.res max_bundled_roms				
 bundle_index_high: 	.res max_bundled_roms
+
 
 .code
 
@@ -37,9 +36,8 @@ bundle_index_high: 	.res max_bundled_roms
 			lda (zp0), y		; a = next high
 			bne @not_null
 			cpx #0
-			bne @not_null
-		
-			rts 				; next = null; exit
+			beq @done			; next = null; exit
+			
 @not_null:
 			ldy bundle_count
 			iny
@@ -51,13 +49,19 @@ bundle_index_high: 	.res max_bundled_roms
 			sta zp0
 			cpy #max_bundled_roms
 			bmi @loop	
-			
+
+@done:		ldy bundle_count
+			lda decimal_table_low, y
+			sta bundle_count_decimal
+			lda decimal_table_high, y
+			sta bundle_count_decimal + 1			
 			rts				
 .endproc
 
 
 ; y - index of bundle to load
 .proc load_bundled_rom
+			sty active_bundle
 			clc
 			lda bundle_index_low, y
 			sta zp2

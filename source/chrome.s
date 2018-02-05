@@ -1,6 +1,10 @@
-.export build_chrome, keyboard_debug
+.export build_chrome, keyboard_debug, display_rom_title
 .import chrome_origin, chrome_color_origin, is_chip8_key_pressed, physical_screen
-.importzp zp0, zp1, irq_zp0
+.import bundle_count, bundle_index_low, bundle_index_high, bundle_count_decimal
+.import decimal_table_high, decimal_table_low
+.importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6
+.importzp irq_zp0
+
 
 .include "common.s"
 
@@ -36,7 +40,7 @@
 
 .proc draw_keyboard_pic
 
-@kbd_origin = chrome_origin + 45
+@kbd_origin = chrome_origin + 80 + chip8_screen_offset_x
 			ldx #0
 			istore zp0, @kbd_origin
 @1:			ldy #0
@@ -90,6 +94,114 @@ keyboard_debug_origin = 984   ; last 16 characters of last row
 			rts				
 .endproc
 
+; zp0:zp1 - top row 
+; zp2:zp3 - bottom row
+; y - offset
+; a - char
+.macro output_big_char
+			sta (zp0), y
+			ora #128
+			sta (zp2), y
+.endmacro
+
+rom_title_origin = chrome_origin + chip8_screen_offset_x + 6
+
+; A - bundle index
+.proc display_rom_title
+			tax			; save bundle_index
+			tay
+
+			istore zp0, rom_title_origin
+			istore zp2,(rom_title_origin + 40)
+			clc
+			lda bundle_index_low, y
+			adc #<BundleNode::title
+			sta zp4
+			lda bundle_index_high, y
+			adc #>BundleNode::title
+			sta zp5
+			
+			ldy #0
+			inx
+			jsr output_big_decimal			; bundle number
+			
+			lda #47							; slash
+			output_big_char
+			iny
+			
+			ldx bundle_count
+			jsr output_big_decimal 
+			
+			lda #58							; colon
+			output_big_char
+			iny
+			lda #32							; space	
+			output_big_char
+			iny
+			
+					; zp0:zp1 += y
+			clc
+			tya
+			adc zp0
+			sta zp0
+			lda #0
+			adc zp1
+			sta zp1
+			
+			clc
+			tya
+			adc zp2
+			sta zp2
+			lda #0
+			adc zp3
+			sta zp3
+
+			ldy #0
+@title_loop:
+			lda (zp4), y
+			output_big_char
+			iny
+			cpy #title_length
+			bne @title_loop
+			rts
+.endproc
+
+; x - value
+; y - next char position; return value contains new next char position
+.proc output_big_decimal
+			sty zp6
+			lda decimal_table_high, x
+			and #15
+			beq @tens
+			tay
+			lda decimal_digit_chars, y
+			ldy zp6
+			output_big_char
+			iny
+			sty zp6
+			
+@tens:		lda decimal_table_low, x
+			lsr a
+			lsr a
+			lsr a
+			lsr a
+			beq @ones
+			tay
+			lda decimal_digit_chars, y
+			ldy zp6
+			output_big_char	
+			iny
+			sty zp6
+@ones:		lda decimal_table_low, x
+			and #15
+			tay
+			lda decimal_digit_chars, y	
+			ldy zp6
+			output_big_char	
+			iny
+			rts
+.endproc
+
 .rodata
 keyboard_pic:	
 			.byte 64, 65, 66, 67, 68
@@ -102,3 +214,6 @@ keyboard_pic:
 keyboard_debug_chars:
 			.byte 240, 241, 242, 243, 244, 245, 246, 247, 248, 249
 			.byte 193, 194, 195, 196, 197, 198
+			
+decimal_digit_chars:
+			.byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57		
