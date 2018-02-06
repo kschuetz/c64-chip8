@@ -1,9 +1,9 @@
-.export clear_screen, build_screen_margins, update_screen_color, init_graphics_tables
-
-.import chip8_screen_origin, chip8_screen_color_origin, physical_screen
+.export clear_screen, build_screen_margins, update_screen_color, init_graphics_tables, draw_sprite
 .exportzp screen_bgcolor, screen_fgcolor
 
-.importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7
+.import chip8_screen_origin, chip8_screen_color_origin, physical_screen
+
+.importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7, reg_i, ram_page
 
 .include "common.s"
 
@@ -160,11 +160,7 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 .endmacro
 
 .macro clear_odd
-			lda #0
-			sta sprite_buffer + 0
-			sta sprite_buffer + 1
-			sta sprite_buffer + 2
-			sta sprite_buffer + 3
+			clear_even
 			sta sprite_buffer + 4
 .endmacro
 
@@ -231,14 +227,15 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 			sta sprite_buffer + 4
 .endmacro
 
+param_is_bottom_half = zp4
+param_rows_left = zp5
+param_sprite_width = zp6
+
 .macro make_draw_sprite is_odd 
 
-@is_bottom_half = zp4
-@rows_left = zp5
-@sprite_width = zp6
 @src_ptr = zp7
 
-			lda @is_bottom_half
+			lda param_is_bottom_half
 			beq @top_half
       
 @initial_bottom_half:
@@ -262,7 +259,7 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 				top_even
 			.endif   
 
-			dec @rows_left
+			dec param_rows_left
 			beq @no_bottom_half  
             
 @bottom_half:
@@ -276,9 +273,9 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 				bottom_even
 			.endif 
 
-			ldy @sprite_width
+			ldy param_sprite_width
 			jsr blit
-			dec @rows_left
+			dec param_rows_left
 			beq @no_rows_left
 
 			; draw_ptr += 40
@@ -293,7 +290,7 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 			jmp @top_half
       
 @no_bottom_half:
-			ldy @sprite_width
+			ldy param_sprite_width
 			jmp blit                              
 
 @no_rows_left:
@@ -305,9 +302,9 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 
 ; draw_ptr:  target_address of upper-left corner of sprite
 ; sprite_source_ptr:  source data for sprite
-; zp4:       zero if drawing top half, non-zero if bottom half
-; zp5:       number of logical rows to draw
-; zp6:       width of sprite buffer to blit
+; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
+; param_rows_left:              number of logical rows to draw
+; param_sprite_width:           width of sprite buffer to blit
 .proc draw_even_sprite
 			make_draw_sprite 0
 .endproc
@@ -322,37 +319,125 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 ; reg_i:	points to sprite	
 .proc draw_sprite
 			pha
+			lda #0
+			sta collision_flag
 			
-			; 0 <= x < 64
+			; check 0 <= x < 64
 			txa
 			and #192		
 			bne @invalid
 			
-			; 0 <= y < 32
+			; check 0 <= y < 32
 			tya
 			and #224	
 			bne @invalid
 			
+			; a = a & 15
 			pla
 			and #15
+			
+			; check a > 0
 			beq @invalid		; 0 height
 			
-			sta zp5	
+			; end_row = min(y + a, 32)
+			sty param_rows_left	
+			clc
+			adc param_rows_left
+			and #31
 			
-			; is Y even?
+			; height = end_row - y
+			sec
+			sbc param_rows_left
+			sta param_rows_left         ; param_rows_left now contains height
+			
+			; draw_ptr = screen_row_table[y]
+			lda screen_row_table_low, y
+			sta draw_ptr
+			lda screen_row_table_high, y
+			sta draw_ptr + 1
+			
+			; physical_col = x / 2
+			txa
+			lsr a
+			
+			; draw_ptr += physical_col
+			clc
+			adc draw_ptr
+			sta draw_ptr
+			lda draw_ptr + 1
+			adc #0
+			sta draw_ptr + 1  
+			
+			; source_ptr = *reg_i 
+			lda reg_i
+			sta sprite_source_ptr
+			lda reg_i + 1
+			map_to_physical
+			sta sprite_source_ptr + 1
+			
+			; will source_ptr overflow ram?  
+			cmp #(ram_page + $f)
+			bne @source_ptr_ok
+			
+			clc
+			lda sprite_source_ptr
+			adc param_rows_left
+			bcc @source_ptr_ok
+			
+			; if so, height exceeds ram by a bytes
+			; height -= a
+			clc
+			sbc param_rows_left
+			eor #$ff
+			sta param_rows_left
+			
+@source_ptr_ok:
+			
+			; is y even?
 			tya
 			and #1
-			sta zp4
+			sta param_is_bottom_half
 
-			; find width
+			; determine strategy depending on if x is even or odd
 			txa
-			and #1
-			beq @x_even
-@x_even:
-									
-			; TODO - draw_sprite
+			lsr a
+			bcc @x_even
+			bcs @x_odd
 @invalid:
 			rts
+
+@x_odd:
+            ; end_col = min(physical_col + 5, 32)
+            ; a contains physical_col 
+            sta zp6
+            clc
+            adc #5
+			and #31
+			
+			; sprite_buffer_size = end_col - physical_col
+			sec
+			sbc param_sprite_width
+			sta param_sprite_width
+			
+			; ready - draw the sprite
+			jmp draw_odd_sprite
+									
+@x_even:
+            ; end_col = min(physical_col + 4, 32)
+            ; a contains physical_col 
+            sta param_sprite_width
+            clc
+            adc #4
+			and #31
+			
+			; sprite_buffer_size = end_col - physical_col
+			sec
+			sbc param_sprite_width
+			sta param_sprite_width
+			
+			; ready - draw the sprite
+			jmp draw_even_sprite								
+
 .endproc
 
 .proc init_graphics_tables
@@ -362,22 +447,21 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 @1:			clc
 			lda zp0
 			sta screen_row_table_low, x
+			sta screen_row_table_low + 1, x
 			adc #40
 			sta zp0
 			lda zp1
 			sta screen_row_table_high, x
+			sta screen_row_table_high + 1, x
 			adc #0
 			sta zp1
-			txa
-			and #1
-			sta screen_row_even_odd, x
 			inx
-			cpx #chip8_screen_physical_height
+			inx
+			cpx #32
 			bne @1
 			rts		
 .endproc
 
 .bss
-screen_row_table_low:		.res chip8_screen_physical_height
-screen_row_table_high:		.res chip8_screen_physical_height
-screen_row_even_odd:		.res chip8_screen_physical_height
+screen_row_table_low:		.res 32
+screen_row_table_high:		.res 32

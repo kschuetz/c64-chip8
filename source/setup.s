@@ -22,7 +22,6 @@
 			sta CI2PRA	
 			
 			switch_vic_mem physical_screen, chrome_charset
-
 			
 			rts
 .endproc
