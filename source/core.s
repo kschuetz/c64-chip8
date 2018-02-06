@@ -128,7 +128,6 @@ ui_action:			.res 0
 			rts				 			
 .endproc
 
-
 .rodata 
 action_handlers:
 			.addr no_action 		; none

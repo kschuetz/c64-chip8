@@ -6,7 +6,7 @@
 .import init_keyboard, init_core
 .import update_screen_color
 .import build_chrome
-.import active_bundle, display_rom_title
+.import reset
 .import build_decimal_table
 .importzp screen_bgcolor, screen_fgcolor
 
@@ -31,11 +31,7 @@
 			jsr build_decimal_table
 			jsr build_bundle_index
 			jsr init_core
-			jsr clear_ram
 			jsr init_keyboard
-			
-			ldy #7	; load space invaders for now
-			jsr load_bundled_rom
 
 			jsr init_charsets
 			jsr init_vars
@@ -45,8 +41,10 @@
 			jsr clear_screen
 			jsr build_screen_margins
 			jsr build_chrome
-			lda active_bundle
-			jsr display_rom_title
+			
+			lda #default_rom_index	
+			jsr reset
+
 			jsr init_vic
 			lda #$1f    ;Disable CIA IRQ's
 			sta $dc0d
