@@ -1,7 +1,7 @@
 .export main_loop, init_core, set_ui_action
 .exportzp ui_action
 
-.import update_screen_color
+.import update_screen_color, active_bundle, bundle_count, reset
 .importzp screen_bgcolor, screen_fgcolor, ui_key_events
 
 .include "common.s"
@@ -87,6 +87,32 @@ ui_action:			.res 0
 			jmp update_screen_color
 .endproc
 
+.proc handle_load_next
+			lda active_bundle
+			clc
+			adc #01
+			cmp bundle_count
+			bmi @ok
+			lda #0				; wrap around to zero
+@ok:		jmp reset
+.endproc
+
+.proc handle_load_prev
+			lda active_bundle
+			sec
+			sbc #01
+			bpl @ok
+			sec
+			lda bundle_count
+			sbc #01
+@ok:		jmp reset
+.endproc
+
+.proc handle_reset
+			lda active_bundle
+			jmp reset
+.endproc
+
 .proc set_ui_action
 			lda ui_key_events
 			beq @done
@@ -131,9 +157,9 @@ ui_action:			.res 0
 .rodata 
 action_handlers:
 			.addr no_action 		; none
-			.addr no_action			; reset
-			.addr no_action			; load_next
-			.addr no_action			; load_prev
+			.addr handle_reset		; reset
+			.addr handle_load_next
+			.addr handle_load_prev
 			.addr no_action			; pause
 			.addr handle_bgcolor_prev
 			.addr handle_bgcolor_next
