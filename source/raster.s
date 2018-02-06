@@ -1,6 +1,7 @@
 .export setup_irq
 .import physical_screen, screen_charset, chrome_charset, check_keyboard, get_chip8_keypress, keyboard_debug
-.importzp screen_bgcolor
+.import check_ui_keys, set_ui_action
+.importzp screen_bgcolor, ui_key_events, ui_action
 
 .include "common.s"
 
@@ -90,9 +91,12 @@ irq_service:
 			sta $d020
 			sta $d021
 			switch_vic_mem physical_screen, chrome_charset
-			
+
 			; temp
 			jsr keyboard_debug
+
+			jsr check_ui_keys
+			jsr set_ui_action
 .endproc
 
 .proc exit_irq
@@ -103,3 +107,5 @@ irq_service:
 			pla
 			rti
 .endproc
+
+

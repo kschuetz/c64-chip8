@@ -10,7 +10,6 @@
 .bss
 
 bundle_count: 		.res 1
-bundle_count_decimal: .res 2
 active_bundle:		.res 1
 bundle_index_low: 	.res max_bundled_roms				
 bundle_index_high: 	.res max_bundled_roms
@@ -50,11 +49,7 @@ bundle_index_high: 	.res max_bundled_roms
 			cpy #max_bundled_roms
 			bmi @loop	
 
-@done:		ldy bundle_count
-			lda decimal_table_low, y
-			sta bundle_count_decimal
-			lda decimal_table_high, y
-			sta bundle_count_decimal + 1			
+@done:				
 			rts				
 .endproc
 

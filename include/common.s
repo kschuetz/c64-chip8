@@ -23,3 +23,28 @@
 	title .byte title_length
 	data .byte
 .endstruct
+
+.enum UIAction
+		none
+		reset
+		load_next
+		load_prev
+		pause
+		bgcolor_prev
+		bgcolor_next
+		fgcolor_prev
+		fgcolor_next
+.endenum
+
+
+; UI Keys
+; Function   	C64 Key		Row			Column
+; ------------------------------------------
+; 0: Reset			F1			0			4
+; 1: Load Next		F3			0			5
+; 2: Load Prev		F5			0		    6
+; 3: Pause			P			5			1
+; 4: BGColor -		J			4			2
+; 5: BGColor +		K			4			5
+; 6: FGColor -		N			4			7
+; 7: FGColor +		M			4			4

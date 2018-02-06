@@ -1,4 +1,4 @@
-.export build_chrome, keyboard_debug, display_rom_title
+.export build_chrome, keyboard_debug, display_rom_title, debug_output_hex
 .import chrome_origin, chrome_color_origin, is_chip8_key_pressed, physical_screen
 .import bundle_count, bundle_index_low, bundle_index_high, bundle_count_decimal
 .import decimal_table_high, decimal_table_low
@@ -199,6 +199,24 @@ rom_title_origin = chrome_origin + chip8_screen_offset_x + 6
 			ldy zp6
 			output_big_char	
 			iny
+			rts
+.endproc
+
+debug_hex_origin = 958
+.proc debug_output_hex
+			tax
+			lsr a
+			lsr a
+			lsr a
+			lsr a
+			tay
+			lda keyboard_debug_chars, y
+			sta physical_screen + debug_hex_origin
+			txa
+			and #$0f
+			tay
+			lda keyboard_debug_chars, y
+			sta physical_screen + debug_hex_origin + 1
 			rts
 .endproc
 

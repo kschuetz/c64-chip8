@@ -19,7 +19,7 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 .code
 
 .proc clear_screen
-			lda #6
+			lda #8
 			ldy #chip8_screen_physical_width - 1
 @loop:		.repeat chip8_screen_physical_height, i
 				sta chip8_screen_origin + 40 * i, y

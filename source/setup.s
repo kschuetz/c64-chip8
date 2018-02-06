@@ -3,6 +3,7 @@
 
 .import clear_screen, physical_screen, screen_charset, chrome_charset, start, build_screen_margins
 .import build_bundle_index, clear_ram, load_bundled_rom, init_charsets
+.import init_keyboard, init_core
 .import update_screen_color
 .import build_chrome
 .import active_bundle, display_rom_title
@@ -29,7 +30,9 @@
 .proc initialize
 			jsr build_decimal_table
 			jsr build_bundle_index
+			jsr init_core
 			jsr clear_ram
+			jsr init_keyboard
 			
 			ldy #7	; load space invaders for now
 			jsr load_bundled_rom
