@@ -3,7 +3,7 @@
 
 .import clear_screen, physical_screen, screen_charset, chrome_charset, start, build_screen_margins
 .import build_bundle_index, clear_ram, load_bundled_rom, init_charsets
-.import init_keyboard, init_core
+.import init_keyboard, init_core, init_graphics_tables
 .import update_screen_color
 .import build_chrome
 .import reset
@@ -28,6 +28,7 @@
 .endproc
 
 .proc initialize
+			jsr init_graphics_tables
 			jsr build_decimal_table
 			jsr build_bundle_index
 			jsr init_core

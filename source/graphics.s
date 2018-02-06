@@ -1,4 +1,4 @@
-.export clear_screen, build_screen_margins, update_screen_color
+.export clear_screen, build_screen_margins, update_screen_color, init_graphics_tables
 
 .import chip8_screen_origin, chip8_screen_color_origin, physical_screen
 .exportzp screen_bgcolor, screen_fgcolor
@@ -83,152 +83,152 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 ;   collision_flag will contain nonzero if collision
 
 .proc blit
-      dey
+			dey
 @loop:
-      lda (draw_ptr), y
-      tax
-      and sprite_buffer, y
-      beq @no_collision
-      sta collision_flag
+			lda (draw_ptr), y
+			tax
+			and sprite_buffer, y
+			beq @no_collision
+			sta collision_flag
 @no_collision:
-      txa
-      eor sprite_buffer, y
-      sta (draw_ptr), y
-      dey
-      bpl @loop
-      rts
+			txa
+			eor sprite_buffer, y
+			sta (draw_ptr), y
+			dey
+			bpl @loop
+  			    rts
 .endproc
 
 .macro top_even
-      tax
-      rol a
-      rol a
-      rol a
-      and #12
-      sta sprite_buffer + 0
-      txa
-      and #48
-      lsr a
-      lsr a
-      lsr a
-      lsr a
-      sta sprite_buffer + 1
-      txa
-      and #12
-      lsr a
-      lsr a
-      sta sprite_buffer + 2
-      txa
-      and #3
-      sta sprite_buffer + 3
+			tax
+			rol a
+			rol a
+			rol a
+			and #12
+			sta sprite_buffer + 0
+			txa
+			and #48
+			lsr a
+			lsr a
+			lsr a
+			lsr a
+			sta sprite_buffer + 1
+			txa
+			and #12
+			lsr a
+			lsr a
+			sta sprite_buffer + 2
+			txa
+			and #3
+			sta sprite_buffer + 3
 .endmacro
 
 .macro bottom_even
-      tax
-      rol a
-      rol a
-      rol a
-      and #12
-      ora sprite_buffer + 0
-      sta sprite_buffer + 0
-      txa
-      and #48
-      lsr a
-      lsr a
-      lsr a
-      lsr a
-      ora sprite_buffer + 1
-      sta sprite_buffer + 1
-      txa
-      and #12
-      lsr a
-      lsr a
-      ora sprite_buffer + 2
-      sta sprite_buffer + 2
-      txa
-      and #3
-      ora sprite_buffer + 3
-      sta sprite_buffer + 3
+			tax
+			rol a
+			rol a
+			rol a
+			and #12
+			ora sprite_buffer + 0
+			sta sprite_buffer + 0
+			txa
+			and #48
+			lsr a
+			lsr a
+			lsr a
+			lsr a
+			ora sprite_buffer + 1
+			sta sprite_buffer + 1
+			txa
+			and #12
+			lsr a
+			lsr a
+			ora sprite_buffer + 2
+			sta sprite_buffer + 2
+			txa
+			and #3
+			ora sprite_buffer + 3
+			sta sprite_buffer + 3
 .endmacro
 
 .macro clear_even
-      lda #0
-      sta sprite_buffer + 0
-      sta sprite_buffer + 1
-      sta sprite_buffer + 2
-      sta sprite_buffer + 3
+			lda #0
+			sta sprite_buffer + 0
+			sta sprite_buffer + 1
+			sta sprite_buffer + 2
+			sta sprite_buffer + 3
 .endmacro
 
 .macro clear_odd
-      lda #0
-      sta sprite_buffer + 0
-      sta sprite_buffer + 1
-      sta sprite_buffer + 2
-      sta sprite_buffer + 3
-      sta sprite_buffer + 4
+			lda #0
+			sta sprite_buffer + 0
+			sta sprite_buffer + 1
+			sta sprite_buffer + 2
+			sta sprite_buffer + 3
+			sta sprite_buffer + 4
 .endmacro
 
 .macro top_odd
-      tax
-      rol a
-      rol a
-      rol a
-      and #2
-      sta sprite_buffer + 0
-      txa
-      and #96
-      lsr a
-      lsr a
-      lsr a
-      sta sprite_buffer + 1
-      txa
-      and #24
-      lsr a
-      sta sprite_buffer + 2
-      txa
-      and #6
-      asl a
-      sta sprite_buffer + 3
-      txa
-      and #1
-      asl a
-      asl a
-      asl a
-      sta sprite_buffer + 4
+			tax
+			rol a
+			rol a
+			rol a
+			and #2
+			sta sprite_buffer + 0
+			txa
+			and #96
+			lsr a
+			lsr a
+			lsr a
+			sta sprite_buffer + 1
+			txa
+			and #24
+			lsr a
+			sta sprite_buffer + 2
+			txa
+			and #6
+			asl a
+			sta sprite_buffer + 3
+			txa
+			and #1
+			asl a
+			asl a
+			asl a
+			sta sprite_buffer + 4
 .endmacro
 
 .macro bottom_odd
-      tax
-      rol a
-      rol a
-      rol a
-      and #2
-      ora sprite_buffer + 0
-      sta sprite_buffer + 0
-      txa
-      and #96
-      lsr a
-      lsr a
-      lsr a
-      ora sprite_buffer + 1
-      sta sprite_buffer + 1
-      txa
-      and #24
-      lsr a
-      ora sprite_buffer + 2
-      sta sprite_buffer + 2
-      txa
-      and #6
-      asl a
-      ora sprite_buffer + 3
-      sta sprite_buffer + 3
-      txa
-      and #1
-      asl a
-      asl a
-      asl a
-      ora sprite_buffer + 4
-      sta sprite_buffer + 4
+			tax
+			rol a
+			rol a
+			rol a
+			and #2
+			ora sprite_buffer + 0
+			sta sprite_buffer + 0
+			txa
+			and #96
+			lsr a
+			lsr a
+			lsr a
+			ora sprite_buffer + 1
+			sta sprite_buffer + 1
+			txa
+			and #24
+			lsr a
+			ora sprite_buffer + 2
+			sta sprite_buffer + 2
+			txa
+			and #6
+			asl a
+			ora sprite_buffer + 3
+			sta sprite_buffer + 3
+			txa
+			and #1
+			asl a
+			asl a
+			asl a
+			ora sprite_buffer + 4
+			sta sprite_buffer + 4
 .endmacro
 
 .macro make_draw_sprite is_odd 
@@ -238,66 +238,66 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 @sprite_width = zp6
 @src_ptr = zp7
 
-      lda @is_bottom_half
-      beq @top_half
+			lda @is_bottom_half
+			beq @top_half
       
 @initial_bottom_half:
       
-      .if is_odd 
-        clear_odd 
-      .else 
-        clear_even 
-      .endif   
-      
-      jmp @bottom_half
+			.if is_odd 
+				clear_odd 
+			.else 
+				clear_even 
+			.endif   
+
+			jmp @bottom_half
       
 @top_half:
-      ldy @src_ptr
-      lda (sprite_source_ptr), y
-      inc @src_ptr 
+			ldy @src_ptr
+			lda (sprite_source_ptr), y
+			inc @src_ptr 
       
-      .if is_odd 
-        top_odd
-      .else
-        top_even
-      .endif   
-      
-      dec @rows_left
-      beq @no_bottom_half  
+			.if is_odd 
+				top_odd
+			.else
+				top_even
+			.endif   
+
+			dec @rows_left
+			beq @no_bottom_half  
             
 @bottom_half:
-      ldy @src_ptr
-      lda (sprite_source_ptr), y
-      inc @src_ptr
-      
-      .if is_odd 
-        bottom_odd
-      .else
-        bottom_even
-      .endif 
-      
-      ldy @sprite_width
-      jsr blit
-      dec @rows_left
-      beq @no_rows_left
-        
-        ; draw_ptr += 40
-      clc
-      lda draw_ptr
-      adc #40
-      sta draw_ptr
-      lda draw_ptr + 1
-      adc #0
-      sta draw_ptr + 1 
-      
-      jmp @top_half
+			ldy @src_ptr
+			lda (sprite_source_ptr), y
+			inc @src_ptr
+
+			.if is_odd 
+				bottom_odd
+			.else
+				bottom_even
+			.endif 
+
+			ldy @sprite_width
+			jsr blit
+			dec @rows_left
+			beq @no_rows_left
+
+			; draw_ptr += 40
+			clc
+			lda draw_ptr
+			adc #40
+			sta draw_ptr
+			lda draw_ptr + 1
+			adc #0
+			sta draw_ptr + 1 
+
+			jmp @top_half
       
 @no_bottom_half:
-      ldy @sprite_width
-      jmp blit                              
+			ldy @sprite_width
+			jmp blit                              
 
 @no_rows_left:
-      rts
+			rts
 
 .endmacro
 
@@ -309,9 +309,75 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 ; zp5:       number of logical rows to draw
 ; zp6:       width of sprite buffer to blit
 .proc draw_even_sprite
-      make_draw_sprite 0
+			make_draw_sprite 0
 .endproc
 
 .proc draw_odd_sprite
-      make_draw_sprite 1
+			make_draw_sprite 1
 .endproc
+
+; x:  		X coordinate
+; y:  		Y coordinate
+; a:  		height
+; reg_i:	points to sprite	
+.proc draw_sprite
+			pha
+			
+			; 0 <= x < 64
+			txa
+			and #192		
+			bne @invalid
+			
+			; 0 <= y < 32
+			tya
+			and #224	
+			bne @invalid
+			
+			pla
+			and #15
+			beq @invalid		; 0 height
+			
+			sta zp5	
+			
+			; is Y even?
+			tya
+			and #1
+			sta zp4
+
+			; find width
+			txa
+			and #1
+			beq @x_even
+@x_even:
+									
+			; TODO - draw_sprite
+@invalid:
+			rts
+.endproc
+
+.proc init_graphics_tables
+			istore zp0, chip8_screen_origin
+			
+			ldx #0
+@1:			clc
+			lda zp0
+			sta screen_row_table_low, x
+			adc #40
+			sta zp0
+			lda zp1
+			sta screen_row_table_high, x
+			adc #0
+			sta zp1
+			txa
+			and #1
+			sta screen_row_even_odd, x
+			inx
+			cpx #chip8_screen_physical_height
+			bne @1
+			rts		
+.endproc
+
+.bss
+screen_row_table_low:		.res chip8_screen_physical_height
+screen_row_table_high:		.res chip8_screen_physical_height
+screen_row_even_odd:		.res chip8_screen_physical_height

@@ -8,12 +8,6 @@
 .zeropage
 op1:	.res 1
 
-
-	;; converts high byte of logical RAM (in A) to physical RAM location
-.macro map_to_physical
-	and #63
-	ora #ram_page
-.endmacro
 	
 .code
 
