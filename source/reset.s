@@ -1,5 +1,5 @@
 .export reset
-.import clear_ram, load_font_set, clear_screen, load_bundled_rom, active_bundle, display_rom_title
+.import clear_ram, clear_registers, load_font_set, clear_screen, load_bundled_rom, active_bundle, display_rom_title
 .import test_draw
 
 ; A - bundle to load
@@ -16,6 +16,6 @@
 			lda active_bundle
 			jsr display_rom_title	
 			
-			;; TODO - reset CPU and registers
+			jsr clear_registers
 			rts
 .endproc

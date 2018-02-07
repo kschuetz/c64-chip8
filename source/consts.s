@@ -10,7 +10,7 @@
 ram = $c000
 ram_page = >ram
 program_start = ram + $0200
-stack_low = $a700		; low bytes of return addresses
+stack_low = $a700		    ; low bytes of return addresses
 stack_high = $a600	        ; high bytes of return addresses
 physical_screen = $b000
 screen_charset = $b800	

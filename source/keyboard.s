@@ -72,9 +72,9 @@ kbd_temp:		.res 1
 
 
 .zeropage
-ui_key_state:	.res 1
-ui_key_events:	.res 1
-ui_key_new_state: .res 1
+ui_key_state:	    .res 1
+ui_key_events:	    .res 1
+ui_key_new_state:   .res 1
 
 .code
 

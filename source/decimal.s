@@ -26,4 +26,3 @@
 .bss
 decimal_table_low:		.res 256
 decimal_table_high:		.res 256
-

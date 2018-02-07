@@ -1,6 +1,8 @@
+.idea/
 build/
 obj/
 *.tws
 *.prj
 *.pui
 *.ps1
+*.iml

@@ -5,12 +5,8 @@
 
 .include "common.s"
 
-
-
-
 .zeropage
 raster_index: .res 1
-
 
 .rodata
 

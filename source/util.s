@@ -1,5 +1,4 @@
 .importzp zp0, zp1, zp2, zp3, zp4, zp5
-.exportzp arg_move_from, arg_move_to, arg_move_size
 
 .export move_up, fill
 
@@ -7,38 +6,40 @@
 ; arg_move_to = destination start address
 ; arg_move_size = number of bytes to move
 
-arg_move_from = zp0
-arg_move_to = zp2
-arg_move_size = zp4
 
 .code
 	
 	;;  Move memory up
 				
 .proc move_up
-		    ldx arg_move_size+1    ; the last byte must be moved first
-			clc               ; start at the final pages of FROM and TO
+
+move_from = zp0
+move_to = zp2
+move_size = zp4
+
+		    ldx move_size+1     ; the last byte must be moved first
+			clc                 ; start at the final pages of FROM and TO
 		    txa
-		    adc arg_move_from+1
-		    sta arg_move_from+1
+		    adc move_from+1
+		    sta move_from+1
 		    clc
 		    txa
-		    adc arg_move_to+1
-		    sta arg_move_to+1
-		    inx          ; allows the use of BNE after the DEX below
-		    ldy arg_move_size
+		    adc move_to+1
+		    sta move_to+1
+		    inx                 ; allows the use of BNE after the DEX below
+		    ldy move_size
 		    beq @3
-		    dey          ; move bytes on the last page first
+		    dey                 ; move bytes on the last page first
 		    beq @2
-@1: 	    lda (arg_move_from),Y
-		    sta (arg_move_to),Y
+@1: 	    lda (move_from), y
+		    sta (move_to), y
 		    dey
 		    bne @1
-@2:		    lda (arg_move_from),Y ; handle Y = 0 separately
-		    sta (arg_move_to),Y
+@2:		    lda (move_from), y  ; handle Y = 0 separately
+		    sta (move_to), y
 @3:			dey
-		    dec arg_move_from+1   ; move the next page (if any)
-		    dec arg_move_to+1
+		    dec move_from + 1   ; move the next page (if any)
+		    dec move_to + 1
 		    dex
 		    bne @1
 		    rts
