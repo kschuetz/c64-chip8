@@ -1,6 +1,10 @@
 .export clear_screen, build_screen_margins, update_screen_color, init_graphics_tables, draw_sprite
 .exportzp screen_bgcolor, screen_fgcolor
 
+; temp - for debugging:
+.export draw_even_sprite, draw_odd_sprite, blit
+.exportzp sprite_buffer, collision_flag, draw_ptr, sprite_source_ptr
+
 .import chip8_screen_origin, chip8_screen_color_origin, physical_screen
 
 .importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7, reg_i, ram_page
@@ -19,7 +23,7 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 .code
 
 .proc clear_screen
-			lda #8
+			lda #0
 			ldy #chip8_screen_physical_width - 1
 @loop:		.repeat chip8_screen_physical_height, i
 				sta chip8_screen_origin + 40 * i, y
@@ -96,30 +100,29 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 			sta (draw_ptr), y
 			dey
 			bpl @loop
-  			    rts
+  			rts
 .endproc
 
 .macro top_even
 			tax
-			rol a
-			rol a
-			rol a
+			lsr a
+			lsr a
+			lsr a
+			lsr a
 			and #12
 			sta sprite_buffer + 0
 			txa
-			and #48
 			lsr a
 			lsr a
-			lsr a
-			lsr a
+			and #12
 			sta sprite_buffer + 1
 			txa
 			and #12
-			lsr a
-			lsr a
 			sta sprite_buffer + 2
 			txa
-			and #3
+			asl a
+			asl a
+			and #12
 			sta sprite_buffer + 3
 .endmacro
 
@@ -128,21 +131,21 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 			rol a
 			rol a
 			rol a
-			and #12
+			and #3
 			ora sprite_buffer + 0
 			sta sprite_buffer + 0
 			txa
-			and #48
 			lsr a
 			lsr a
 			lsr a
 			lsr a
+			and #3
 			ora sprite_buffer + 1
 			sta sprite_buffer + 1
 			txa
-			and #12
 			lsr a
 			lsr a
+			and #3
 			ora sprite_buffer + 2
 			sta sprite_buffer + 2
 			txa
@@ -169,27 +172,28 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 			rol a
 			rol a
 			rol a
-			and #2
+			rol a
+			and #4
 			sta sprite_buffer + 0
 			txa
-			and #96
 			lsr a
 			lsr a
 			lsr a
+			and #12
 			sta sprite_buffer + 1
 			txa
-			and #24
 			lsr a
+			and #12
 			sta sprite_buffer + 2
 			txa
-			and #6
 			asl a
+			and #12
 			sta sprite_buffer + 3
 			txa
-			and #1
 			asl a
 			asl a
 			asl a
+			and #8
 			sta sprite_buffer + 4
 .endmacro
 
@@ -197,32 +201,32 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 			tax
 			rol a
 			rol a
-			rol a
-			and #2
+			and #1
 			ora sprite_buffer + 0
 			sta sprite_buffer + 0
 			txa
-			and #96
-			lsr a
-			lsr a
-			lsr a
+			rol a
+			rol a
+			rol a
+			rol a
+			and #3
 			ora sprite_buffer + 1
 			sta sprite_buffer + 1
 			txa
-			and #24
 			lsr a
+			lsr a
+			lsr a
+			and #3
 			ora sprite_buffer + 2
 			sta sprite_buffer + 2
 			txa
-			and #6
-			asl a
+			lsr a
+			and #3
 			ora sprite_buffer + 3
 			sta sprite_buffer + 3
 			txa
-			and #1
 			asl a
-			asl a
-			asl a
+			and #2
 			ora sprite_buffer + 4
 			sta sprite_buffer + 4
 .endmacro
@@ -235,6 +239,9 @@ param_sprite_width = zp6
 
 @src_ptr = zp7
 
+			lda #0
+			sta @src_ptr
+			
 			lda param_is_bottom_half
 			beq @top_half
       
@@ -316,7 +323,7 @@ param_sprite_width = zp6
 ; x:  		X coordinate
 ; y:  		Y coordinate
 ; a:  		height
-; reg_i:	points to sprite	
+; reg_i:	points to sprite
 .proc draw_sprite
 			pha
 			lda #0

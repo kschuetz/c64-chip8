@@ -27,6 +27,8 @@
 .endproc
 
 .proc initialize
+			
+
 			jsr init_graphics_tables
 			jsr build_decimal_table
 			jsr build_bundle_index
@@ -41,9 +43,6 @@
 			jsr clear_screen
 			jsr build_screen_margins
 			jsr build_chrome
-			
-			lda #default_rom_index	
-			jsr reset
 
 			jsr init_vic
 			lda #$1f    ;Disable CIA IRQ's
@@ -56,9 +55,13 @@
 			sta $fffc
 			stx $fffb
 			stx $fffd
-
+			
 			lda #$35
 			sta $1
+			
+			lda #default_rom_index	
+			jsr reset
+			
 			rts
 .endproc
 
