@@ -1,9 +1,17 @@
-.export setup_irq
+.export setup_irq, exit_irq
 .import physical_screen, screen_charset, chrome_charset, check_keyboard, get_chip8_keypress, keyboard_debug
+.import update_timers
 .import check_ui_keys, set_ui_action
 .importzp screen_bgcolor, ui_key_events, ui_action
 
 .include "common.s"
+
+.enum services
+    top
+    chip8_top
+    chip8_end
+    timer_only
+.endenum
 
 .zeropage
 raster_index: .res 1
@@ -11,13 +19,22 @@ raster_index: .res 1
 .rodata
 
 next_raster_index:
-			.byte 1, 2, 0
+			.byte 1, 2, 3, 4, 5, 0
 next_raster_line:
-			.byte 50, 178, 0
+			.byte 50        ; start of chip8 screen
+			.byte 64        ; timer update
+			.byte 128       ; timer update
+			.byte 178       ; end of chip8 screen
+			.byte 200       ; timer update
+			.byte 0         ; top of screen.  includes timer update
 			
 irq_service:
-			.byte 0, 1, 2
-			
+			.byte services::top
+			.byte services::chip8_top
+			.byte services::timer_only
+			.byte services::timer_only
+			.byte services::chip8_end
+			.byte services::timer_only
 .code
 
 
@@ -63,9 +80,11 @@ irq_service:
 			lda irq_service, x
 			
 			beq top_irq
+			cmp #2
+			beq screen_end_irq
 			cmp #1
 			beq screen_top_irq
-			jmp screen_end_irq	
+			jmp update_timers
 .endproc
 
 .proc top_irq
@@ -73,7 +92,7 @@ irq_service:
 			sta $d020
 			lda screen_bgcolor
 			sta $d021
-			jmp exit_irq
+			jmp update_timers
 .endproc
 
 .proc screen_top_irq
@@ -81,6 +100,8 @@ irq_service:
 			jsr check_keyboard
 			jmp exit_irq
 .endproc
+
+
 
 .proc screen_end_irq
 			lda #chrome_bgcolor

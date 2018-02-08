@@ -1,5 +1,5 @@
 .export main_loop, init_core, set_ui_action
-.exportzp ui_action
+.exportzp ui_action, paused
 
 .import update_screen_color, active_bundle, bundle_count, reset
 .importzp screen_bgcolor, screen_fgcolor, ui_key_events
@@ -8,12 +8,14 @@
 
 .zeropage
 ui_action:			.res 0
+paused:             .res 0
 
 .code
 
 .proc init_core
-			lda #UIAction::none
+			lda #0
 			sta ui_action
+			sta paused
 			rts	
 .endproc
 

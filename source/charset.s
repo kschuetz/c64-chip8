@@ -18,7 +18,7 @@ xo = %11110000
 xx = %11111111
 
 row_bits:
-			.byte oo, oo
+            .byte oo, oo
 			.byte oo, ox
 			.byte oo, xo
 			.byte oo, xx
