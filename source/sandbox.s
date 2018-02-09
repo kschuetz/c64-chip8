@@ -1,7 +1,7 @@
 .import draw_sprite
 .import move_up
 .importzp reg_i, zp0, zp2, zp4, zp5, zp6
-.import draw_even_sprite, draw_odd_sprite, blit, chip8_screen_origin, debug_output_hex
+.import draw_even_sprite, draw_odd_sprite, blit_proc, chip8_screen_origin, debug_output_hex
 .importzp sprite_buffer, collision_flag, draw_ptr, sprite_source_ptr
 
 .export test_draw
@@ -58,7 +58,7 @@ test_sprite_1 = $c050
 			bpl :-
 			
 			ldy #5
-			jmp blit	
+			jmp blit_proc
 .endproc
 
 ; param_is_bottom_half = zp4
