@@ -1,7 +1,7 @@
 .import draw_sprite
 .import move_up
 .importzp reg_i, zp0, zp2, zp4, zp5, zp6
-.import draw_even_sprite, draw_odd_sprite, blit, chip8_screen_origin
+.import draw_even_sprite, draw_odd_sprite, blit, chip8_screen_origin, debug_output_hex
 .importzp sprite_buffer, collision_flag, draw_ptr, sprite_source_ptr
 
 .export test_draw
@@ -12,7 +12,7 @@ test_sprite_1 = $c050
 
 
 .proc test_draw
-			jmp testdraw_odd_sprite
+			jmp test_draw_0
 .endproc
 
 
@@ -23,10 +23,22 @@ test_sprite_1 = $c050
 			jsr move_up
 			
 			istore reg_i, test_sprite_1
-			ldx #0
-			ldy #0
+			ldx #1
+			ldy #1
 			lda #8
-			jmp draw_sprite 	
+			;jsr draw_sprite
+			lda collision_flag
+			jsr debug_output_hex
+
+			istore reg_i, test_sprite_1
+            ldx #1
+            ldy #1
+            lda #15
+            jsr draw_sprite
+            lda collision_flag
+            jsr debug_output_hex
+
+			rts
 .endproc
 
 
@@ -68,7 +80,18 @@ test_sprite_1 = $c050
 			sta zp5
 			lda #4 
 			sta zp6
-			jmp draw_even_sprite
+			jsr draw_even_sprite
+
+			istore sprite_source_ptr, test_data_1
+            istore draw_ptr, (chip8_screen_origin + 121)
+
+            lda #0
+            sta zp4
+            lda #8
+            sta zp5
+            lda #4
+            sta zp6
+            jmp draw_even_sprite
 .endproc
 
 .proc testdraw_odd_sprite
@@ -92,6 +115,8 @@ test_sprite_1 = $c050
 ;.proc draw_sprite
 
 .rodata 
-test_data_1:  .byte 255, 127, 63, 31, 15, 7, 3, 1
+test_data_1:
+            .byte 255, 127, 63, 31, 15, 7, 3, 1
+            .byte 128, 129, 131, 135, 143, 159, 193, 255
 
 sprite_buffer_data: .byte 15, 13, 8, 0, 1

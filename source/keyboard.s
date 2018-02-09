@@ -104,7 +104,6 @@ ui_key_new_state:   .res 1
 			lda ui_key_new_state
 			sta ui_key_state
 
-			jmp debug_output_hex			
 			rts
 .endproc
 

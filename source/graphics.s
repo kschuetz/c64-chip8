@@ -325,7 +325,7 @@ param_sprite_width = zp6
 ; a:  		height
 ; reg_i:	points to sprite
 .proc draw_sprite
-			pha
+			sta zp5                     ; temporary stash
 			lda #0
 			sta collision_flag
 			
@@ -340,18 +340,21 @@ param_sprite_width = zp6
 			bne @invalid
 			
 			; a = a & 15
-			pla
+			lda zp5                     
 			and #15
 			
 			; check a > 0
 			beq @invalid		; 0 height
 			
 			; end_row = min(y + a, 32)
-			sty param_rows_left	
-			clc
-			adc param_rows_left
-			and #31
-			
+            sty param_rows_left
+            clc
+            adc param_rows_left
+            cmp #32
+            bmi @height_in_bounds
+            lda #32
+
+@height_in_bounds:
 			; height = end_row - y
 			sec
 			sbc param_rows_left
@@ -414,36 +417,22 @@ param_sprite_width = zp6
 			rts
 
 @x_odd:
-            ; end_col = min(physical_col + 5, 32)
-            ; a contains physical_col 
-            sta zp6
-            clc
-            adc #5
-			and #31
-			
-			; sprite_buffer_size = end_col - physical_col
-			sec
-			sbc param_sprite_width
-			sta param_sprite_width
-			
+            ; a contains physical_col 0..31
+            tax
+            lda sprite_widths_odd_table, x
+            sta param_sprite_width
+
 			; ready - draw the sprite
 			jmp draw_odd_sprite
 									
 @x_even:
-            ; end_col = min(physical_col + 4, 32)
-            ; a contains physical_col 
+            ; a contains physical_col 0..31
+            tax
+            lda sprite_widths_even_table, x
             sta param_sprite_width
-            clc
-            adc #4
-			and #31
-			
-			; sprite_buffer_size = end_col - physical_col
-			sec
-			sbc param_sprite_width
-			sta param_sprite_width
-			
-			; ready - draw the sprite
-			jmp draw_even_sprite								
+
+            ; ready - draw the sprite
+            jmp draw_even_sprite
 
 .endproc
 
@@ -466,9 +455,26 @@ param_sprite_width = zp6
 			inx
 			cpx #32
 			bne @1
+
 			rts		
 .endproc
+
+; TODO:  need to rewrite all sprite functions to wrap data around screen
+
+.rodata
+sprite_widths_even_table:
+            .repeat 29
+                .byte 4
+            .endrepeat
+            .byte 3, 2, 1
+
+sprite_widths_odd_table:
+            .repeat 28
+                .byte 5
+            .endrepeat
+            .byte 4, 3, 2, 1
 
 .bss
 screen_row_table_low:		.res 32
 screen_row_table_high:		.res 32
+
