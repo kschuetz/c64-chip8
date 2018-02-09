@@ -228,6 +228,7 @@ USE_OLD_GRAPHICS = 0
 ; Output:
 ;   collision_flag will contain nonzero if collision
 
+old_graphics:
 blit_proc:
 .proc blit
 			dey
@@ -536,7 +537,7 @@ blit_proc:      rts
 ; param_right_column:           physical column offset of _right-most_  pixel to copy; must be 0 <= y < 32
 ; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
 ; param_rows_left:              number of logical rows to draw
-.macro make_draw_sprite is_odd, sprite_width
+.macro make_draw_sprite strategy, sprite_width
 
 @src_ptr = zp7
 
@@ -548,11 +549,7 @@ blit_proc:      rts
 
 @initial_bottom_half:
 
-			.if is_odd
-				clear_odd
-			.else
-				clear_even
-			.endif
+            .ident(.concat("clear_", strategy))
 
 			jmp @bottom_half
 
@@ -561,11 +558,7 @@ blit_proc:      rts
 			lda (sprite_source_ptr), y
 			inc @src_ptr
 
-			.if is_odd
-				top_odd
-			.else
-				top_even
-			.endif
+            .ident(.concat("top_", strategy))
 
 			dec param_rows_left
 			beq @no_bottom_half
@@ -575,21 +568,17 @@ blit_proc:      rts
 			lda (sprite_source_ptr), y
 			inc @src_ptr
 
-			.if is_odd
-				bottom_odd
-			.else
-				bottom_even
-			.endif
+            .ident(.concat("bottom_", strategy))
 
 			ldy param_physical_row
 			lda screen_row_table_low, y
 			sta draw_ptr
-			lda screen_row_table_high + 1
+			lda screen_row_table_high, y
 			sta draw_ptr + 1
 			iny
 			tya
 			and #31                             ; wrap around to the top
-			sty param_physical_row
+			sta param_physical_row
 
 			blit sprite_width
 			dec param_rows_left
@@ -601,7 +590,7 @@ blit_proc:      rts
 			ldy param_physical_row
             lda screen_row_table_low, y
             sta draw_ptr
-            lda screen_row_table_high + 1
+            lda screen_row_table_high, y
             sta draw_ptr + 1
 			blit sprite_width
 
@@ -616,11 +605,11 @@ blit_proc:      rts
 ; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
 ; param_rows_left:              number of logical rows to draw
 .proc draw_even_sprite
-			make_draw_sprite 0, 4
+			make_draw_sprite "even", 4
 .endproc
 
 .proc draw_odd_sprite
-			make_draw_sprite 1, 5
+			make_draw_sprite "odd", 5
 .endproc
 
 ; x:  		X coordinate

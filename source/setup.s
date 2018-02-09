@@ -3,7 +3,7 @@
 
 .import clear_screen, physical_screen, screen_charset, chrome_charset, start, build_screen_margins
 .import build_bundle_index, clear_ram, load_bundled_rom, init_charsets
-.import init_keyboard, init_core, init_graphics_tables, init_timers
+.import init_keyboard, init_core, init_graphics_tables, init_timers, init_random
 .import update_screen_color
 .import build_chrome
 .import reset
@@ -29,6 +29,7 @@
 
 .proc initialize
             jsr check_host_model
+            jsr init_random
             jsr init_timers
 			jsr init_graphics_tables
 			jsr build_decimal_table

@@ -31,8 +31,8 @@ test_sprite_1 = $c050
 			jsr debug_output_hex
 
 			istore reg_i, test_sprite_1
-            ldx #1
-            ldy #1
+            ldx #49
+            ldy #15
             lda #15
             jsr draw_sprite
             lda collision_flag

@@ -6,6 +6,7 @@
 .import is_chip8_key_pressed
 .import convert_to_bcd, get_digit_font_location
 .import clear_screen
+.import get_random
 
 .export exec
 	
@@ -14,6 +15,7 @@
 .zeropage
 op1:	            .res 1
 cpu_temp0:          .res 1
+cpu_temp1:          .res 1
 cpu_temp_addr0:     .res 2
 	
 .code
@@ -108,7 +110,7 @@ cpu_temp_addr0:     .res 2
             adc #2
             map_to_physical
             sta stack_high, Y
-            iny
+            iny                             ; stack grows upwards
             sty reg_sp
             jmp opcode_1
 .endmacro
@@ -308,7 +310,14 @@ cpu_temp_addr0:     .res 2
 ;; Cxkk - RND Vx, byte
 ;; Set Vx = random byte AND kk
 .macro opcode_c_impl
-;; TODO
+            op1_to_y
+            sty cpu_temp0
+            lda reg_v, y
+            sta cpu_temp1
+        	jsr get_random
+        	and cpu_temp1
+        	ldy cpu_temp0
+        	sta reg_v, y
         	jmp next
 .endmacro
 
