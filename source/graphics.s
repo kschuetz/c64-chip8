@@ -509,7 +509,6 @@ screen_row_table_high:		.res 32
             .local @loop, @no_collision, @no_wrap
 
             ldx #(sprite_width - 1)
-			dex
 			ldy param_right_column
 @loop:
 			lda (draw_ptr), y
@@ -577,7 +576,7 @@ blit_proc:      rts
 			sta draw_ptr + 1
 			iny
 			tya
-			and #31                             ; wrap around to the top
+			and #15                             ; wrap around to the top
 			sta param_physical_row
 
 			blit sprite_width
@@ -617,7 +616,7 @@ blit_proc:      rts
 ; a:  		height
 ; reg_i:	points to sprite
 .proc draw_sprite
-			sta gt0                     ; temporary stash
+			sta @stash1 + 1                     ; temporary stash
 			lda #0
 			sta collision_flag
 
@@ -632,7 +631,7 @@ blit_proc:      rts
 			tay
 
 			; a = a & 15
-			lda gt0
+@stash1:	lda #0
 			and #15
 
 			; check a > 0
