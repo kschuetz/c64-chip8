@@ -1,8 +1,8 @@
 .import draw_sprite
 .import move_up
 .importzp reg_i, zp0, zp2, zp3, zp4, zp5, zp6
-.import draw_even_sprite, draw_odd_sprite, blit_proc, chip8_screen_origin, debug_output_hex
-.importzp sprite_buffer, collision_flag, draw_ptr, sprite_source_ptr
+.import draw_even_sprite, draw_odd_sprite, chip8_screen_origin, debug_output_hex
+.importzp sprite_buffer, collision_flag, sprite_source_ptr
 
 .export test_draw
 
@@ -41,26 +41,6 @@ test_sprite_1 = $c050
 			rts
 .endproc
 
-
-; blit - copies from sprite_buffer to screen
-; Input:
-;   Y - number of bytes to copy from sprite_buffer;  must be > 0  
-;   draw_ptr - target screen address
-;   requires normalized data in sprite_buffer (i.e., upper 4 bits 0)
-; Output:
-;   collision_flag will contain nonzero if collision
-.proc test_blit
-			istore draw_ptr, chip8_screen_origin 
-			ldy #4
-:			lda sprite_buffer_data, y
-			sta sprite_buffer, y
-			dey
-			bpl :-
-			
-			ldy #5
-			jmp blit_proc
-.endproc
-
 param_physical_row = zp2
 param_right_column = zp3
 param_is_bottom_half = zp4
@@ -83,53 +63,6 @@ param_sprite_width = zp6
             sta param_rows_left
             jmp draw_even_sprite
 .endproc
-
-; param_is_bottom_half = zp4
-; param_rows_left = zp5
-; param_sprite_width = zp6
-
-; draw_ptr:  target_address of upper-left corner of sprite
-; sprite_source_ptr:  source data for sprite
-; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
-; param_rows_left:              number of logical rows to draw
-; param_sprite_width:           width of sprite buffer to blit
-.proc testdraw_even_sprite_old
-			istore sprite_source_ptr, test_data_1
-			istore draw_ptr, chip8_screen_origin
-			
-			lda #1
-			sta zp4
-			lda #8
-			sta zp5
-			lda #4 
-			sta zp6
-			jsr draw_even_sprite
-
-			istore sprite_source_ptr, test_data_1
-            istore draw_ptr, (chip8_screen_origin + 121)
-
-            lda #0
-            sta zp4
-            lda #8
-            sta zp5
-            lda #4
-            sta zp6
-            jmp draw_even_sprite
-.endproc
-
-.proc testdraw_odd_sprite
-			istore sprite_source_ptr, test_data_1
-			istore draw_ptr, chip8_screen_origin
-			
-			lda #0
-			sta zp4
-			lda #8
-			sta zp5
-			lda #5 
-			sta zp6
-			jmp draw_odd_sprite
-.endproc
-
 
 ;; x:  		X coordinate
 ; y:  		Y coordinate
