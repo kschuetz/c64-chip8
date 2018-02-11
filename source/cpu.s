@@ -1,8 +1,9 @@
 .export exec, cpu_next
 .exportzp cpu_temp_addr0, cpu_temp0
 
-.importzp reg_pc, reg_sp, reg_v, reg_i, ram_page
+.importzp reg_pc, reg_sp, reg_v, reg_i, reg_vf, ram_page
 .importzp delay_timer
+.importzp collision_flag
 .import stack_low, stack_high, ram
 .import is_chip8_key_pressed, get_chip8_keypress
 .import convert_to_bcd, get_digit_font_location
@@ -10,6 +11,7 @@
 .import get_random
 .import set_delay_timer, set_sound_timer
 .import read_registers_from_ram, write_registers_to_ram
+.import draw_sprite
 
 .export exec
 	
@@ -61,9 +63,9 @@ cpu_temp_addr0:     .res 2
             and #$fe
             tay
             lda opcode_dispatch, y
-            sta @jump
-            lda opcode_dispatch + 1, y
             sta @jump + 1
+            lda opcode_dispatch + 1, y
+            sta @jump + 2
 @jump:      jmp $0000
 .endproc
 
@@ -345,7 +347,23 @@ cpu_temp_addr0:     .res 2
 ;; Dxyn - DRW Vx, Vy, nibble
 ;; Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 .macro opcode_d_impl
-;; TODO
+            txa
+            sta @stash1 + 1
+            lsr a
+            lsr a
+            lsr a
+            lsr a
+            tax
+            op1_to_y
+@stash1:    lda #0
+            jsr draw_sprite
+            lda collision_flag
+            beq @no_collision
+            lda #1
+            .byte $2c   ; BIT instruction
+@no_collision:
+            lda #0
+            sta reg_vf
         	jmp next
 .endmacro
 

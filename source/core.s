@@ -1,14 +1,14 @@
 .export main_loop, init_core, set_ui_action
 .exportzp ui_action, paused
 
-.import update_screen_color, active_bundle, bundle_count, reset
+.import update_screen_color, active_bundle, bundle_count, reset, exec
 .importzp screen_bgcolor, screen_fgcolor, ui_key_events
 
 .include "common.s"
 
 .zeropage
-ui_action:			.res 0
-paused:             .res 0
+ui_action:			.res 1
+paused:             .res 1
 
 .code
 
@@ -37,6 +37,11 @@ paused:             .res 0
 			jsr no_action				; self modified target
 			
 @ui_work_done:
+            lda paused
+            bne main_loop
+
+            ; execute a CPU instruction
+            jsr exec
 			jmp main_loop
 .endproc
 

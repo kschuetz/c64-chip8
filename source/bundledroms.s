@@ -6,14 +6,18 @@
 
 .segment "BUNDLE"
 
-.macro bundle filename, title
+.macro bundle filename, title, offset
 		.local @end
 		.word @end
 		scrcode title
 		.repeat (title_length - .strlen(title))
 			.byte 0
 		.endrep
-		.incbin filename
+		.if .paramcount < 3
+		    .incbin filename
+		.else
+		    .incbin filename, offset
+		.endif
 @end:
 .endmacro
 
@@ -25,7 +29,7 @@ bundle_start:
 		bundle "roms/CONNECT4", "connect 4"
 		bundle "roms/GUESS", "guess"
 		bundle "roms/HIDDEN", "hidden"
-		bundle "roms/INVADERS", "invaders"
+		bundle "roms/INVADERS", "invaders", $25
 		bundle "roms/KALEID", "kaleid"
 		bundle "roms/MAZE", "maze"
 		bundle "roms/MERLIN", "merlin"

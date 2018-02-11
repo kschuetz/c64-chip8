@@ -8,7 +8,7 @@
 			jsr clear_ram
 			jsr load_font_set
 			jsr clear_screen
-			jsr test_draw				; temp
+			; jsr test_draw				; temp
 			
 			pla
 			tay
