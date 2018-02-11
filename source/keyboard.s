@@ -1,4 +1,4 @@
-.export check_keyboard, is_chip8_key_pressed, get_chip8_keypress, init_keyboard, check_ui_keys
+.export check_keyboard, is_guest_key_pressed, get_guest_keypress, init_keyboard, check_ui_keys
 .exportzp ui_key_events
 
 .import debug_output_hex
@@ -44,7 +44,7 @@ kbd_col7:		.res 1
 
 ; A - chip8 key to check
 ; returns nonzero in A is key is pressed
-.proc is_chip8_key_pressed
+.proc is_guest_key_pressed
 			and #$0f
 			tay 
 			ldx chip8_key_port_a, y
@@ -54,11 +54,11 @@ kbd_col7:		.res 1
 .endproc 
 
 ; returns pressed key in A, or $ff if no key pressed
-.proc get_chip8_keypress
+.proc get_guest_keypress
 			ldx #0
 @loop:		stx @stash + 1
 			txa
-			jsr is_chip8_key_pressed
+			jsr is_guest_key_pressed
 			bne @found
 @stash:		ldx #0
 			inx

@@ -1,7 +1,7 @@
 
 .export initialize
 
-.import clear_screen, physical_screen, screen_charset, chrome_charset, start, build_screen_margins
+.import clear_screen, host_screen, screen_charset, chrome_charset, start, build_screen_margins
 .import build_bundle_index, clear_ram, load_bundled_rom, init_charsets
 .import init_keyboard, init_core, init_graphics_tables, init_timers, init_random
 .import update_screen_color
@@ -22,7 +22,7 @@
 			ora #1
 			sta $dd00
 			
-			switch_vic_mem physical_screen, chrome_charset
+			switch_vic_mem host_screen, chrome_charset
 
 			lda $d011
 			and #%10010000

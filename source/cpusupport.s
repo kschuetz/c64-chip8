@@ -1,8 +1,8 @@
 .export convert_to_bcd, get_digit_font_location
 .export read_registers_from_ram, write_registers_to_ram
 
-.import ram, decimal_table_low, decimal_table_high, cpu_next
-.importzp reg_v, reg_i, cpu_temp_addr0, ram_page
+.import guest_ram, decimal_table_low, decimal_table_high, cpu_next
+.importzp reg_v, reg_i, cpu_temp_addr0, guest_ram_page
 
 .include "common.s"
 
@@ -12,8 +12,8 @@
 ;; Y: V register to read from.  Must be $0 - $f before calling.
 .proc convert_to_bcd
             lda reg_i + 1
-            map_to_physical
-            cmp #(ram_page + $f)        ; check if I+2 is going to exceed RAM
+            map_to_host
+            cmp #(guest_ram_page + $f)        ; check if I+2 is going to exceed RAM
             sta cpu_temp_addr0 + 1
             beq @handle_edge_cases      
       
@@ -61,7 +61,7 @@
             ;; hundreds
             lda decimal_table_high, x
             and #15
-            sta ram + $ffe
+            sta guest_ram + $ffe
             
             ;; tens
             lda decimal_table_low, x
@@ -69,7 +69,7 @@
             lsr a 
             lsr a
             lsr a
-@done:      sta ram + $fff
+@done:      sta guest_ram + $fff
             jmp cpu_next
 @limit_to_one:              
             lda reg_v, y
@@ -92,15 +92,15 @@
             adc reg_i
             sta reg_i
             adc #0
-            map_to_physical
+            map_to_host
             sta reg_i + 1
             jmp cpu_next
 .endproc
 
 .macro ram_registers_setup
             lda reg_i + 1
-            map_to_physical
-            cmp #(ram_page + $f)        ; check if i+15 is going to exceed RAM boundary
+            map_to_host
+            cmp #(guest_ram_page + $f)        ; check if i+15 is going to exceed RAM boundary
             sta cpu_temp_addr0 + 1
             beq @check_boundary
 

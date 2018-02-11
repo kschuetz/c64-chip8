@@ -1,7 +1,7 @@
 .import draw_sprite
 .import move_up
 .importzp reg_i, zp0, zp2, zp3, zp4, zp5, zp6
-.import draw_even_sprite, draw_odd_sprite, chip8_screen_origin, debug_output_hex
+.import draw_even_sprite, draw_odd_sprite, guest_screen_origin, debug_output_hex
 .importzp sprite_buffer, collision_flag, sprite_source_ptr
 
 .export test_draw

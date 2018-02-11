@@ -1,6 +1,6 @@
 .include "common.s"
 	
-.import screen_charset, chrome_charset, ram
+.import screen_charset, chrome_charset, guest_ram
 .importzp zp0, zp2, zp4
 .import fill, move_up
 
@@ -73,7 +73,7 @@ row_bits:
 .proc load_font_set
 			ldy #79
 @loop:		lda font_set, y
-			sta ram, y
+			sta guest_ram, y
 			dey
 			bpl @loop
 .endproc

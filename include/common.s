@@ -19,9 +19,9 @@
 .endmacro 
 
 	;; converts high byte of logical RAM (in A) to physical RAM location
-.macro map_to_physical
+.macro map_to_host
 	    and #63
-	    ora #ram_page
+	    ora #guest_ram_page
 .endmacro
 
 .struct BundleNode

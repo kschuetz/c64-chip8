@@ -1,11 +1,11 @@
 .export exec, cpu_next
 .exportzp cpu_temp_addr0, cpu_temp0
 
-.importzp reg_pc, reg_sp, reg_v, reg_i, reg_vf, ram_page
+.importzp reg_pc, reg_sp, reg_v, reg_i, reg_vf, guest_ram_page
 .importzp delay_timer
 .importzp collision_flag
 .import stack_low, stack_high, ram
-.import is_chip8_key_pressed, get_chip8_keypress
+.import is_guest_key_pressed, get_guest_keypress
 .import convert_to_bcd, get_digit_font_location
 .import clear_screen
 .import get_random
@@ -102,7 +102,7 @@ cpu_temp_addr0:     .res 2
             normalize_pc_low
             sta reg_pc
             lda stack_high, y
-            map_to_physical
+            map_to_host
             sta reg_pc + 1
             dey
             sty reg_sp
@@ -116,7 +116,7 @@ cpu_temp_addr0:     .res 2
             normalize_pc_low
             sta reg_pc
             lda op1
-            map_to_physical
+            map_to_host
             sta reg_pc + 1
             rts
 .endmacro
@@ -131,7 +131,7 @@ cpu_temp_addr0:     .res 2
             sta stack_low, Y
             lda reg_pc + 1
             adc #2
-            map_to_physical
+            map_to_host
             sta stack_high, Y
             iny                             ; stack grows upwards
             sty reg_sp
@@ -311,7 +311,7 @@ cpu_temp_addr0:     .res 2
 .macro opcode_a_impl
             stx reg_i
             lda op1
-            map_to_physical
+            map_to_host
             sta reg_i + 1               
         	jmp next
 .endmacro
@@ -325,7 +325,7 @@ cpu_temp_addr0:     .res 2
         	sta reg_pc
             lda op1
             adc #0
-            map_to_physical
+            map_to_host
             sta reg_pc + 1
             rts
 .endmacro
@@ -379,10 +379,10 @@ cpu_temp_addr0:     .res 2
         	beq @sknp
         	jmp next
 @skp:       lda op1
-            jsr is_chip8_key_pressed
+            jsr is_guest_key_pressed
             skip_if_ne
 @sknp:      lda op1
-            jsr is_chip8_key_pressed
+            jsr is_guest_key_pressed
             skip_if_eq
 .endmacro
 
@@ -445,7 +445,7 @@ cpu_temp_addr0:     .res 2
             sta reg_i
             lda reg_i + 1
             adc #0
-            map_to_physical
+            map_to_host
             sta reg_i + 1
             jmp next
 
@@ -456,7 +456,7 @@ cpu_temp_addr0:     .res 2
 
 @wait_key:
             sty @stash1 + 1
-            jsr get_chip8_keypress
+            jsr get_guest_keypress
             bpl @key_pressed
             ; no key pressed - don't update PC
             rts
@@ -500,7 +500,7 @@ cpu_next:               ; exported name of next
 next1:      sta reg_pc
             lda reg_pc + 1
             adc #0
-            map_to_physical
+            map_to_host
             sta reg_pc + 1
             rts
 .endproc

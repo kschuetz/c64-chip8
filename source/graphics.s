@@ -5,9 +5,9 @@
 .export draw_even_sprite, draw_odd_sprite
 .exportzp sprite_buffer, collision_flag, row_base_ptr, sprite_source_ptr
 
-.import chip8_screen_origin, chip8_screen_color_origin, physical_screen
+.import guest_screen_origin, guest_screen_color_origin, host_screen
 
-.importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7, reg_i, ram_page
+.importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7, reg_i, guest_ram_page
 
 .include "common.s"
 
@@ -24,9 +24,9 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 
 .proc clear_screen
 			lda #0
-			ldy #chip8_screen_physical_width - 1
-@loop:		.repeat chip8_screen_physical_height, i
-				sta chip8_screen_origin + 40 * i, y
+			ldy #guest_screen_physical_width - 1
+@loop:		.repeat guest_screen_physical_height, i
+				sta guest_screen_origin + 40 * i, y
 			.endrepeat
 			dey
 			bpl @loop
@@ -34,9 +34,9 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 .endproc
 
 .proc update_screen_color
-			ldy #chip8_screen_physical_width - 1
-@loop:		.repeat chip8_screen_physical_height, i
-				sta chip8_screen_color_origin + 40 * i, y
+			ldy #guest_screen_physical_width - 1
+@loop:		.repeat guest_screen_physical_height, i
+				sta guest_screen_color_origin + 40 * i, y
 			.endrepeat
 			dey
 			bpl @loop
@@ -45,24 +45,24 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 
 .proc build_screen_margins
 				; set character of margins to 15
-			istore zp0, (physical_screen + 40 * chip8_screen_offset_y)		
+			istore zp0, (host_screen + 40 * guest_screen_offset_y)
 			lda #15
 			sta zp2
 			jsr @go
 				; set color ram of margins to 0
-			istore zp0, (COLOR_RAM + 40 * chip8_screen_offset_y)
+			istore zp0, (COLOR_RAM + 40 * guest_screen_offset_y)
 			lda #chrome_bgcolor
 			sta zp2
-@go:		ldx #chip8_screen_physical_height
+@go:		ldx #guest_screen_physical_height
 @loop:		lda zp2
-			ldy #chip8_screen_offset_x - 1
+			ldy #guest_screen_offset_x - 1
 @1:			sta (zp0), y
 			dey
 			bpl @1
 			ldy #39
 @2:			sta (zp0), y
 			dey
-			cpy #(chip8_screen_physical_width + chip8_screen_offset_x)
+			cpy #(guest_screen_physical_width + guest_screen_offset_x)
 			bpl @2
 			clc
 			lda #40
@@ -354,11 +354,11 @@ param_sprite_width = zp6
 			lda reg_i
 			sta sprite_source_ptr
 			lda reg_i + 1
-			map_to_physical
+			map_to_host
 			sta sprite_source_ptr + 1
 
 			; will source_ptr overflow ram?
-			cmp #(ram_page + $f)
+			cmp #(guest_ram_page + $f)
 			bne @source_ptr_ok
 
 			clc
@@ -411,7 +411,7 @@ param_sprite_width = zp6
 .endproc
 
 .proc init_graphics_tables
-			istore zp0, chip8_screen_origin
+			istore zp0, guest_screen_origin
 
 			ldx #0
 @1:			clc

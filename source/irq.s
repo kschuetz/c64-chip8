@@ -1,5 +1,5 @@
 .export setup_irq, exit_irq
-.import physical_screen, screen_charset, chrome_charset, check_keyboard, get_chip8_keypress, keyboard_debug
+.import host_screen, screen_charset, chrome_charset, check_keyboard, get_guest_keypress, keyboard_debug
 .import update_timers
 .import check_ui_keys, set_ui_action
 .importzp screen_bgcolor, ui_key_events, ui_action
@@ -96,7 +96,7 @@ irq_service:
 .endproc
 
 .proc screen_top_irq
-			switch_vic_mem physical_screen, screen_charset
+			switch_vic_mem host_screen, screen_charset
 			jsr check_keyboard
 			jmp exit_irq
 .endproc
@@ -107,7 +107,7 @@ irq_service:
 			lda #chrome_bgcolor
 			sta $d020
 			sta $d021
-			switch_vic_mem physical_screen, chrome_charset
+			switch_vic_mem host_screen, chrome_charset
 
 			; temp
 			jsr keyboard_debug

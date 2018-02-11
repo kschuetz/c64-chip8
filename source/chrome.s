@@ -1,5 +1,5 @@
 .export build_chrome, keyboard_debug, display_rom_title, debug_output_hex
-.import chrome_origin, chrome_color_origin, is_chip8_key_pressed, physical_screen
+.import chrome_origin, chrome_color_origin, is_guest_key_pressed, host_screen
 .import bundle_count, bundle_index_low, bundle_index_high, bundle_count_decimal
 .import decimal_table_high, decimal_table_low
 .importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6
@@ -40,7 +40,7 @@
 
 .proc draw_keyboard_pic
 
-@kbd_origin = chrome_origin + 80 + chip8_screen_offset_x
+@kbd_origin = chrome_origin + 80 + guest_screen_offset_x
 			ldx #0
 			istore zp0, @kbd_origin
 @1:			ldy #0
@@ -69,7 +69,7 @@ keyboard_debug_origin = 984   ; last 16 characters of last row
 .proc init_keyboard_debug
 			ldy #15
 @loop:		lda keyboard_debug_chars, y
-			sta physical_screen + keyboard_debug_origin, y
+			sta host_screen + keyboard_debug_origin, y
 			lda #2
 			sta COLOR_RAM + keyboard_debug_origin, y
 			dey
@@ -82,7 +82,7 @@ keyboard_debug_origin = 984   ; last 16 characters of last row
 			ldy #15
 @loop:		sty irq_zp0
 			tya
-			jsr is_chip8_key_pressed
+			jsr is_guest_key_pressed
 			beq @no
 			lda #1
 			bne @1
@@ -104,7 +104,7 @@ keyboard_debug_origin = 984   ; last 16 characters of last row
 			sta (zp2), y
 .endmacro
 
-rom_title_origin = chrome_origin + chip8_screen_offset_x + 6
+rom_title_origin = chrome_origin + guest_screen_offset_x + 6
 
 ; A - bundle index
 .proc display_rom_title
@@ -211,12 +211,12 @@ debug_hex_origin = 958
 			lsr a
 			tay
 			lda keyboard_debug_chars, y
-			sta physical_screen + debug_hex_origin
+			sta host_screen + debug_hex_origin
 			txa
 			and #$0f
 			tay
 			lda keyboard_debug_chars, y
-			sta physical_screen + debug_hex_origin + 1
+			sta host_screen + debug_hex_origin + 1
 			rts
 .endproc
 
