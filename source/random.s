@@ -48,6 +48,13 @@
             ldx #0
 @loop:      lda $d41b
             sta random_buffer, x
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
             dex
             bne @loop
 

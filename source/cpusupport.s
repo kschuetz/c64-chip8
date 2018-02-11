@@ -1,4 +1,5 @@
 .export convert_to_bcd, get_digit_font_location
+.export read_registers_from_ram, write_registers_to_ram
 
 .import ram, decimal_table_low, decimal_table_high, cpu_next
 .importzp reg_v, reg_i, cpu_temp_addr0, ram_page
@@ -79,7 +80,6 @@
             jmp @done
 .endproc
 
-
 ; Y: V register to read from.  Must be $0 - $f before calling.
 .proc get_digit_font_location
             ; base location of digit in fontset is digit * 5
@@ -95,4 +95,65 @@
             map_to_physical
             sta reg_i + 1
             jmp cpu_next
+.endproc
+
+.macro ram_registers_setup
+            lda reg_i + 1
+            map_to_physical
+            cmp #(ram_page + $f)        ; check if i+15 is going to exceed RAM boundary
+            sta cpu_temp_addr0 + 1
+            beq @check_boundary
+
+            lda reg_i
+            sta cpu_temp_addr0
+@safe:      ldx #16                     ; number of registers safe to read/write
+.endmacro
+
+.macro ram_registers_check_boundary
+@check_boundary:
+            lda reg_i
+            ; if a <= $f0, safe to read/write all
+            cmp #$f1
+            bcc @safe
+
+            ; otherwise, safe to read/write $100 - a
+            eor #$ff
+            tax
+            inx
+            bne @loop1          ; unconditional
+.endmacro
+
+.proc read_registers_from_ram
+            ram_registers_setup
+@loop1:
+            lda (cpu_temp_addr0), y
+            sta reg_v, y
+            iny
+            dex
+            bpl @loop1
+
+            cpy #16
+            beq @done
+
+            lda #0                      ; fill remaining with zeroes
+@loop2:     sta reg_v, y
+            iny
+            cpy #16
+            bne @loop2
+@done:      rts
+
+            ram_registers_check_boundary
+.endproc
+
+.proc write_registers_to_ram
+            ram_registers_setup
+@loop1:
+            lda reg_v, y
+            sta (cpu_temp_addr0), y
+            iny
+            dex
+            bpl @loop1
+            rts
+            
+            ram_registers_check_boundary
 .endproc

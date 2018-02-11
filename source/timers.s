@@ -76,7 +76,6 @@ done:       jmp exit_irq
 
 .endproc
 
-
 ;; fine counters are decremented 4 times per frame
 ntsc_decrement_amount = 64     ; 256 / 4
 pal_decrement_amount = 76      ; (312/262) * ntsc

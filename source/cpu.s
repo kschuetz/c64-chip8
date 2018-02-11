@@ -2,11 +2,14 @@
 .exportzp cpu_temp_addr0, cpu_temp0
 
 .importzp reg_pc, reg_sp, reg_v, reg_i, ram_page
+.importzp delay_timer
 .import stack_low, stack_high, ram
-.import is_chip8_key_pressed
+.import is_chip8_key_pressed, get_chip8_keypress
 .import convert_to_bcd, get_digit_font_location
 .import clear_screen
 .import get_random
+.import set_delay_timer, set_sound_timer
+.import read_registers_from_ram, write_registers_to_ram
 
 .export exec
 	
@@ -19,6 +22,11 @@ cpu_temp1:          .res 1
 cpu_temp_addr0:     .res 2
 	
 .code
+
+; to ensure PC contains only even addresses
+.macro normalize_pc_low
+            and #$fe
+.endmacro
 
 .macro op1_to_y
             lda op1
@@ -84,14 +92,27 @@ cpu_temp_addr0:     .res 2
             jsr clear_screen
             jmp next
 @1:	        cpx #$ee
-            bne next	
-            jmp return_from_subroutine
+            bne next
+
+            ; return from subroutine
+            ldy reg_sp
+            lda stack_low, y
+            normalize_pc_low
+            sta reg_pc
+            lda stack_high, y
+            map_to_physical
+            sta reg_pc + 1
+            dey
+            sty reg_sp
+            rts
 .endmacro
 
 ;; 1nnn - JP addr
 ;; Jump to location nnn
 .macro opcode_1_impl
-            stx reg_pc
+            txa
+            normalize_pc_low
+            sta reg_pc
             lda op1
             map_to_physical
             sta reg_pc + 1
@@ -392,24 +413,50 @@ cpu_temp_addr0:     .res 2
             bne :+
             jmp convert_to_bcd
 :           cpx #$55
-            beq @write_regs
-            cpx #$65
-            beq @read_regs
-@read_delay:    ; todo
-@wait_key:      ; todo
-@write_delay:   ; todo
-@write_sound:   ; todo
-@add_to_i:      ; todo
-@write_regs:    ; todo
-@read_regs:     ; todo
-        	jmp next
-        	
+            bne :+
+            jmp write_registers_to_ram
+:           cpx #$65
+            bne :+
+            jmp read_registers_from_ram
+:        	jmp next
+
+@add_to_i:
+            ; carry flag is clear from cpx
+            lda reg_v, y
+            adc reg_i
+            sta reg_i
+            lda reg_i + 1
+            adc #0
+            map_to_physical
+            sta reg_i + 1
+            jmp next
+
+@read_delay:
+            lda delay_timer
+            sta reg_v, y
+            jmp next
+
+@wait_key:
+            sty @stash1 + 1
+            jsr get_chip8_keypress
+            bpl @key_pressed
+            ; no key pressed - don't update PC
+            rts
+@key_pressed:
+@stash1:    ldy #0
+            sta reg_v, y
+            jmp next
+
+@write_delay:
+            lda reg_v, y
+            jsr set_delay_timer
+            jmp next
+
+@write_sound:
+            lda reg_v, y
+            jsr set_delay_timer
+            jmp next
 .endmacro
-
-.proc return_from_subroutine
-	        jmp next
-.endproc
-
 
 ;; The following are laid out so all of their branches are in range.
 ;; -----------------------------------------------------------------
