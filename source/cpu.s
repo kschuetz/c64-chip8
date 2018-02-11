@@ -60,11 +60,11 @@ cpu_temp_addr0:     .res 2
             lsr a
             lsr a
             lsr a
-            and #$fe
+            lsr a
             tay
-            lda opcode_dispatch, y
+            lda opcode_dispatch_low, y
             sta @jump + 1
-            lda opcode_dispatch + 1, y
+            lda opcode_dispatch_high, y
             sta @jump + 2
 @jump:      jmp $0000
 .endproc
@@ -194,10 +194,10 @@ cpu_temp_addr0:     .res 2
             txa
             and #15
             tay
-            lda opcode_8_dispatch, y
-            sta @jump
-            lda opcode_8_dispatch + 1, y
+            lda opcode_8_dispatch_low, y
             sta @jump + 1
+            lda opcode_8_dispatch_high, y
+            sta @jump + 2
             x_shr_4_to_y
             lda op1
             and #15
@@ -550,11 +550,25 @@ def_opcode "f"
 
 .rodata
 
-opcode_dispatch:
-	.addr opcode_0, opcode_1, opcode_2, opcode_3, opcode_4, opcode_5, opcode_6, opcode_7 
-	.addr opcode_8, opcode_9, opcode_a, opcode_b, opcode_c, opcode_d, opcode_e, opcode_f 
-	
-opcode_8_dispatch:
-    .addr opcode_8_0, opcode_8_1, opcode_8_2, opcode_8_3, opcode_8_4, opcode_8_5, opcode_8_6, opcode_8_7 
-	.addr next, next, next, next, next, next, opcode_8_e, next    	
-	
+.define opcodes_0_thru_7 opcode_0, opcode_1, opcode_2, opcode_3, opcode_4, opcode_5, opcode_6, opcode_7
+.define opcodes_8_thru_f opcode_8, opcode_9, opcode_a, opcode_b, opcode_c, opcode_d, opcode_e, opcode_f
+
+opcode_dispatch_low:
+	.lobytes opcodes_0_thru_7
+	.lobytes opcodes_8_thru_f
+
+opcode_dispatch_high:
+	.hibytes opcodes_0_thru_7
+	.hibytes opcodes_8_thru_f
+
+.define opcodes_8_0_thru_8_7 opcode_8_0, opcode_8_1, opcode_8_2, opcode_8_3, opcode_8_4, opcode_8_5, opcode_8_6, opcode_8_7
+.define opcodes_8_8_thru_8_f next, next, next, next, next, next, opcode_8_e, next
+
+opcode_8_dispatch_low:
+    .lobytes opcodes_8_0_thru_8_7
+    .lobytes opcodes_8_8_thru_8_f
+
+opcode_8_dispatch_high:
+    .hibytes opcodes_8_0_thru_8_7
+    .hibytes opcodes_8_8_thru_8_f
+

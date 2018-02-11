@@ -12,4 +12,3 @@
 			lda #0
 			jmp fill
 .endproc
-
