@@ -15,19 +15,19 @@
 		@charset = ((charset - vic_bank_base) >> 10)
 		
 		lda #<((@screen << 4) | (@charset & 14))
-		sta VMCSB
+		sta $d018
 .endmacro 
 
 	;; converts high byte of logical RAM (in A) to physical RAM location
 .macro map_to_physical
-	and #63
-	ora #ram_page
+	    and #63
+	    ora #ram_page
 .endmacro
 
 .struct BundleNode
-	next .addr
-	title .byte title_length
-	data .byte
+	    next .addr
+	    title .byte title_length
+	    data .byte
 .endstruct
 
 .enum UIAction
@@ -41,16 +41,3 @@
 		fgcolor_prev
 		fgcolor_next
 .endenum
-
-
-; UI Keys
-; Function   	C64 Key		Row			Column
-; ------------------------------------------
-; 0: Reset			F1			0			4
-; 1: Load Next		F3			0			5
-; 2: Load Prev		F5			0		    6
-; 3: Pause			P			5			1
-; 4: BGColor -		J			4			2
-; 5: BGColor +		K			4			5
-; 6: FGColor -		N			4			7
-; 7: FGColor +		M			4			4

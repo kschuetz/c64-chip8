@@ -14,20 +14,37 @@
 .include "common.s"
 
 .proc init_vic
-			lda C2DDRA	;change VIC to bank 2
+			lda $dd02	;change VIC to bank 2
 			ora #3
-			sta C2DDRA
-			lda CI2PRA
+			sta $dd02
+			lda $dd00
 			and #$fc
 			ora #1
-			sta CI2PRA	
+			sta $dd00
 			
 			switch_vic_mem physical_screen, chrome_charset
-			
+
+			lda $d011
+			and #%10010000
+			ora #%00001011
+			sta $d011
+
+			lda #0
+			sta $d015           ; disable all sprites
+
 			rts
 .endproc
 
 .proc initialize
+            cld
+
+            lda #chrome_bgcolor
+            sta $d020
+
+            lda $d011               ; blank screen during initialization
+            and #%11101111
+            sta $d011
+
             jsr check_host_model
             jsr init_random
             jsr init_timers
@@ -63,6 +80,11 @@
 			
 			lda #default_rom_index	
 			jsr reset
+
+
+            lda $d011               ; enable screen
+            ora #%00010000
+            sta $d011
 			
 			rts
 .endproc
@@ -90,5 +112,3 @@
 			cli         ;reenable IRQ's
 			jmp start    ;reset!
 .endproc
-
-
