@@ -482,7 +482,7 @@ return_from_subroutine:
 
 @write_sound:
             lda reg_v, y
-            jsr set_delay_timer
+            jsr set_sound_timer
             jmp next
 
 wait_key:
