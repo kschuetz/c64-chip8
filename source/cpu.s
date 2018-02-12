@@ -333,6 +333,22 @@ return_from_subroutine:
 ;; Cxkk - RND Vx, byte
 ;; Set Vx = random byte AND kk
 .macro opcode_c_impl
+            stx @stash_mask + 1
+            lda op1
+            and #15
+            sta @stash_y + 1
+        	jsr get_random
+@stash_mask:
+        	and #0
+@stash_y:
+  	        ldy #0
+        	sta reg_v, y
+        	jmp next
+.endmacro
+
+;; Cxkk - RND Vx, byte
+;; Set Vx = random byte AND kk
+.macro opcode_c_impl_old
             op1_to_y
             sty cpu_temp0
             lda reg_v, y
@@ -341,29 +357,6 @@ return_from_subroutine:
         	and cpu_temp1
         	ldy cpu_temp0
         	sta reg_v, y
-        	jmp next
-.endmacro
-
-;; Dxyn - DRW Vx, Vy, nibble
-;; Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-.macro opcode_d_impl_old
-            txa
-            sta @stash1 + 1
-            lsr a
-            lsr a
-            lsr a
-            lsr a
-            tax
-            op1_to_y
-@stash1:    lda #0
-            jsr draw_sprite
-            lda collision_flag
-            beq @no_collision
-            lda #1
-            .byte $2c   ; BIT instruction
-@no_collision:
-            lda #0
-            sta reg_vf
         	jmp next
 .endmacro
 
