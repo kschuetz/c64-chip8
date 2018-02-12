@@ -8,7 +8,7 @@
 
 ; ************** configurable ****************
 
-.define default_rom_index 8
+.define default_rom_index 9
 .define title_length 16
 
 .define max_bundled_roms 32

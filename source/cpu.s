@@ -346,7 +346,7 @@ return_from_subroutine:
 
 ;; Dxyn - DRW Vx, Vy, nibble
 ;; Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-.macro opcode_d_impl
+.macro opcode_d_impl_old
             txa
             sta @stash1 + 1
             lsr a
@@ -356,6 +356,34 @@ return_from_subroutine:
             tax
             op1_to_y
 @stash1:    lda #0
+            jsr draw_sprite
+            lda collision_flag
+            beq @no_collision
+            lda #1
+            .byte $2c   ; BIT instruction
+@no_collision:
+            lda #0
+            sta reg_vf
+        	jmp next
+.endmacro
+
+;; Dxyn - DRW Vx, Vy, nibble
+;; Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+.macro opcode_d_impl
+            op1_to_y
+            lda reg_v, y
+            sta @stash_x + 1
+            txa
+            sta @stash_a + 1
+            lsr a
+            lsr a
+            lsr a
+            lsr a
+            tay
+            lda reg_v, y
+            tay
+@stash_a:   lda #0
+@stash_x:   ldx #0
             jsr draw_sprite
             lda collision_flag
             beq @no_collision
