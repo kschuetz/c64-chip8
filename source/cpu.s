@@ -460,7 +460,7 @@ return_from_subroutine:
 :        	jmp next
 
 @add_to_i:
-            ; carry flag is clear from cpx
+            clc
             lda reg_v, y
             adc reg_i
             sta reg_i
