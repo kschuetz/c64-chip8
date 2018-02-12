@@ -85,14 +85,10 @@
             ; base location of digit in fontset is digit * 5
             lda reg_v, y        
             and #15
+            tay
+            lda font_digit_ptrs, y
             sta reg_i
-            asl a           ; a = a * 4
-            asl a  	
-            clc 
-            adc reg_i
-            sta reg_i
-            adc #0
-            map_to_host
+            lda #guest_ram_page
             sta reg_i + 1
             jmp cpu_next
 .endproc
@@ -164,3 +160,8 @@
             
             ram_registers_check_boundary
 .endproc
+
+.rodata
+font_digit_ptrs:
+            .byte 0, 5, 10, 15, 20, 25, 30, 35
+            .byte 40, 45, 50, 55, 60, 65, 70, 75
