@@ -20,7 +20,7 @@
 
 	;; converts high byte of logical RAM (in A) to physical RAM location
 .macro map_to_host
-	    and #63
+	    and #15
 	    ora #guest_ram_page
 .endmacro
 

@@ -29,7 +29,7 @@ bundle_start:
 		bundle "roms/CONNECT4", "connect 4"
 		bundle "roms/GUESS", "guess"
 		bundle "roms/HIDDEN", "hidden"
-		bundle "roms/INVADERS", "invaders", $25
+		bundle "roms/INVADERS", "invaders"
 		bundle "roms/KALEID", "kaleid"
 		bundle "roms/MAZE", "maze"
 		bundle "roms/MERLIN", "merlin"

@@ -2,7 +2,7 @@
 .export read_registers_from_ram, write_registers_to_ram
 
 .import guest_ram, decimal_table_low, decimal_table_high, cpu_next
-.importzp reg_v, reg_i, cpu_temp_addr0, guest_ram_page
+.importzp reg_v, reg_i, cpu_temp0, cpu_temp_addr0, guest_ram_page
 
 .include "common.s"
 
@@ -98,6 +98,12 @@
 .endproc
 
 .macro ram_registers_setup
+            tya
+            and #15
+            clc
+            adc #1
+            sta cpu_temp0
+
             lda reg_i + 1
             map_to_host
             cmp #(guest_ram_page + $f)        ; check if i+15 is going to exceed RAM boundary
@@ -106,7 +112,8 @@
 
             lda reg_i
             sta cpu_temp_addr0
-@safe:      ldx #16                     ; number of registers safe to read/write
+@safe:      ldx cpu_temp0                     ; number of registers safe to read/write
+            ldy #0
 .endmacro
 
 .macro ram_registers_check_boundary
@@ -132,15 +139,15 @@
             dex
             bpl @loop1
 
-            cpy #16
+            cpy cpu_temp0
             beq @done
 
             lda #0                      ; fill remaining with zeroes
 @loop2:     sta reg_v, y
             iny
-            cpy #16
+            cpy cpu_temp0
             bne @loop2
-@done:      rts
+@done:      jmp cpu_next
 
             ram_registers_check_boundary
 .endproc
@@ -153,7 +160,7 @@
             iny
             dex
             bpl @loop1
-            rts
+            jmp cpu_next
             
             ram_registers_check_boundary
 .endproc

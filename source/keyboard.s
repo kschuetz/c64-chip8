@@ -18,6 +18,10 @@ kbd_col7:		.res 1
 .proc init_keyboard
 			lda #0
 			sta ui_key_state
+			ldy #7
+@loop:      sta kbd_col0, y
+            dey
+            bpl @loop
 			rts
 .endproc
 
@@ -51,23 +55,24 @@ kbd_col7:		.res 1
 			lda kbd_col0, x
 			and chip8_key_port_b, y
 			rts
-.endproc 
+.endproc
 
 ; returns pressed key in A, or $ff if no key pressed
 .proc get_guest_keypress
-			ldx #0
-@loop:		stx @stash + 1
-			txa
-			jsr is_guest_key_pressed
-			bne @found
-@stash:		ldx #0
-			inx
-			cpx #$10
-			bne @loop
-			lda #$ff		; not found; return $ff
-@found:		rts
-.endproc    
-
+			ldy #0
+@loop:      ldx chip8_key_port_a, y
+            lda kbd_col0, x
+            and chip8_key_port_b, y
+            bne @found                  ; key pressed;  Y contains logical key
+            iny
+            cpy #16
+            bne @loop
+@not_found:
+            lda #$ff                    ; return $ff if not found
+            rts
+@found:     tya
+            rts
+.endproc
 
 .zeropage
 ui_key_state:	    .res 1

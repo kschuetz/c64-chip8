@@ -27,7 +27,7 @@ cpu_temp_addr0:     .res 2
 
 ; to ensure PC contains only even addresses
 .macro normalize_pc_low
-            and #$fe
+           ; and #$fe
 .endmacro
 
 .macro op1_to_y
@@ -96,7 +96,8 @@ cpu_temp_addr0:     .res 2
 @1:	        cpx #$ee
             bne next
 
-            ; return from subroutine
+return_from_subroutine:
+            dec reg_sp
             ldy reg_sp
             lda stack_low, y
             normalize_pc_low
@@ -104,8 +105,7 @@ cpu_temp_addr0:     .res 2
             lda stack_high, y
             map_to_host
             sta reg_pc + 1
-            dey
-            sty reg_sp
+
             rts
 .endmacro
 
@@ -130,7 +130,7 @@ cpu_temp_addr0:     .res 2
             ldy reg_sp
             sta stack_low, Y
             lda reg_pc + 1
-            adc #2
+            adc #0
             map_to_host
             sta stack_high, Y
             iny                             ; stack grows upwards
@@ -417,7 +417,7 @@ cpu_temp_addr0:     .res 2
             cpx #$07
             beq @read_delay
             cpx #$0a
-            beq @wait_key
+            beq wait_key
             cpx #$15
             beq @write_delay
             cpx #$18
@@ -454,17 +454,6 @@ cpu_temp_addr0:     .res 2
             sta reg_v, y
             jmp next
 
-@wait_key:
-            sty @stash1 + 1
-            jsr get_guest_keypress
-            bpl @key_pressed
-            ; no key pressed - don't update PC
-            rts
-@key_pressed:
-@stash1:    ldy #0
-            sta reg_v, y
-            jmp next
-
 @write_delay:
             lda reg_v, y
             jsr set_delay_timer
@@ -473,6 +462,18 @@ cpu_temp_addr0:     .res 2
 @write_sound:
             lda reg_v, y
             jsr set_delay_timer
+            jmp next
+
+wait_key:
+            sty stash1 + 1
+            jsr get_guest_keypress
+            bpl key_pressed
+no_key_pressed:
+            ; no key pressed - don't update PC
+            rts
+key_pressed:
+stash1:     ldy #0
+            sta reg_v, y
             jmp next
 .endmacro
 
@@ -528,13 +529,13 @@ def_opcode "8_4"
 ; must immediately follow def_opcode_8_4
 .proc set_carry_and_exit
             lda #1
-            sta reg_v + $f
+            sta reg_vf
             jmp next
 .endproc
 
 .proc clear_carry_and_exit
             lda #0
-            sta reg_v + $f
+            sta reg_vf
             jmp next
 .endproc
 
@@ -571,4 +572,3 @@ opcode_8_dispatch_low:
 opcode_8_dispatch_high:
     .hibytes opcodes_8_0_thru_8_7
     .hibytes opcodes_8_8_thru_8_f
-
