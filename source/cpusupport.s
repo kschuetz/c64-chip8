@@ -109,12 +109,13 @@
             lda reg_i
             sta cpu_temp_addr0
 @safe:      ldx cpu_temp0                     ; number of registers safe to read/write
-            ldy #0
+@begin:     ldy #0
 .endmacro
 
 .macro ram_registers_check_boundary
 @check_boundary:
             lda reg_i
+            sta cpu_temp_addr0
             ; if a <= $f0, safe to read/write all
             cmp #$f1
             bcc @safe
@@ -123,7 +124,7 @@
             eor #$ff
             tax
             inx
-            bne @loop1          ; unconditional
+            bne @begin          ; unconditional
 .endmacro
 
 .proc read_registers_from_ram
@@ -133,7 +134,7 @@
             sta reg_v, y
             iny
             dex
-            bpl @loop1
+            bne @loop1
 
             cpy cpu_temp0
             beq @done
@@ -155,7 +156,7 @@
             sta (cpu_temp_addr0), y
             iny
             dex
-            bpl @loop1
+            bne @loop1
             jmp cpu_next
             
             ram_registers_check_boundary

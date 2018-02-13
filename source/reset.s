@@ -1,6 +1,7 @@
 .export reset
 .import clear_ram, clear_registers, load_font_set, clear_screen, load_bundled_rom, active_bundle, display_rom_title
 .import test_draw
+.import init_debug
 
 ; A - bundle to load
 .proc reset
@@ -15,7 +16,8 @@
 			jsr load_bundled_rom
 			lda active_bundle
 			jsr display_rom_title	
-			
+
+			jsr init_debug
 			jsr clear_registers
 			rts
 .endproc
