@@ -25,7 +25,7 @@ next_raster_line:
 			.byte 64        ; timer update
 			.byte 128       ; timer update
 			.byte 178       ; end of chip8 screen
-			.byte 200       ; timer update
+			.byte 200       ; pixel animation, timer update
 			.byte 0         ; top of screen.  includes timer update
 			
 irq_service:
@@ -101,7 +101,10 @@ irq_service:
 			jmp exit_irq
 .endproc
 
-
+;.proc pixel_animation
+;            jsr next_pixel_frame
+;            jmp exit_irq
+;.endproc
 
 .proc screen_end_irq
 			lda #chrome_bgcolor

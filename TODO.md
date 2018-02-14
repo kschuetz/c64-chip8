@@ -4,3 +4,6 @@
 * Chrome
 * Pixel styles
 * Redo keyboard display
+* Improve random routines
+* Pause
+

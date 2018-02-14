@@ -46,7 +46,7 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 .proc build_screen_margins
 				; set character of margins to 15
 			istore zp0, (host_screen + 40 * guest_screen_offset_y)
-			lda #15
+			lda #16
 			sta zp2
 			jsr @go
 				; set color ram of margins to 0
