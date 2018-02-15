@@ -6,7 +6,7 @@
 
 .export init_charsets, load_font_set, load_pixel_set, cycle_pixel_style
 
-pixel_style_count = 5
+pixel_style_count = 7
 
 .bss
 

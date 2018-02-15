@@ -1,4 +1,5 @@
 .export setup_irq, exit_irq
+.exportzp frame_counter
 .import host_screen, screen_charset, chrome_charset, check_keyboard, get_guest_keypress, keyboard_debug
 .import update_timers
 .import check_ui_keys, set_ui_action
@@ -10,28 +11,30 @@
     top
     chip8_top
     chip8_end
+    frame
     timer_only
 .endenum
 
 .zeropage
-raster_index: .res 1
+raster_index:   .res 1
+frame_counter:  .res 2
 
 .rodata
 
 next_raster_index:
 			.byte 1, 2, 3, 4, 5, 0
 next_raster_line:
-			.byte 50        ; start of chip8 screen
-			.byte 64        ; timer update
+			.byte 49        ; start of chip8 screen
+			.byte 64        ; frame service, keyboard, timer update
 			.byte 128       ; timer update
 			.byte 178       ; end of chip8 screen
-			.byte 200       ; pixel animation, timer update
+			.byte 200       ; timer update
 			.byte 0         ; top of screen.  includes timer update
 			
 irq_service:
 			.byte services::top
 			.byte services::chip8_top
-			.byte services::timer_only
+			.byte services::frame
 			.byte services::timer_only
 			.byte services::chip8_end
 			.byte services::timer_only
@@ -41,6 +44,8 @@ irq_service:
 .proc setup_irq
 			sei
 			ldy #0
+			sty frame_counter
+			sty frame_counter + 1
 			sty raster_index
 			lda #<irq1
 			ldx #>irq1
@@ -84,6 +89,8 @@ irq_service:
 			beq screen_end_irq
 			cmp #1
 			beq screen_top_irq
+			cmp #3
+			beq frame_service
 			jmp update_timers
 .endproc
 
@@ -101,10 +108,20 @@ irq_service:
 			jmp exit_irq
 .endproc
 
-;.proc pixel_animation
-;            jsr next_pixel_frame
-;            jmp exit_irq
-;.endproc
+; called once per frame
+.proc frame_service
+            ; temp
+            jsr keyboard_debug
+
+            jsr check_ui_keys
+            jsr set_ui_action
+
+            inc frame_counter
+            bne :+
+            inc frame_counter + 1
+:
+            jmp update_timers
+.endproc
 
 .proc screen_end_irq
 			lda #chrome_bgcolor
@@ -112,11 +129,7 @@ irq_service:
 			sta $d021
 			switch_vic_mem host_screen, chrome_charset
 
-			; temp
-			jsr keyboard_debug
 
-			jsr check_ui_keys
-			jsr set_ui_action
 .endproc
 
 .proc exit_irq

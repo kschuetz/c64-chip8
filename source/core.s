@@ -3,13 +3,15 @@
 
 .import update_screen_color, active_bundle, bundle_count, reset, exec
 .import cycle_pixel_style
-.importzp screen_bgcolor, screen_fgcolor, ui_key_events
+.importzp screen_bgcolor, screen_fgcolor, ui_key_events, frame_counter
 
 .include "common.s"
 
 .zeropage
 ui_action:			.res 1
 paused:             .res 1
+ui_action_last_frame:
+                    .res 1
 
 .code
 
@@ -17,6 +19,8 @@ paused:             .res 1
 			lda #0
 			sta ui_action
 			sta paused
+			lda #$ff
+
 			rts	
 .endproc
 
@@ -24,6 +28,12 @@ paused:             .res 1
 			nop
 			nop
 			nop
+			; do not check ui actions more than once per frame
+			lda frame_counter
+			cmp ui_action_last_frame
+			beq @ui_work_done
+			sta ui_action_last_frame
+			
 			ldy #UIAction::none
 			lda ui_action
 			beq @ui_work_done
