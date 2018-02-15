@@ -131,6 +131,13 @@ ui_action_last_frame:
 			jmp reset
 .endproc
 
+.proc handle_pause
+            lda paused
+            eor #$ff
+            sta paused
+            rts
+.endproc
+
 .proc set_ui_action
 			lda ui_key_events
 			beq @done
@@ -178,7 +185,7 @@ action_handlers:
 			.addr handle_reset		; reset
 			.addr handle_load_prev
 			.addr handle_load_next
-			.addr no_action			; pause
+			.addr handle_pause			; pause
 			.addr handle_bgcolor_next
 			.addr handle_fgcolor_next
 			.addr cycle_pixel_style
