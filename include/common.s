@@ -33,11 +33,11 @@
 .enum UIAction
 		none
 		reset
-		load_next
 		load_prev
+		load_next
 		pause
-		bgcolor_prev
 		bgcolor_next
-		fgcolor_prev
 		fgcolor_next
+		pixel_style_next
+		toggle_sound
 .endenum

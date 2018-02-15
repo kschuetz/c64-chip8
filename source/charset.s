@@ -4,7 +4,14 @@
 .importzp zp0, zp2, zp4
 .import fill, move_up
 
-.export init_charsets, load_font_set, load_pixel_set
+.export init_charsets, load_font_set, load_pixel_set, cycle_pixel_style
+
+pixel_style_count = 5
+
+.bss
+
+active_pixel_style:
+            .res 1
 
 .code
 
@@ -55,12 +62,13 @@
             dey
             bpl @loop
 
-            ldy #4
+            ldy #default_pixel_style_index
             jmp load_pixel_set
 .endproc
 
 ; Y - index of pixel set (0..15)
 .macro load_pixel_set_impl
+            sty active_pixel_style
             lda pixel_set_address_low, y
             sta @source + 1
             lda pixel_set_address_high, y
@@ -72,6 +80,15 @@
             dey
             bpl @loop
 .endmacro
+
+.proc cycle_pixel_style
+             ldy active_pixel_style
+             iny
+             cpy #pixel_style_count
+             bcc @ok
+             ldy #0
+@ok:         ; continue to load_pixel_set
+.endproc
 
 .proc load_pixel_set
             load_pixel_set_impl
@@ -94,6 +111,8 @@
 ;            dey
 ;            bpl @loop
 ;.endproc
+
+
 
 .proc load_font_set
 			ldy #79

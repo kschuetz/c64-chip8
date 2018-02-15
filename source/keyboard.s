@@ -164,17 +164,17 @@ chip8_key_port_b:
 ; Function   	    C64 Key		Row			Column
 ; ------------------------------------------
 ; 0: Reset			F1			0			4
-; 1: Load Next		F3			0			5
-; 2: Load Prev		F5			0		    6
+; 1: Load Prev		F3			0			5
+; 2: Load Next		F5			0		    6
 ; 3: Pause			P			5			1
-; 4: BGColor -		J			4			2
-; 5: BGColor +		K			4			5
-; 6: FGColor -		N			4			7
-; 7: FGColor +		M			4			4
+; 4: BGColor 		K			4			5
+; 5: FGColor 		J           4           2
+; 6: Pixel Style    M           4           4
+; 7: Toggle sound   O           4           6
 
 ui_key_port_a:
 			.byte 0, 0, 0, 5, 4, 4, 4, 4
 			
 ui_key_port_b:
 			.byte 1 << 4, 1 << 5, 1 << 6, 1 << 1
-			.byte 1 << 2, 1 << 5, 1 << 7, 1 << 4
+			.byte 1 << 5, 1 << 2, 1 << 4, 1 << 6

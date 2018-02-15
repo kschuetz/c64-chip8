@@ -2,6 +2,7 @@
 .exportzp ui_action, paused
 
 .import update_screen_color, active_bundle, bundle_count, reset, exec
+.import cycle_pixel_style
 .importzp screen_bgcolor, screen_fgcolor, ui_key_events
 
 .include "common.s"
@@ -129,11 +130,11 @@ paused:             .res 1
 			bcs @done
 @bit1:		lsr a
 			bcc @bit2
-			lda #UIAction::load_next
+			lda #UIAction::load_prev
 			bcs @done
 @bit2:		lsr a
 			bcc @bit3
-			lda #UIAction::load_prev
+			lda #UIAction::load_next
 			bcs @done
 @bit3:		lsr a
 			bcc @bit4
@@ -141,19 +142,19 @@ paused:             .res 1
 			bcs @done	
 @bit4:		lsr a
 			bcc @bit5
-			lda #UIAction::bgcolor_prev
+			lda #UIAction::bgcolor_next
 			bcs @done	
 @bit5:		lsr a
 			bcc @bit6
-			lda #UIAction::bgcolor_next
+			lda #UIAction::fgcolor_next
 			bcs @done	
 @bit6:		lsr a
 			bcc @bit7
-			lda #UIAction::fgcolor_prev
+			lda #UIAction::pixel_style_next
 			bcs @done	
 @bit7:		lsr a
 			bcc @none
-			lda #UIAction::fgcolor_next
+			lda #UIAction::toggle_sound
 			bcs @done
 			
 @none:		lda #UIAction::none
@@ -165,10 +166,10 @@ paused:             .res 1
 action_handlers:
 			.addr no_action 		; none
 			.addr handle_reset		; reset
-			.addr handle_load_next
 			.addr handle_load_prev
+			.addr handle_load_next
 			.addr no_action			; pause
-			.addr handle_bgcolor_prev
 			.addr handle_bgcolor_next
-			.addr handle_fgcolor_prev	
-			.addr handle_fgcolor_next	
+			.addr handle_fgcolor_next
+			.addr cycle_pixel_style
+			.addr no_action         ; toggle sound

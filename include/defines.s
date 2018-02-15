@@ -15,6 +15,7 @@
 
 .define chrome_bgcolor 0
 
+default_pixel_style_index = 0
 default_screen_bgcolor = 11
 default_screen_fgcolor = 13
 
