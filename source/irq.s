@@ -24,10 +24,10 @@ frame_counter:  .res 2
 next_raster_index:
 			.byte 1, 2, 3, 4, 5, 0
 next_raster_line:
-			.byte 49        ; start of chip8 screen
+			.byte 48        ; start of chip8 screen
 			.byte 64        ; frame service, keyboard, timer update
 			.byte 128       ; timer update
-			.byte 178       ; end of chip8 screen
+			.byte 176       ; end of chip8 screen
 			.byte 200       ; timer update
 			.byte 0         ; top of screen.  includes timer update
 			
@@ -63,6 +63,58 @@ irq_service:
 			cli
 			rts
 .endproc
+
+
+.proc irq1_experiment
+            pha
+            txa
+            pha
+            tya
+            pha
+
+            istore IRQ_VECTOR, irq2
+
+            inc $d012
+
+            lda #$01
+            sta $d019
+
+            tsx
+            cli
+
+            .repeat 9
+                nop
+            .endrepeat
+irq2:
+            txs
+            ldx #8
+:           dex
+            bne :-
+
+            lda $d012
+            cmp $d012
+            beq @stable
+@stable:
+            cld                             ; 2
+            ldx raster_index                ; 3
+            lda next_raster_line, x         ; 4
+            sta $d012                       ; 4
+
+            ldy next_raster_index, x        ; 4
+            sty raster_index                ; 3
+
+            lda irq_service, x
+
+            beq top_irq
+            cmp #2
+            beq screen_end_irq
+            cmp #1
+            beq screen_top_irq
+            cmp #3
+            beq frame_service
+            jmp update_timers
+.endproc
+
 
 .proc irq1
 			pha
@@ -131,6 +183,19 @@ irq_service:
 
 
 .endproc
+
+.proc exit_irq_experiment
+            istore IRQ_VECTOR, irq1
+            lda #1
+            sta $d019
+			pla
+			tay
+			pla
+			tax
+			pla
+			rti
+.endproc
+
 
 .proc exit_irq
 			pla

@@ -1,7 +1,7 @@
 .export init_timers, update_timers, clear_timers, set_delay_timer, set_sound_timer
 .exportzp delay_timer, sound_timer
 
-.import exit_irq
+.import new_exit_irq
 .importzp host_model, paused
 
 .zeropage
@@ -72,7 +72,7 @@ dec_sound:
             dex
             stx sound_timer
 
-done:       jmp exit_irq
+done:       rts ;jmp new_exit_irq
 
 .endproc
 

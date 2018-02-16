@@ -2,7 +2,7 @@
 .include "common.s"
 
 .export start, bundle_end
-.import initialize, setup_irq, main_loop
+.import initialize, setup_irq, new_setup_irq, main_loop
 	
 .segment "LOADADDR"
 
@@ -22,7 +22,8 @@ head:	    .word @next
 
 .proc start
 			jsr initialize
-			jsr setup_irq
+			;jsr setup_irq
+			jsr new_setup_irq
 			jmp main_loop
 .endproc
 
