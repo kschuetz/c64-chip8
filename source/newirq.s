@@ -137,17 +137,17 @@
 
     def_irq timer_update_3, model
             jsr update_timers
-            setup_next model, 176, screen_bottom
+            setup_next model, 177, screen_bottom
     end_def
 
     def_irq screen_bottom, model
             stabilize model
             lda #chrome_bgcolor
-            ldx #9
-:           dex
-            bne :-
             sta $d021
             sta $d020
+            ldx #32
+:           dex
+            bne :-
             switch_vic_mem host_screen, chrome_charset
 
             setup_next model, 250, timer_update_4
