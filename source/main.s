@@ -2,7 +2,7 @@
 .include "common.s"
 
 .export start, bundle_end
-.import initialize, setup_irq, new_setup_irq, main_loop
+.import initialize, setup_irq, main_loop
 	
 .segment "LOADADDR"
 
@@ -16,14 +16,13 @@ head:	    .word @next
 			.byte $9E,"2061"	    ; SYS 2061
 			.byte $00		    ; End of BASIC line
 @next:	    .word 0		    ; BASIC end marker
-	      	jmp   start
+	      	jmp start
 
 .code
 
 .proc start
 			jsr initialize
-			;jsr setup_irq
-			jsr new_setup_irq
+			jsr setup_irq
 			jmp main_loop
 .endproc
 

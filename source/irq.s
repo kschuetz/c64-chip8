@@ -1,54 +1,191 @@
 .export setup_irq, exit_irq
 .exportzp frame_counter
+
 .import host_screen, screen_charset, chrome_charset, check_keyboard, get_guest_keypress, keyboard_debug
 .import update_timers
 .import check_ui_keys, set_ui_action
-.importzp screen_bgcolor, ui_key_events, ui_action
+.importzp screen_bgcolor
 
 .include "common.s"
 
-.enum services
-    top
-    chip8_top
-    chip8_end
-    frame
-    timer_only
-.endenum
+ .zeropage
+ frame_counter:     .res 2
 
-.zeropage
-raster_index:   .res 1
-frame_counter:  .res 2
+ .code
 
-.rodata
+.define pal_63 0
+.define ntsc_64 1
+.define ntsc_65 2
 
-next_raster_index:
-			.byte 1, 2, 3, 4, 5, 0
-next_raster_line:
-			.byte 48        ; start of chip8 screen
-			.byte 64        ; frame service, keyboard, timer update
-			.byte 128       ; timer update
-			.byte 176       ; end of chip8 screen
-			.byte 200       ; timer update
-			.byte 0         ; top of screen.  includes timer update
-			
-irq_service:
-			.byte services::top
-			.byte services::chip8_top
-			.byte services::frame
-			.byte services::timer_only
-			.byte services::chip8_end
-			.byte services::timer_only
-.code
+.define pal_63_suffix "_pal_63"
+.define ntsc_64_suffix "_ntsc_64"
+.define ntsc_65_suffix "_ntsc_65"
 
+.define host_screen_top "host_screen_top"
+.define screen_top "screen_top"
+.define frame_services "frame_services"
+.define timer_update_3 "timer_update_3"
+.define screen_bottom "screen_bottom"
+.define timer_update_4 "timer_update_4"
+
+.macro stabilize model
+            .local @wedge, @stable
+
+            istore IRQ_VECTOR, @wedge
+
+            inc $d012
+            lda #1
+            sta $d019
+
+            tsx
+            cli
+
+            .repeat 8
+                nop
+            .endrepeat
+            .if model = ntsc_65
+                nop
+            .endif
+@wedge:
+            txs
+
+            .if model = ntsc_64
+                ldx #8
+:               dex
+                bne :-
+                nop
+                nop
+            .elseif model = ntsc_65
+                ldx #9
+:               dex
+                bne :-
+            .else   ; pal_63
+                ldx #8
+:               dex
+                bne :-
+                bit $00
+            .endif
+
+            lda $d012
+            cmp $d012
+            beq @stable
+@stable:
+.endmacro
+
+.macro def_irq name, model
+            .if model = ntsc_64
+                .proc .ident(.concat(name, ntsc_64_suffix))
+            .elseif model = ntsc_65
+                .proc .ident(.concat(name, ntsc_65_suffix))
+            .else
+                .proc .ident(.concat(name, pal_63_suffix))
+            .endif
+            
+            pha
+            txa
+            pha
+            tya
+            pha
+.endmacro
+
+.macro setup_next model, screen_line, name
+            .local @vector
+
+            .if model = ntsc_64
+                @vector = .ident(.concat(name, ntsc_64_suffix))
+            .elseif model = ntsc_65
+                @vector = .ident(.concat(name, ntsc_65_suffix))
+            .else
+                @vector = .ident(.concat(name, pal_63_suffix))
+            .endif
+
+            lda #screen_line
+            sta $d012
+            istore IRQ_VECTOR, @vector
+            jmp exit_irq
+.endmacro
+
+.macro end_def
+            .endproc
+.endmacro
+
+
+.macro define_irqs model
+    def_irq host_screen_top, model
+            lda #chrome_bgcolor
+            sta $d020
+            lda screen_bgcolor
+            sta $d021
+            jsr update_timers
+            setup_next model, 48, screen_top
+    end_def
+
+    def_irq screen_top, model
+            stabilize model
+            switch_vic_mem host_screen, screen_charset
+            setup_next model, 64, frame_services
+    end_def
+
+    def_irq frame_services, model
+            jsr check_keyboard
+            jsr keyboard_debug
+
+            jsr check_ui_keys
+            jsr set_ui_action
+
+            inc frame_counter
+            bne :+
+            inc frame_counter + 1
+:
+            jsr update_timers
+            setup_next model, 128, timer_update_3
+    end_def
+
+    def_irq timer_update_3, model
+            jsr update_timers
+            setup_next model, 176, screen_bottom
+    end_def
+
+    def_irq screen_bottom, model
+            stabilize model
+            lda #chrome_bgcolor
+            sta $d021
+            sta $d020
+            
+            inc $d021
+            inc $d021
+            inc $d021
+            inc $d021
+            inc $d021
+
+            dec $d021
+            dec $d021
+            dec $d021
+            dec $d021
+            dec $d021
+
+            ldx #1
+:           dex
+            bne :-
+            switch_vic_mem host_screen, chrome_charset
+
+            setup_next model, 250, timer_update_4
+    end_def
+
+    def_irq timer_update_4, model
+            jsr update_timers
+            setup_next model, 0, host_screen_top
+    end_def
+
+.endmacro
 
 .proc setup_irq
 			sei
 			ldy #0
 			sty frame_counter
 			sty frame_counter + 1
-			sty raster_index
-			lda #<irq1
-			ldx #>irq1
+			lda #<host_screen_top_pal_63
+			ldx #>host_screen_top_pal_63
 			sta IRQ_VECTOR
 			stx IRQ_VECTOR + 1
 			lda $d011
@@ -65,145 +202,19 @@ irq_service:
 .endproc
 
 
-.proc irq1_experiment
-            pha
-            txa
-            pha
-            tya
-            pha
+define_irqs pal_63
 
-            istore IRQ_VECTOR, irq2
+define_irqs ntsc_64
 
-            inc $d012
-
-            lda #$01
-            sta $d019
-
-            tsx
-            cli
-
-            .repeat 9
-                nop
-            .endrepeat
-irq2:
-            txs
-            ldx #8
-:           dex
-            bne :-
-
-            lda $d012
-            cmp $d012
-            beq @stable
-@stable:
-            cld                             ; 2
-            ldx raster_index                ; 3
-            lda next_raster_line, x         ; 4
-            sta $d012                       ; 4
-
-            ldy next_raster_index, x        ; 4
-            sty raster_index                ; 3
-
-            lda irq_service, x
-
-            beq top_irq
-            cmp #2
-            beq screen_end_irq
-            cmp #1
-            beq screen_top_irq
-            cmp #3
-            beq frame_service
-            jmp update_timers
-.endproc
-
-
-.proc irq1
-			pha
-			txa
-			pha
-			tya
-			pha
-
-			asl $d019
-			cli
-			cld
-			
-			ldx raster_index
-			lda next_raster_line, x
-			sta $d012
-
-			ldy next_raster_index, x
-			sty raster_index
-			
-			lda irq_service, x
-			
-			beq top_irq
-			cmp #2
-			beq screen_end_irq
-			cmp #1
-			beq screen_top_irq
-			cmp #3
-			beq frame_service
-			jmp update_timers
-.endproc
-
-.proc top_irq
-			lda #chrome_bgcolor
-			sta $d020
-			lda screen_bgcolor
-			sta $d021
-			jmp update_timers
-.endproc
-
-.proc screen_top_irq
-			switch_vic_mem host_screen, screen_charset
-			jsr check_keyboard
-			jmp exit_irq
-.endproc
-
-; called once per frame
-.proc frame_service
-            ; temp
-            jsr keyboard_debug
-
-            jsr check_ui_keys
-            jsr set_ui_action
-
-            inc frame_counter
-            bne :+
-            inc frame_counter + 1
-:
-            jmp update_timers
-.endproc
-
-.proc screen_end_irq
-			lda #chrome_bgcolor
-			sta $d020
-			sta $d021
-			switch_vic_mem host_screen, chrome_charset
-
-
-.endproc
-
-.proc exit_irq_experiment
-            istore IRQ_VECTOR, irq1
-            lda #1
-            sta $d019
-			pla
-			tay
-			pla
-			tax
-			pla
-			rti
-.endproc
-
+define_irqs ntsc_65
 
 .proc exit_irq
-			pla
-			tay
-			pla
-			tax
-			pla
-			rti
+            lda #1
+            sta $d019
+            pla
+            tay
+            pla
+            tax
+            pla
+            rti
 .endproc
-
-
