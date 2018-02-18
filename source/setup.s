@@ -1,4 +1,3 @@
-
 .export initialize
 
 .import clear_screen, host_screen, screen_charset, chrome_charset, start, build_screen_margins
@@ -37,6 +36,7 @@
 
 .proc initialize
             cld
+            jsr check_host_model
 
             lda #chrome_bgcolor
             sta $d020
@@ -44,8 +44,7 @@
             lda $d011               ; blank screen during initialization
             and #%11101111
             sta $d011
-
-            jsr check_host_model
+            
             jsr init_random
             jsr init_timers
 			jsr init_graphics_tables

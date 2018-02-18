@@ -31,7 +31,7 @@ host_model:         .res 1
             cpx #$5e  ; vice values: pal-n=$6c pal=$50
                   ; so choose middle value $5e for check
             bcc @is_pal
-            iny ; is pal-n
+            iny   ; is pal-n
 @is_pal:
             tya
 @done:

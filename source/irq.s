@@ -4,7 +4,7 @@
 .import host_screen, screen_charset, chrome_charset, check_keyboard, get_guest_keypress, keyboard_debug
 .import update_timers
 .import check_ui_keys, set_ui_action
-.importzp screen_bgcolor
+.importzp host_model, screen_bgcolor
 
 .include "common.s"
 
@@ -184,10 +184,12 @@
 			ldy #0
 			sty frame_counter
 			sty frame_counter + 1
-			lda #<host_screen_top_pal_63
-			ldx #>host_screen_top_pal_63
-			sta IRQ_VECTOR
-			stx IRQ_VECTOR + 1
+			ldy host_model
+            dey 			            ; host_model is 1..4
+            lda irq_entry_low, y
+            sta IRQ_VECTOR
+            lda irq_entry_high, y
+            sta IRQ_VECTOR + 1
 			lda $d011
 			and #$7f
 			sta $d011
@@ -218,3 +220,16 @@ define_irqs ntsc_65
             pla
             rti
 .endproc
+
+
+.rodata
+.define model_irqs host_screen_top_ntsc_64, host_screen_top_ntsc_65, host_screen_top_pal_63, host_screen_top_ntsc_65
+
+irq_entry_low:      .lobytes model_irqs
+irq_entry_high:     .hibytes model_irqs
+
+; host_model:
+; $01: OLD NTSC - 64 cycles
+; $02: NTSC - 65 cycles
+; $03: PAL - 63 cycles
+; $04: Drean - 65 cycles
