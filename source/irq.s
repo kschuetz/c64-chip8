@@ -26,6 +26,7 @@
 .define frame_services "frame_services"
 .define timer_update_3 "timer_update_3"
 .define screen_bottom "screen_bottom"
+.define chrome_top "chrome_top"
 .define timer_update_4 "timer_update_4"
 
 .macro stabilize model
@@ -72,7 +73,7 @@
 @stable:
 .endmacro
 
-.macro def_irq name, model
+.macro begin_irq name, model
             .if model = ntsc_64
                 .proc .ident(.concat(name, ntsc_64_suffix))
             .elseif model = ntsc_65
@@ -105,28 +106,27 @@
             jmp exit_irq
 .endmacro
 
-.macro end_def
+.macro end_irq
             .endproc
 .endmacro
 
-
 .macro define_irqs model
-    def_irq host_screen_top, model
+    begin_irq host_screen_top, model
             lda #chrome_bgcolor
             sta $d020
             lda screen_bgcolor
             sta $d021
             jsr update_timers
             setup_next model, 48, screen_top
-    end_def
+    end_irq
 
-    def_irq screen_top, model
+    begin_irq screen_top, model
             stabilize model
             switch_vic_mem host_screen, screen_charset
             setup_next model, 64, frame_services
-    end_def
+    end_irq
 
-    def_irq frame_services, model
+    begin_irq frame_services, model
             jsr check_keyboard
             jsr keyboard_debug
 
@@ -139,43 +139,47 @@
 :
             jsr update_timers
             setup_next model, 128, timer_update_3
-    end_def
+    end_irq
 
-    def_irq timer_update_3, model
+    begin_irq timer_update_3, model
             jsr update_timers
-            setup_next model, 176, screen_bottom
-    end_def
+            setup_next model, 177, screen_bottom
+    end_irq
 
-    def_irq screen_bottom, model
+    begin_irq screen_bottom, model
             stabilize model
             lda #chrome_bgcolor
             sta $d021
             sta $d020
-            
-            inc $d021
-            inc $d021
-            inc $d021
-            inc $d021
-            inc $d021
+            setup_next model, 184, chrome_top
+    end_irq
 
-            dec $d021
-            dec $d021
-            dec $d021
-            dec $d021
-            dec $d021
-
-            ldx #1
+    begin_irq chrome_top, model
+            stabilize model
+            switch_vic_mem host_screen, chrome_charset
+            ldy #0
+@next_line:
+           .if model = ntsc_64
+                ldx title_bar_wait_ntsc, y
+           .elseif model = ntsc_65
+                ldx title_bar_wait_ntsc, y
+           .else
+                ldx title_bar_wait_pal, y
+           .endif
 :           dex
             bne :-
-            switch_vic_mem host_screen, chrome_charset
-
+            lda title_bar_colors, y
+            sta $d021
+            iny
+            cpy #16
+            bne @next_line
             setup_next model, 250, timer_update_4
-    end_def
+    end_irq
 
-    def_irq timer_update_4, model
+    begin_irq timer_update_4, model
             jsr update_timers
             setup_next model, 0, host_screen_top
-    end_def
+    end_irq
 
 .endmacro
 
@@ -233,3 +237,12 @@ irq_entry_high:     .hibytes model_irqs
 ; $02: NTSC - 65 cycles
 ; $03: PAL - 63 cycles
 ; $04: Drean - 65 cycles
+
+
+title_bar_colors:        .byte 4, 5, 6, 7, 8, 9, 10, 3, 4, 5, 6, 7, 8, 9, 10, chrome_bgcolor
+
+title_bar_wait_ntsc:     .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
+
+title_bar_wait_pal:     .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
+
+;08 08  08 0a 09 0a  09 05 08 08  08 09 0a 09
