@@ -239,10 +239,12 @@ irq_entry_high:     .hibytes model_irqs
 ; $04: Drean - 65 cycles
 
 
-title_bar_colors:        .byte 4, 5, 6, 7, 8, 9, 10, 3, 4, 5, 6, 7, 8, 9, 10, chrome_bgcolor
+title_bar_colors:        .byte 11, 12, 15, 1, 15, 1, 1, 1, 1, 1, 15, 1, 15, 12, 11, chrome_bgcolor
 
 title_bar_wait_ntsc:     .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
 
 title_bar_wait_pal:     .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
 
+
+;0b 0c 0f 01 03 0e 06 06 06 0e 03 01 0f 0c 0b 00
 ;08 08  08 0a 09 0a  09 05 08 08  08 09 0a 09

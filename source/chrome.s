@@ -9,6 +9,7 @@
 .include "common.s"
 
 .proc build_chrome
+            ldx #180
 			ldy #1								; color ram
 @1:			lda #0								; screen ram
 			sta chrome_origin - 1, x
@@ -18,6 +19,12 @@
 			sta chrome_color_origin + 179, x
 			dex
 			bne @1
+
+			lda #0
+			ldx #79
+:           sta chrome_color_origin, x
+            dex
+            bpl :-
 			
 			jsr draw_keyboard_pic
 			jsr init_keyboard_debug
