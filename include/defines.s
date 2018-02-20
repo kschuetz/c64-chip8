@@ -5,6 +5,7 @@
 .define guest_screen_offset_x 4
 .define guest_screen_offset_y 0
 .define chrome_height 8
+vic_bank_base = $8000
 
 ; ************** configurable ****************
 
@@ -18,5 +19,3 @@
 default_pixel_style_index = 0
 default_screen_bgcolor = 11
 default_screen_fgcolor = 13
-
-vic_bank_base = $8000

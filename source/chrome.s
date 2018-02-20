@@ -26,7 +26,7 @@
             dex
             bpl :-
 			
-			jsr draw_keyboard_pic
+			; jsr draw_keyboard_pic
 			jsr init_keyboard_debug
 			rts
 			
@@ -45,6 +45,7 @@
 
 .endproc
 
+; TODO: remove
 .proc draw_keyboard_pic
 
 @kbd_origin = chrome_origin + 80 + guest_screen_offset_x
@@ -228,6 +229,7 @@ debug_hex_origin = 958
 .endproc
 
 .rodata
+; TODO:  remove
 keyboard_pic:	
 			.byte 64, 65, 66, 67, 68
 			.byte 96, 97, 98, 99, 100
@@ -241,4 +243,7 @@ keyboard_debug_chars:
 			.byte 193, 194, 195, 196, 197, 198
 			
 decimal_digit_chars:
-			.byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57		
+			.byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
+
+
+            

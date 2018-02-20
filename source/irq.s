@@ -4,6 +4,8 @@
 .import host_screen, screen_charset, chrome_charset, check_keyboard, get_guest_keypress, keyboard_debug
 .import update_timers
 .import check_ui_keys, set_ui_action
+.import sprite_pointers, set_button_sprite_frames
+.import button_sprite_pointer
 .importzp host_model, screen_bgcolor
 
 .include "common.s"
@@ -137,6 +139,7 @@
             bne :+
             inc frame_counter + 1
 :
+            jsr set_button_sprite_frames
             jsr update_timers
             setup_next model, 128, timer_update_3
     end_irq
@@ -173,6 +176,8 @@
             iny
             cpy #16
             bne @next_line
+
+            jsr button_sprites_1
             setup_next model, 250, timer_update_4
     end_irq
 
@@ -182,6 +187,28 @@
     end_irq
 
 .endmacro
+
+.proc button_sprites_1
+            ldy #7
+:           lda button_sprite_pointer, y
+            sta sprite_pointers, y
+            dey
+            bpl :-
+
+            lda #204
+            sta $d001
+            sta $d003
+            sta $d005
+            sta $d007
+
+            lda #220
+            sta $d009
+            sta $d00b
+            sta $d00d
+            sta $d00f
+
+            rts
+.endproc
 
 .proc setup_irq
 			sei

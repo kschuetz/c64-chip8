@@ -8,6 +8,7 @@
 .import reset
 .import build_decimal_table
 .import check_host_model
+.import init_buttons, init_button_sprites
 .importzp screen_bgcolor, screen_fgcolor
 
 .include "common.s"
@@ -28,10 +29,10 @@
 			ora #%00001011
 			sta $d011
 
-			lda #0
-			sta $d015           ; disable all sprites
+			; lda #0
+			; sta $d015           ; disable all sprites
 
-			rts
+			jmp init_button_sprites
 .endproc
 
 .proc initialize
@@ -55,6 +56,7 @@
 
 			jsr init_charsets
 			jsr init_vars
+			jsr init_buttons
 			
 			lda screen_fgcolor
 			jsr update_screen_color
