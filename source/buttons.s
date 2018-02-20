@@ -142,4 +142,4 @@ button_up_frame:
             .byte $98, $99, $9a, $9b, $9c, $9d, $9e, $9f
 
 buttons_sprite_data:
-           .incbin "data/keyboard-charset.bin", 0, $0400
+           .incbin "data/buttons.bin", 0, $0400

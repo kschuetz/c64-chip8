@@ -30,6 +30,8 @@
 .define screen_bottom "screen_bottom"
 .define chrome_top "chrome_top"
 .define timer_update_4 "timer_update_4"
+.define button_pic_1 "button_pic_1"
+.define button_pic_2 "button_pic_2"
 
 .macro stabilize model
             .local @wedge, @stable
@@ -178,7 +180,17 @@
             bne @next_line
 
             jsr button_sprites_1
-            setup_next model, 250, timer_update_4
+            setup_next model, 220, button_pic_1
+    end_irq
+
+    begin_irq button_pic_1, model
+            jsr button_sprites_2
+            setup_next model, 236, button_pic_2
+    end_irq
+
+    begin_irq button_pic_2, model
+            jsr button_sprites_3
+            setup_next model, 0, host_screen_top
     end_irq
 
     begin_irq timer_update_4, model
@@ -201,13 +213,42 @@
             sta $d005
             sta $d007
 
-            lda #220
+            lda #216
             sta $d009
             sta $d00b
             sta $d00d
             sta $d00f
 
             rts
+.endproc
+
+.proc button_sprites_2
+            .repeat 4, i
+                lda button_sprite_pointer + 8 + i
+                sta sprite_pointers + i
+            .endrepeat
+
+            lda #228
+            sta $d001
+            sta $d003
+            sta $d005
+            sta $d007
+
+            rts
+.endproc
+
+.proc button_sprites_3
+            .repeat 4, i
+                lda button_sprite_pointer + 12 + i
+                sta sprite_pointers + 4 + i
+            .endrepeat
+
+            lda #240
+            sta $d009
+            sta $d00b
+            sta $d00d
+            sta $d00f
+            jmp update_timers
 .endproc
 
 .proc setup_irq

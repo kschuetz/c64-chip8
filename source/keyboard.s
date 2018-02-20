@@ -3,6 +3,7 @@
 .exportzp ui_key_events, kbd_col0
 
 .import debug_output_hex
+.importzp active_keymap
 
 .zeropage
 kbd_col0:		.res 1
@@ -47,11 +48,13 @@ kbd_col7:		.res 1
          	rts
 .endproc   
 
-; A - chip8 key to check
+; A - logical chip8 key to check
 ; returns nonzero in A is key is pressed
 .proc is_guest_key_pressed
 			and #$0f
 			tay 
+			lda (active_keymap), y
+			tay
 			ldx chip8_key_port_a, y
 			lda kbd_col0, x
 			and chip8_key_port_b, y
@@ -115,51 +118,53 @@ ui_key_new_state:   .res 1
 
 ; Keyboard tables
 
-; The layout of the Chip 8 keyboard:
+; Physical key indices
 ;
-; 1	2 3	C
-; 4 5 6 D
-; 7 8 9 E
-; A 0 B F
+; 0	1 2	3
+; 4 5 6 7
+; 8 9 A C
+; C D E F
 
-; These will be mapped to the following C64 keys:
+; C64 keys
 ;
 ; 1 2 3 4
 ; Q W E R
 ; A S D F
 ; Z X C V
 
+
+
 ; Mapping to CIA Ports A (row) and B (column)
-; Chip8 Key   	C64 Key		Row			Column
+; Key index   	C64 Key		Row			Column
 ; ------------------------------------------
-; 0				X			2			7
-; 1				1			7			0
-; 2				2			7			3
-; 3				3			1			0
-; 4				Q			7			6
-; 5				W			1			1
-; 6				E			1			6
-; 7				A			1			2
-; 8				S			1			5
-; 9				D			2			2
-; A				Z			1			4
-; B				C			2			4
-; C				4			1			3
-; D				R			2			1
-; E				F			2			5
-; F				V			3			7
+; 0				1			7			0
+; 1				2			7			3
+; 2				3			1           0
+; 3				4			1           3
+; 4				Q			7           6
+; 5				W			1           1
+; 6				E			1           6
+; 7				R			2           1
+; 8				A			1           2
+; 9				S		    1           5
+; A				D		    2           2
+; B				F		    2           5
+; C				Z			1           4
+; D				X			2           7
+; E				C			2           4
+; F				V			3           7
 
 chip8_key_port_a:
-			.byte 2, 7, 7, 1
-			.byte 7, 1, 1, 1
-			.byte 1, 2, 1, 2
+			.byte 7, 7, 1, 1
+			.byte 7, 1, 1, 2
+			.byte 1, 1, 2, 2
 			.byte 1, 2, 2, 3
 
 chip8_key_port_b:
-			.byte 1 << 7, 1 << 0, 1 << 3, 1 << 0
-			.byte 1 << 6, 1 << 1, 1 << 6, 1 << 2
-			.byte 1 << 5, 1 << 2, 1 << 4, 1 << 4
-			.byte 1 << 3, 1 << 1, 1 << 5, 1 << 7
+			.byte 1 << 0, 1 << 3, 1 << 0, 1 << 3
+			.byte 1 << 6, 1 << 1, 1 << 6, 1 << 1
+			.byte 1 << 2, 1 << 5, 1 << 2, 1 << 5
+			.byte 1 << 4, 1 << 7, 1 << 4, 1 << 7
 
 ; UI Keys
 ; Function   	    C64 Key		Row			Column
