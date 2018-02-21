@@ -9,7 +9,7 @@ vic_bank_base = $8000
 
 ; ************** configurable ****************
 
-.define default_rom_index 8
+.define default_rom_index 18
 .define title_length 16
 
 .define max_bundled_roms 32
@@ -20,5 +20,5 @@ default_pixel_style_index = 0
 default_screen_bgcolor = 11
 default_screen_fgcolor = 13
 
-active_button_color = 1
-inactive_button_color = 11
+enabled_button_color = 1
+disabled_button_color = 11

@@ -27,6 +27,8 @@
 .struct BundleNode
 	    next .addr
 	    title .byte title_length
+	    enabled_keys .word
+	    keymap .addr
 	    data .byte
 .endstruct
 

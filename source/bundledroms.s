@@ -1,4 +1,6 @@
 .export bundle_start
+.import default_keymap, tictac_keymap, tetris_keymap, tank_keymap
+.import tictac_enabled_keys, tetris_enabled_keys, tank_enabled_keys
 
 .include "defines.s"
 
@@ -6,18 +8,25 @@
 
 .segment "BUNDLE"
 
-.macro bundle filename, title, offset
+.macro bundle filename, title, enabled_key_mask, keymap_addr
 		.local @end
 		.word @end
 		scrcode title
 		.repeat (title_length - .strlen(title))
 			.byte 0
 		.endrep
-		.if .paramcount < 3
-		    .incbin filename
+		.ifnblank enabled_key_mask
+		    .word enabled_key_mask
 		.else
-		    .incbin filename, offset
+		    .word $ffff ; all keys enabled
 		.endif
+		.ifnblank keymap_addr
+		    .addr keymap_addr
+		.else
+		    .addr default_keymap
+		.endif
+
+		.incbin filename
 @end:
 .endmacro
 
@@ -38,9 +47,9 @@ bundle_start:
 		bundle "roms/PONG2", "pong 2"
 		bundle "roms/PUZZLE", "puzzle"
 		bundle "roms/SYZYGY", "syzygy"
-		bundle "roms/TANK", "tank"
-		bundle "roms/TETRIS", "tetris"
-		bundle "roms/TICTAC", "tictac"
+		bundle "roms/TANK", "tank", tank_enabled_keys, tank_keymap
+		bundle "roms/TETRIS", "tetris", tetris_enabled_keys, tetris_keymap
+		bundle "roms/TICTAC", "tictac", tictac_enabled_keys, tictac_keymap
 		bundle "roms/UFO", "ufo"
 		bundle "roms/VBRIX", "vbrix"
 		bundle "roms/VERS", "vers"

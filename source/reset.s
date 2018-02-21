@@ -22,9 +22,6 @@
 			lda active_bundle
 			jsr display_rom_title
 
-			; TODO: load ROM specific keymap
-			istore active_keymap, default_keymap
-
 			jsr init_debug
 			jsr clear_registers
 			rts

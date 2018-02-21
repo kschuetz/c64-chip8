@@ -3,7 +3,8 @@
 
 .import bundle_start, program_start, move_up
 .import decimal_table_low, decimal_table_high
-.importzp zp0, zp1, zp2, zp3, zp4, zp5
+.import set_button_colors
+.importzp zp0, zp1, zp2, zp3, zp4, zp5, active_keymap
 
 .include "common.s"
 
@@ -57,6 +58,7 @@ bundle_index_high: 	.res max_bundled_roms
 ; y - index of bundle to load
 .proc load_bundled_rom
 			sty active_bundle
+
 			clc
 			lda bundle_index_low, y
 			sta zp2
@@ -80,5 +82,30 @@ bundle_index_high: 	.res max_bundled_roms
 			sta zp5
 									; zp4:zp5 contains size
 			istore zp2, program_start						
-			jmp move_up							 
+			jsr move_up
+
+			; enabled_keys
+			ldy active_bundle
+			clc
+            lda bundle_index_low, y
+            adc #<BundleNode::enabled_keys
+            sta zp2
+            lda bundle_index_high, y
+            adc #>BundleNode::enabled_keys
+            sta zp3
+            ldy #0
+            lda (zp2), y
+            sta zp0
+            iny
+            lda (zp2), y
+            sta zp1
+            jsr set_button_colors
+
+            ldy #2
+            lda (zp2), y
+            sta active_keymap
+            iny
+            lda (zp2), y
+            sta active_keymap + 1
+			rts
 .endproc

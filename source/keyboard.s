@@ -54,29 +54,56 @@ kbd_col7:		.res 1
 			and #$0f
 			tay 
 			lda (active_keymap), y
+			bmi @no                     ; keymap contains $ff, so no key is mapped to this one
 			tay
 			ldx chip8_key_port_a, y
 			lda kbd_col0, x
 			and chip8_key_port_b, y
 			rts
+@no:        lda #0
+            rts
 .endproc
 
 ; returns pressed key in A, or $ff if no key pressed
 .proc get_guest_keypress
 			ldy #0
-@loop:      ldx chip8_key_port_a, y
+@loop:      sty @stash + 1
+            lda (active_keymap), y
+            bmi @no
+            sty @found + 1
+            tay
+            ldx chip8_key_port_a, y
             lda kbd_col0, x
             and chip8_key_port_b, y
             bne @found                  ; key pressed;  Y contains logical key
+@no:
+@stash:     ldy #0
             iny
             cpy #16
             bne @loop
 @not_found:
             lda #$ff                    ; return $ff if not found
             rts
-@found:     tya
+@found:     lda #0
             rts
 .endproc
+
+;; returns pressed key in A, or $ff if no key pressed
+;.proc get_guest_keypress
+;			ldy #0
+;@loop:      ldx chip8_key_port_a, y
+;            lda kbd_col0, x
+;            and chip8_key_port_b, y
+;            bne @found                  ; key pressed;  Y contains logical key
+;            iny
+;            cpy #16
+;            bne @loop
+;@not_found:
+;            lda #$ff                    ; return $ff if not found
+;            rts
+;@found:     tya
+;            rts
+;.endproc
 
 .zeropage
 ui_key_state:	    .res 1

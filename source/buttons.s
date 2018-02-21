@@ -91,11 +91,7 @@ button_sprites_vertical_spacing = 11
             sta $d00d
             sta $d00f
 
-;            lda #1          ; color
-;            .repeat 8, i
-;               sta $d027 + i
-;            .endrepeat
-            lda #%10100101
+            lda #$ff
             sta zp0
             sta zp1
             jsr set_button_colors
@@ -192,18 +188,18 @@ button_sprites_vertical_spacing = 11
             ldy #0
 @loop1:     lsr zp0
             bcc @off1
-            lda #active_button_color
+            lda #enabled_button_color
             .byte $2c  ; BIT
-@off1:      lda #inactive_button_color
+@off1:      lda #disabled_button_color
             sta button_color, y
             iny
             cpy #8
             bne @loop1
 @loop2:     lsr zp1
             bcc @off2
-            lda #active_button_color
+            lda #enabled_button_color
             .byte $2c  ; BIT
-@off2:      lda #inactive_button_color
+@off2:      lda #disabled_button_color
             sta button_color, y
             iny
             cpy #16
