@@ -19,3 +19,6 @@ vic_bank_base = $8000
 default_pixel_style_index = 0
 default_screen_bgcolor = 11
 default_screen_fgcolor = 13
+
+active_button_color = 1
+inactive_button_color = 11

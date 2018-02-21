@@ -4,8 +4,9 @@
 .import host_screen, screen_charset, chrome_charset, check_keyboard, get_guest_keypress, keyboard_debug
 .import update_timers
 .import check_ui_keys, set_ui_action
-.import sprite_pointers, set_button_sprite_frames
+.import set_button_sprite_frames
 .import button_sprite_pointer
+.import button_sprites_1, button_sprites_2, button_sprites_3
 .importzp host_model, screen_bgcolor
 
 .include "common.s"
@@ -120,7 +121,7 @@
             sta $d020
             lda screen_bgcolor
             sta $d021
-            jsr update_timers
+            jsr update_timers                         ; update_timers (1/4)
             setup_next model, 48, screen_top
     end_irq
 
@@ -142,12 +143,12 @@
             inc frame_counter + 1
 :
             jsr set_button_sprite_frames
-            jsr update_timers
+            jsr update_timers                          ; update_timers (2/4)
             setup_next model, 128, timer_update_3
     end_irq
 
     begin_irq timer_update_3, model
-            jsr update_timers
+            jsr update_timers                          ; update_timers (3/4)
             setup_next model, 177, screen_bottom
     end_irq
 
@@ -156,6 +157,7 @@
             lda #chrome_bgcolor
             sta $d021
             sta $d020
+            jsr button_sprites_1
             setup_next model, 184, chrome_top
     end_irq
 
@@ -179,17 +181,16 @@
             cpy #16
             bne @next_line
 
-            jsr button_sprites_1
-            setup_next model, 220, button_pic_1
+            setup_next model, 218, button_pic_1
     end_irq
 
     begin_irq button_pic_1, model
             jsr button_sprites_2
-            setup_next model, 236, button_pic_2
+            setup_next model, 230, button_pic_2
     end_irq
 
     begin_irq button_pic_2, model
-            jsr button_sprites_3
+            jsr button_sprites_3        ; button_sprites_3 calls update_timers (4/4)
             setup_next model, 0, host_screen_top
     end_irq
 
@@ -199,57 +200,6 @@
     end_irq
 
 .endmacro
-
-.proc button_sprites_1
-            ldy #7
-:           lda button_sprite_pointer, y
-            sta sprite_pointers, y
-            dey
-            bpl :-
-
-            lda #204
-            sta $d001
-            sta $d003
-            sta $d005
-            sta $d007
-
-            lda #216
-            sta $d009
-            sta $d00b
-            sta $d00d
-            sta $d00f
-
-            rts
-.endproc
-
-.proc button_sprites_2
-            .repeat 4, i
-                lda button_sprite_pointer + 8 + i
-                sta sprite_pointers + i
-            .endrepeat
-
-            lda #228
-            sta $d001
-            sta $d003
-            sta $d005
-            sta $d007
-
-            rts
-.endproc
-
-.proc button_sprites_3
-            .repeat 4, i
-                lda button_sprite_pointer + 12 + i
-                sta sprite_pointers + 4 + i
-            .endrepeat
-
-            lda #240
-            sta $d009
-            sta $d00b
-            sta $d00d
-            sta $d00f
-            jmp update_timers
-.endproc
 
 .proc setup_irq
 			sei

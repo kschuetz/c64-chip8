@@ -1,6 +1,8 @@
-.export init_buttons, button_sprite_pointer, set_button_sprite_frames, init_button_sprites
+.export init_buttons, button_sprite_pointer, set_button_sprite_frames, init_button_sprites, set_button_colors
+.export button_sprites_1, button_sprites_2, button_sprites_3
 .import buttons_sprite_set, fill, chip8_key_port_a, chip8_key_port_b
-.importzp zp0, zp2, kbd_col0
+.import update_timers, sprite_pointers
+.importzp zp0, zp1, zp2, kbd_col0
 
 .include "common.s"
 
@@ -63,37 +65,40 @@
 @done:
 .endproc
 
+button_sprites_left_edge = 54
+button_sprites_spacing = 12
+button_sprites_top = 204
+button_sprites_vertical_spacing = 11
+
+
 ; call once before setup_irq
 .proc init_button_sprites
-            lda #32
-            sta $d000
-            sta $d008
-            lda #48
-            sta $d002
-            sta $d00a
-            lda #64
-            sta $d004
-            sta $d00c
-            lda #80
-            sta $d006
-            sta $d00e
+            .repeat 4, i
+                lda #button_sprites_left_edge + (i * button_sprites_spacing)
+                sta $d000 + (2 * i)
+                sta $d008 + (2 * i)
+            .endrepeat
 
-            lda #204
+            lda #button_sprites_top
             sta $d001
             sta $d003
             sta $d005
             sta $d007
 
-            lda #220
+            lda #button_sprites_top + button_sprites_vertical_spacing
             sta $d009
             sta $d00b
             sta $d00d
             sta $d00f
 
-            lda #1          ; color
-            .repeat 8, i
-               sta $d027 + i
-            .endrepeat
+;            lda #1          ; color
+;            .repeat 8, i
+;               sta $d027 + i
+;            .endrepeat
+            lda #%10100101
+            sta zp0
+            sta zp1
+            jsr set_button_colors
 
             jsr set_button_sprite_frames
 
@@ -105,6 +110,63 @@
             lda #255        ; enable
             sta $d015
             rts
+.endproc
+
+.proc button_sprites_1
+            ldy #7
+:           lda button_sprite_pointer, y
+            sta sprite_pointers, y
+            lda button_color, y
+            sta $d027, y
+            dey
+            bpl :-
+
+            lda #button_sprites_top
+            sta $d001
+            sta $d003
+            sta $d005
+            sta $d007
+
+            lda #button_sprites_top + button_sprites_vertical_spacing
+            sta $d009
+            sta $d00b
+            sta $d00d
+            sta $d00f
+
+            rts
+.endproc
+
+.proc button_sprites_2
+            .repeat 4, i
+                lda button_sprite_pointer + 8 + i
+                sta sprite_pointers + i
+                lda button_color + 8 + i
+                sta $d027 + i
+            .endrepeat
+
+            lda #button_sprites_top + 2 * button_sprites_vertical_spacing
+            sta $d001
+            sta $d003
+            sta $d005
+            sta $d007
+
+            rts
+.endproc
+
+.proc button_sprites_3
+            .repeat 4, i
+                lda button_sprite_pointer + 12 + i
+                sta sprite_pointers + 4 + i
+                lda button_color + 12 + i
+                sta $d027 + 4 + i
+            .endrepeat
+
+            lda #button_sprites_top + 3 * button_sprites_vertical_spacing
+            sta $d009
+            sta $d00b
+            sta $d00d
+            sta $d00f
+            jmp update_timers
 .endproc
 
 .proc set_button_sprite_frames
@@ -124,8 +186,36 @@
             rts
 .endproc
 
+; zp0 - buttons 0..7 enabled
+; zp1 - buttons 8..F enabled
+.proc set_button_colors
+            ldy #0
+@loop1:     lsr zp0
+            bcc @off1
+            lda #active_button_color
+            .byte $2c  ; BIT
+@off1:      lda #inactive_button_color
+            sta button_color, y
+            iny
+            cpy #8
+            bne @loop1
+@loop2:     lsr zp1
+            bcc @off2
+            lda #active_button_color
+            .byte $2c  ; BIT
+@off2:      lda #inactive_button_color
+            sta button_color, y
+            iny
+            cpy #16
+            bne @loop2
+            rts
+.endproc
+
 .bss
 button_sprite_pointer:
+            .res 16
+
+button_color:
             .res 16
 
 .rodata
@@ -133,11 +223,11 @@ cs_to_sprite:
             .byte 0, 3, 6, 9, 12, 15, 18, 21
             .byte 1, 4, 7, 10, 13, 16, 19, 22
 
-button_down_frame:
+button_up_frame:
             .byte $80, $81, $82, $83, $84, $85, $86, $87
             .byte $88, $89, $8a, $8b, $8c, $8d, $8e, $8f
             
-button_up_frame:
+button_down_frame:
             .byte $90, $91, $92, $93, $94, $95, $96, $97
             .byte $98, $99, $9a, $9b, $9c, $9d, $9e, $9f
 
