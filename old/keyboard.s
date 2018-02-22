@@ -3,29 +3,25 @@
 .exportzp ui_key_events, kbd_col0
 
 .import debug_output_hex
-.importzp active_keymap, irq_zp0
+.importzp active_keymap
 
 .zeropage
-kbd_col0:		    .res 16
-key_repeat_mode:    .res 1
-
-.bss
-key_states:     .res 16
+kbd_col0:		.res 1
+kbd_col1:		.res 1
+kbd_col2:		.res 1
+kbd_col3:		.res 1
+kbd_col4:		.res 1
+kbd_col5:		.res 1
+kbd_col6:		.res 1
+kbd_col7:		.res 1
 
 .code
 
 .proc init_keyboard
-            lda #0
-            sta key_repeat_mode
-.endproc
-
-.proc reset_keyboard
 			lda #0
 			sta ui_key_state
 			ldy #7
 @loop:      sta kbd_col0, y
-            sta key_states, y
-            sta key_states + 8, y
             dey
             bpl @loop
 			rts
@@ -40,61 +36,31 @@ key_states:     .res 16
 .endmacro
 
 .proc check_keyboard
-			lda #%11111111  ; CIA#1 port A = outputs
-         	sta $dc02
-
+			lda #%11111111  ; CIA#1 port A = outputs 
+         	sta $dc02     
+         	
          	lda #%00000000  ; CIA#1 port B = inputs
-         	sta $dc03
-
+         	sta $dc03	
+         	
          	.repeat 8, col
          		test_column col
          	.endrep
-            ; continue to update_key_states
-.endproc
-
-.proc update_key_states
-         	ldy #15
-@loop:     	sty irq_zp0
-         	lda (active_keymap), y
-         	bmi @up                 ; keymap contains $ff, so no key is mapped to this one
-         	tay
-         	ldx chip8_key_port_a, y
-            lda kbd_col0, x
-            and chip8_key_port_b, y
-            beq @up
-@down:      ldy irq_zp0
-            lda key_states, y
-            bne @next_key           ; key is already down, or event has been fired
-            lda #1
-            sta key_states, y
-            bne @next_key           ; unconditional
-@up:        ldy irq_zp0
-            lda #0
-            sta key_states, y
-@next_key:  dey
-            bpl @loop
-
          	rts
-.endproc
-
+.endproc   
 
 ; A - logical chip8 key to check
 ; returns nonzero in A is key is pressed
 .proc is_guest_key_pressed
-			ldy key_repeat_mode
-			beq is_guest_key_pressed_single_mode
-			; continue to is_guest_key_pressed_repeat_mode
+			ldy
 .endproc
 
 .proc is_guest_key_pressed_repeat_mode
-            and #$0f
             tay
             lda key_states, y
             rts
 .endproc
 
 .proc is_guest_key_pressed_single_mode
-            and #$0f
             tay
             lda key_states, y
             bne @down
@@ -108,42 +74,50 @@ key_states:     .res 16
             rts
 .endproc
 
+;; A - logical chip8 key to check
+;; returns nonzero in A is key is pressed
+;.proc is_guest_key_pressed
+;			and #$0f
+;			tay
+;			lda (active_keymap), y
+;			bmi @no                     ; keymap contains $ff, so no key is mapped to this one
+;			tay
+;			ldx chip8_key_port_a, y
+;			lda kbd_col0, x
+;			sta @stash1 + 1
+;			and chip8_key_port_b, y
+;			sta @stash2 + 1
+;			eor #$ff                    ; turn key off until next frame
+;@stash1:    and #0
+;            sta kbd_col0, x
+;@stash2:    lda #0
+;			rts
+;@no:        lda #0
+;            rts
+;.endproc
+
+
 ; returns pressed key in A, or $ff if no key pressed
 .proc get_guest_keypress
-			ldy key_repeat_mode
-            beq get_guest_keypress_single_mode
-            ; continue to get_guest_keypress_repeat_mode
-.endproc
-
-.proc get_guest_keypress_repeat_mode
-            ldy #0
-@loop:      lda key_states, y
-            beq @next_key
-            ;found
-            tya
-            rts
-@next_key:  iny
+			ldy #0
+@loop:      sty @stash + 1
+            lda (active_keymap), y
+            bmi @no
+            sty @found + 1
+            tay
+            ldx chip8_key_port_a, y
+            lda kbd_col0, x
+            and chip8_key_port_b, y
+            bne @found                  ; key pressed;  Y contains logical key
+@no:
+@stash:     ldy #0
+            iny
             cpy #16
             bne @loop
-            lda #$ff        ; nothing found
+@not_found:
+            lda #$ff                    ; return $ff if not found
             rts
-.endproc
-
-.proc get_guest_keypress_single_mode
-            ldy #0
-@loop:      lda key_states, y
-            beq @next_key
-            cmp #1
-            bne @next_key   ; if a > 1, event has already fired
-            ;found
-            lda #2          ; event fired state
-            sta key_states, y
-            tya
-            rts
-@next_key:  iny
-            cpy #16
-            bne @loop
-            lda #$ff        ; nothing found
+@found:     lda #0
             rts
 .endproc
 
@@ -186,13 +160,13 @@ ui_key_new_state:   .res 1
 			rol ui_key_new_state
 @next:		dey
 			bpl @loop
-
+			
 			; events = ui_key_new_state & ~ui_key_state
 			lda ui_key_state
 			eor #$ff
 			and ui_key_new_state
 			sta ui_key_events
-
+			
 			; ui_key_state = ui_key_new_state
 			lda ui_key_new_state
 			sta ui_key_state
@@ -266,7 +240,7 @@ chip8_key_port_b:
 
 ui_key_port_a:
 			.byte 0, 0, 0, 5, 4, 4, 4, 4
-
+			
 ui_key_port_b:
 			.byte 1 << 4, 1 << 5, 1 << 6, 1 << 1
 			.byte 1 << 5, 1 << 2, 1 << 4, 1 << 6

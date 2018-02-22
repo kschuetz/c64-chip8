@@ -87,6 +87,8 @@ keyboard_debug_origin = 984   ; last 16 characters of last row
 
 ; must be called from irq
 .proc keyboard_debug
+            rts
+
 			ldy #15
 @loop:		sty irq_zp0
 			tya

@@ -133,7 +133,7 @@
 
     begin_irq frame_services, model
             jsr check_keyboard
-            jsr keyboard_debug
+            ; jsr keyboard_debug
 
             jsr check_ui_keys
             jsr set_ui_action
