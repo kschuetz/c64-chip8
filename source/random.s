@@ -1,4 +1,7 @@
-.export init_random, get_random
+.include "common.s"
+
+.export get_random
+.export init_random
 
 .proc init_random
             lda #0

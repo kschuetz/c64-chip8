@@ -1,12 +1,19 @@
-.export guest_ram, stack_low, stack_high, program_start
-.exportzp guest_ram_page
-.export host_screen, guest_screen_origin, guest_screen_color_origin, sprite_pointers
-.export screen_charset, chrome_charset
-.export chrome_origin, chrome_color_origin
-.export buttons_sprite_set
-.exportzp guest_ram_page
-
 .include "common.s"
+
+.export buttons_sprite_set
+.export chrome_charset
+.export chrome_color_origin
+.export chrome_origin
+.export guest_ram
+.export guest_screen_color_origin
+.export guest_screen_origin
+.export host_screen
+.export program_start
+.export screen_charset
+.export sprite_pointers
+.export stack_high
+.export stack_low
+.exportzp guest_ram_page
 
 guest_ram = $c000
 guest_ram_page = >guest_ram

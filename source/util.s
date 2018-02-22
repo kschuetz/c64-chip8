@@ -1,16 +1,21 @@
-.importzp zp0, zp1, zp2, zp3, zp4, zp5
+.include "common.s"
 
-.export move_up, fill
+.export fill
+.export move_up
 
-; arg_move_from = source start address
-; arg_move_to = destination start address
-; arg_move_size = number of bytes to move
-
+.importzp zp0
+.importzp zp1
+.importzp zp2
+.importzp zp3
+.importzp zp4
+.importzp zp5
 
 .code
 	
-	;;  Move memory up
-				
+;;  Move memory up
+;;    zp0:zp1 = source start address
+;;    zp2:zp3 = destination start address
+;;    zp4:zp5 = number of bytes to move
 .proc move_up
 
 move_from = zp0
@@ -45,12 +50,12 @@ move_size = zp4
 		    rts
 .endproc
 
-	;; length must be > 0
-	;; zp0:zp1 = dest address
-	;; x = (length - 1) high
-	;; y = (length - 1) low
-	;; a = fill value
-	
+;; fill:
+;;   length must be > 0
+;;   zp0:zp1 = dest address
+;;   x = (length - 1) high
+;;   y = (length - 1) low
+;;   a = fill value
 .proc fill
 			cpx #0
 			beq @last_page

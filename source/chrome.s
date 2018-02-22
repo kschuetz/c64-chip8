@@ -1,12 +1,28 @@
-.export build_chrome, keyboard_debug, display_rom_title, debug_output_hex
-.import chrome_origin, chrome_color_origin, is_guest_key_pressed, host_screen
-.import bundle_count, bundle_index_low, bundle_index_high, bundle_count_decimal
-.import decimal_table_high, decimal_table_low
-.importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6
-.importzp irq_zp0
-
-
 .include "common.s"
+
+.export build_chrome
+.export debug_output_hex
+.export display_rom_title
+.export keyboard_debug
+
+.import bundle_count
+.import bundle_count_decimal
+.import bundle_index_high
+.import bundle_index_low
+.import chrome_color_origin
+.import chrome_origin
+.import decimal_table_high
+.import decimal_table_low
+.import host_screen
+.import is_guest_key_pressed
+.importzp irq_zp0
+.importzp zp0
+.importzp zp1
+.importzp zp2
+.importzp zp3
+.importzp zp4
+.importzp zp5
+.importzp zp6
 
 .proc build_chrome
             ldx #180
@@ -246,6 +262,3 @@ keyboard_debug_chars:
 			
 decimal_digit_chars:
 			.byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
-
-
-            

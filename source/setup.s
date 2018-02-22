@@ -1,17 +1,31 @@
+.include "common.s"
+
 .export initialize
 
-.import clear_screen, host_screen, screen_charset, chrome_charset, start, build_screen_margins
-.import build_bundle_index, clear_ram, load_bundled_rom, init_charsets
-.import init_keyboard, init_core, init_graphics_tables, init_timers, init_random
-.import update_screen_color
+.import build_bundle_index
 .import build_chrome
-.import reset
 .import build_decimal_table
+.import build_screen_margins
 .import check_host_model
-.import init_buttons, init_button_sprites
-.importzp screen_bgcolor, screen_fgcolor
-
-.include "common.s"
+.import chrome_charset
+.import clear_ram
+.import clear_screen
+.import host_screen
+.import init_buttons
+.import init_button_sprites
+.import init_charsets
+.import init_core
+.import init_graphics_tables
+.import init_keyboard
+.import init_random
+.import init_timers
+.import load_bundled_rom
+.import reset
+.import screen_charset
+.import start
+.import update_screen_color
+.importzp screen_bgcolor
+.importzp screen_fgcolor
 
 .proc init_vic
 			lda $dd02	;change VIC to bank 2

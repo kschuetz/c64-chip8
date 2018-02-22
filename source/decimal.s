@@ -1,5 +1,11 @@
-.export decimal_table_high, decimal_table_low, build_decimal_table
-.importzp zp0, zp1
+.include "common.s"
+
+.export build_decimal_table
+.export decimal_table_high
+.export decimal_table_low
+
+.importzp zp0
+.importzp zp1
 
 .proc build_decimal_table
 			ldx #0

@@ -1,10 +1,19 @@
-.export convert_to_bcd, get_digit_font_location
-.export read_registers_from_ram, write_registers_to_ram
-
-.import guest_ram, decimal_table_low, decimal_table_high, cpu_next
-.importzp reg_v, reg_i, cpu_temp0, cpu_temp_addr0, guest_ram_page
-
 .include "common.s"
+
+.export convert_to_bcd
+.export get_digit_font_location
+.export read_registers_from_ram
+.export write_registers_to_ram
+
+.import cpu_next
+.import decimal_table_high
+.import decimal_table_low
+.import guest_ram
+.importzp cpu_temp0
+.importzp cpu_temp_addr0
+.importzp guest_ram_page
+.importzp reg_i
+.importzp reg_v
 
 ;; These routines should only be called by CPU routines
 

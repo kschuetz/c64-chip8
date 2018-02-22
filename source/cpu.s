@@ -1,21 +1,32 @@
-.export exec, cpu_next
-.exportzp cpu_temp_addr0, cpu_temp0
-
-.importzp reg_pc, reg_sp, reg_v, reg_i, reg_vf, guest_ram_page
-.importzp delay_timer
-.importzp collision_flag
-.import stack_low, stack_high, ram
-.import is_guest_key_pressed, get_guest_keypress
-.import convert_to_bcd, get_digit_font_location
-.import clear_screen
-.import get_random
-.import set_delay_timer, set_sound_timer
-.import read_registers_from_ram, write_registers_to_ram
-.import draw_sprite
-
-.export exec
-	
 .include "common.s"
+
+.export cpu_next
+.export exec
+.exportzp cpu_temp0
+.exportzp cpu_temp_addr0
+
+.import clear_screen
+.import convert_to_bcd
+.import draw_sprite
+.import get_digit_font_location
+.import get_guest_keypress
+.import get_random
+.import is_guest_key_pressed
+.import ram
+.import read_registers_from_ram
+.import set_delay_timer
+.import set_sound_timer
+.import stack_high
+.import stack_low
+.import write_registers_to_ram
+.importzp collision_flag
+.importzp delay_timer
+.importzp guest_ram_page
+.importzp reg_i
+.importzp reg_pc
+.importzp reg_sp
+.importzp reg_v
+.importzp reg_vf
 
 .zeropage
 op1:	            .res 1
@@ -24,11 +35,6 @@ cpu_temp1:          .res 1
 cpu_temp_addr0:     .res 2
 	
 .code
-
-; to ensure PC contains only even addresses
-.macro normalize_pc_low
-           ; and #$fe
-.endmacro
 
 .macro op1_to_y
             lda op1
@@ -100,7 +106,6 @@ return_from_subroutine:
             dec reg_sp
             ldy reg_sp
             lda stack_low, y
-            normalize_pc_low
             sta reg_pc
             lda stack_high, y
             map_to_host
@@ -113,7 +118,6 @@ return_from_subroutine:
 ;; Jump to location nnn
 .macro opcode_1_impl
             txa
-            normalize_pc_low
             sta reg_pc
             lda op1
             map_to_host

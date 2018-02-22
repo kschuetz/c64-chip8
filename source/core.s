@@ -1,11 +1,21 @@
-.export main_loop, init_core, set_ui_action
-.exportzp ui_action, paused
-
-.import update_screen_color, active_bundle, bundle_count, reset, exec
-.import cycle_pixel_style
-.importzp screen_bgcolor, screen_fgcolor, ui_key_events, frame_counter
-
 .include "common.s"
+
+.export init_core
+.export main_loop
+.export set_ui_action
+.exportzp paused
+.exportzp ui_action
+
+.import active_bundle
+.import bundle_count
+.import cycle_pixel_style
+.import exec
+.import reset
+.import update_screen_color
+.importzp frame_counter
+.importzp screen_bgcolor
+.importzp screen_fgcolor
+.importzp ui_key_events
 
 .zeropage
 ui_action:			.res 1

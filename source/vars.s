@@ -1,7 +1,21 @@
-.exportzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7
-.exportzp irq_zp0, irq_zp1, irq_zp2, irq_zp3, irq_zp4, irq_zp5, irq_zp6, irq_zp7
-		
 .include "common.s"
+
+.exportzp irq_zp0
+.exportzp irq_zp1
+.exportzp irq_zp2
+.exportzp irq_zp3
+.exportzp irq_zp4
+.exportzp irq_zp5
+.exportzp irq_zp6
+.exportzp irq_zp7
+.exportzp zp0
+.exportzp zp1
+.exportzp zp2
+.exportzp zp3
+.exportzp zp4
+.exportzp zp5
+.exportzp zp6
+.exportzp zp7
 
 .zeropage
 

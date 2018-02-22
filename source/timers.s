@@ -1,8 +1,16 @@
-.export init_timers, update_timers, clear_timers, set_delay_timer, set_sound_timer
-.exportzp delay_timer, sound_timer
+.include "common.s"
+
+.export clear_timers
+.export init_timers
+.export set_delay_timer
+.export set_sound_timer
+.export update_timers
+.exportzp delay_timer
+.exportzp sound_timer
 
 .import new_exit_irq
-.importzp host_model, paused
+.importzp host_model
+.importzp paused
 
 .zeropage
 delay_timer:        .res 1

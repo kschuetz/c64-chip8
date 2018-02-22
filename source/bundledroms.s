@@ -1,8 +1,18 @@
-.export bundle_start
-.import default_keymap, tictac_keymap, tetris_keymap, tank_keymap, connect4_keymap, hidden_keymap
-.import tictac_enabled_keys, tetris_enabled_keys, tank_enabled_keys, connect4_enabled_keys, hidden_enabled_keys
-
 .include "defines.s"
+
+.export bundle_start
+
+.import connect4_enabled_keys
+.import connect4_keymap
+.import default_keymap
+.import hidden_enabled_keys
+.import hidden_keymap
+.import tank_enabled_keys
+.import tank_keymap
+.import tetris_enabled_keys
+.import tetris_keymap
+.import tictac_enabled_keys
+.import tictac_keymap
 
 .macpack cbm
 

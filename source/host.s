@@ -1,3 +1,5 @@
+.include "common.s"
+
 .export check_host_model
 .exportzp host_model
 
@@ -8,7 +10,6 @@
 ; $03: 312 rasterlines and 63 cycles per line [PAL: 6569 VIC]
 ; $04: 312 rasterlines and 65 cycles per line [Drean PAL-N: 6572 VIC]
 host_model:         .res 1
-
 
 .code
 

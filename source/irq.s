@@ -1,20 +1,43 @@
-.export setup_irq, exit_irq
-.exportzp frame_counter
-
-.import host_screen, screen_charset, chrome_charset, check_keyboard, get_guest_keypress, keyboard_debug
-.import update_timers
-.import check_ui_keys, set_ui_action
-.import set_button_sprite_frames
-.import button_sprite_pointer
-.import button_sprites_1, button_sprites_2, button_sprites_3
-.importzp host_model, screen_bgcolor
-
 .include "common.s"
 
- .zeropage
- frame_counter:     .res 2
+.export exit_irq
+.export setup_irq
+.exportzp frame_counter
 
- .code
+.import button_sprite_pointer
+.import button_sprites_1
+.import button_sprites_2
+.import button_sprites_3
+.import check_keyboard
+.import check_keyboard
+.import check_ui_keys
+.import check_ui_keys
+.import chrome_charset
+.import chrome_charset
+.import get_guest_keypress
+.import get_guest_keypress
+.import host_screen
+.import host_screen
+.import keyboard_debug
+.import keyboard_debug
+.import screen_charset
+.import screen_charset
+.import set_button_sprite_frames
+.import set_button_sprite_frames
+.import set_ui_action
+.import set_ui_action
+.import sprite_pointers
+.import update_timers
+.import update_timers
+.importzp host_model
+.importzp host_model
+.importzp screen_bgcolor
+.importzp screen_bgcolor
+
+.zeropage
+frame_counter:     .res 2
+
+.code
 
 .define pal_63 0
 .define ntsc_64 1

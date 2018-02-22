@@ -1,11 +1,29 @@
-.exportzp registers, reg_v, reg_pc, reg_i, reg_sp
-.exportzp reg_v0, reg_v1, reg_v2, reg_v3, reg_v4, reg_v5, reg_v6, reg_v7
-.exportzp reg_v8, reg_v9, reg_va, reg_vb, reg_vc, reg_vd, reg_ve, reg_vf
+.include "common.s"
+
 .export clear_registers
+.exportzp registers
+.exportzp reg_v
+.exportzp reg_pc
+.exportzp reg_i
+.exportzp reg_sp
+.exportzp reg_v0
+.exportzp reg_v1
+.exportzp reg_v2
+.exportzp reg_v3
+.exportzp reg_v4
+.exportzp reg_v5
+.exportzp reg_v6
+.exportzp reg_v7
+.exportzp reg_v8
+.exportzp reg_v9
+.exportzp reg_va
+.exportzp reg_vb
+.exportzp reg_vc
+.exportzp reg_vd
+.exportzp reg_ve
+.exportzp reg_vf
 
 .import program_start
-
-.include "common.s"
 
 .zeropage
 

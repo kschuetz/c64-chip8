@@ -1,10 +1,18 @@
 .include "common.s"
-	
-.import screen_charset, chrome_charset, guest_ram
-.importzp zp0, zp2, zp4
-.import fill, move_up
 
-.export init_charsets, load_font_set, load_pixel_set, cycle_pixel_style
+.export cycle_pixel_style
+.export init_charsets
+.export load_font_set
+.export load_pixel_set
+
+.import chrome_charset
+.import fill
+.import guest_ram
+.import move_up
+.import screen_charset
+.importzp zp0
+.importzp zp2
+.importzp zp4
 
 pixel_style_count = 7
 

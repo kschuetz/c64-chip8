@@ -1,10 +1,24 @@
-.export init_buttons, button_sprite_pointer, set_button_sprite_frames, init_button_sprites, set_button_colors
-.export button_sprites_1, button_sprites_2, button_sprites_3
-.import buttons_sprite_set, fill, chip8_key_port_a, chip8_key_port_b
-.import update_timers, sprite_pointers
-.importzp zp0, zp1, zp2, kbd_col0
-
 .include "common.s"
+
+.export button_sprite_pointer
+.export button_sprites_1
+.export button_sprites_2
+.export button_sprites_3
+.export init_buttons
+.export init_button_sprites
+.export set_button_sprite_frames
+.export set_button_colors
+
+.import buttons_sprite_set
+.import chip8_key_port_a
+.import chip8_key_port_b
+.import fill
+.import sprite_pointers
+.import update_timers
+.importzp kbd_col0
+.importzp zp0
+.importzp zp1
+.importzp zp2
 
 .proc init_buttons
 @current = zp2

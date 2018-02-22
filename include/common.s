@@ -1,6 +1,8 @@
 .include "c64.inc"
 .include "defines.s"
 
+.linecont +
+
 .macro istore m, value
 		lda #<value
 		sta m

@@ -1,8 +1,11 @@
-	
 .include "common.s"
 
-.export start, bundle_end
-.import initialize, setup_irq, main_loop
+.export bundle_end
+.export start
+
+.import initialize
+.import main_loop
+.import setup_irq
 	
 .segment "LOADADDR"
 

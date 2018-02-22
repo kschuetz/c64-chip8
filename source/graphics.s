@@ -1,15 +1,36 @@
-.export clear_screen, build_screen_margins, update_screen_color, init_graphics_tables, draw_sprite
-.exportzp screen_bgcolor, screen_fgcolor
+.include "common.s"
+
+.export build_screen_margins
+.export clear_screen
+.export draw_sprite
+.export init_graphics_tables
+.export update_screen_color
+.exportzp screen_bgcolor
+.exportzp screen_fgcolor
 
 ; temp - for debugging:
-.export draw_even_sprite, draw_odd_sprite
-.exportzp sprite_buffer, collision_flag, row_base_ptr, sprite_source_ptr
+.export draw_even_sprite
+.export draw_odd_sprite
+.exportzp sprite_buffer 
+.exportzp collision_flag 
+.exportzp row_base_ptr 
+.exportzp sprite_source_ptr
+; -------------
 
-.import guest_screen_origin, guest_screen_color_origin, host_screen
+.import guest_screen_color_origin
+.import guest_screen_origin
+.import host_screen
 
-.importzp zp0, zp1, zp2, zp3, zp4, zp5, zp6, zp7, reg_i, guest_ram_page
-
-.include "common.s"
+.importzp guest_ram_page
+.importzp reg_i
+.importzp zp0
+.importzp zp1
+.importzp zp2
+.importzp zp3
+.importzp zp4
+.importzp zp5
+.importzp zp6
+.importzp zp7
 
 .zeropage
 

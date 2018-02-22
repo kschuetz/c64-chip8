@@ -1,9 +1,10 @@
+.include "common.s"
+
 .export clear_ram
 
-.import guest_ram, fill
-.importzp zp0, zp1
-
-.include "common.s"
+.import fill
+.import guest_ram
+.importzp zp0
 
 .proc clear_ram
 			istore zp0, guest_ram

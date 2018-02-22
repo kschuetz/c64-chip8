@@ -1,12 +1,25 @@
-.export bundle_count, bundle_index_low, bundle_index_high, build_bundle_index, load_bundled_rom
-.export active_bundle
-
-.import bundle_start, program_start, move_up
-.import decimal_table_low, decimal_table_high
-.import set_button_colors
-.importzp zp0, zp1, zp2, zp3, zp4, zp5, active_keymap
-
 .include "common.s"
+
+.export active_bundle
+.export build_bundle_index
+.export bundle_count
+.export bundle_index_high
+.export bundle_index_low
+.export load_bundled_rom
+
+.import bundle_start
+.import decimal_table_high
+.import decimal_table_low
+.import move_up
+.import program_start
+.import set_button_colors
+.importzp active_keymap
+.importzp zp0
+.importzp zp1
+.importzp zp2
+.importzp zp3
+.importzp zp4
+.importzp zp5
 
 .bss
 

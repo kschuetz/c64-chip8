@@ -1,11 +1,19 @@
-.export reset
-.import clear_ram, clear_registers, load_font_set, clear_screen, load_bundled_rom, active_bundle, display_rom_title
-.import test_draw
-.import init_debug
-.import default_keymap
-.importzp paused, active_keymap
-
 .include "common.s"
+
+.export reset
+
+.import active_bundle
+.import clear_ram
+.import clear_registers
+.import clear_screen
+.import default_keymap
+.import display_rom_title
+.import init_debug
+.import load_bundled_rom
+.import load_font_set
+.import test_draw
+.importzp active_keymap
+.importzp paused
 
 ; A - bundle to load
 .proc reset
