@@ -1,6 +1,6 @@
 .export bundle_start
-.import default_keymap, tictac_keymap, tetris_keymap, tank_keymap
-.import tictac_enabled_keys, tetris_enabled_keys, tank_enabled_keys
+.import default_keymap, tictac_keymap, tetris_keymap, tank_keymap, connect4_keymap, hidden_keymap
+.import tictac_enabled_keys, tetris_enabled_keys, tank_enabled_keys, connect4_enabled_keys, hidden_enabled_keys
 
 .include "defines.s"
 
@@ -35,9 +35,9 @@ bundle_start:
 		bundle "roms/BLINKY", "blinky"
 		bundle "roms/BLITZ", "blitz"
 		bundle "roms/BRIX", "brix"
-		bundle "roms/CONNECT4", "connect 4"
+		bundle "roms/CONNECT4", "connect 4", connect4_enabled_keys, connect4_keymap
 		bundle "roms/GUESS", "guess"
-		bundle "roms/HIDDEN", "hidden"
+		bundle "roms/HIDDEN", "hidden", hidden_enabled_keys, hidden_keymap
 		bundle "roms/INVADERS", "invaders"
 		bundle "roms/KALEID", "kaleid"
 		bundle "roms/MAZE", "maze"
