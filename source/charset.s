@@ -14,7 +14,7 @@
 .importzp zp2
 .importzp zp4
 
-pixel_style_count = 7
+pixel_style_count = 8
 
 .bss
 
