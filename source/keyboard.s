@@ -22,6 +22,7 @@ key_states:         .res 16
 .proc reset_keyboard
 			lda #0
 			sta ui_key_state
+			sta ui_key_state + 1
 			ldy #7
 @loop:      sta kbd_col0, y
             sta key_states, y
@@ -147,33 +148,21 @@ key_states:         .res 16
             rts
 .endproc
 
-;; returns pressed key in A, or $ff if no key pressed
-;.proc get_guest_keypress
-;			ldy #0
-;@loop:      ldx chip8_key_port_a, y
-;            lda kbd_col0, x
-;            and chip8_key_port_b, y
-;            bne @found                  ; key pressed;  Y contains logical key
-;            iny
-;            cpy #16
-;            bne @loop
-;@not_found:
-;            lda #$ff                    ; return $ff if not found
-;            rts
-;@found:     tya
-;            rts
-;.endproc
-
 .zeropage
-ui_key_state:	    .res 1
-ui_key_events:	    .res 1
-ui_key_new_state:   .res 1
+ui_key_state:	    .res 2
+ui_key_events:	    .res 2
+ui_key_new_state:   .res 2
 
 .code
 
+;; sets ui_key_events
+;; ui_key_events:       bits 0..7 are events 0..7,
+;; ui_key_events + 1:   bit 0 is event 8
 .proc check_ui_keys
 			lda #0
 			sta ui_key_new_state
+
+			; events 0..7
 			ldy #7
 @loop:		ldx ui_key_port_a, y
 			lda kbd_col0, x
@@ -187,15 +176,32 @@ ui_key_new_state:   .res 1
 @next:		dey
 			bpl @loop
 
+		    ; event 8
+		    ldx ui_key_port_a + 8
+		    lda kbd_col0, x
+            and ui_key_port_b, y
+            beq :+
+            lda #1
+            .byte $2c  ; BIT instruction
+:           lda #0
+            sta ui_key_new_state + 1
+
 			; events = ui_key_new_state & ~ui_key_state
 			lda ui_key_state
 			eor #$ff
 			and ui_key_new_state
 			sta ui_key_events
 
+			lda ui_key_state + 1
+            eor #$ff
+            and ui_key_new_state + 1
+            sta ui_key_events + 1
+
 			; ui_key_state = ui_key_new_state
 			lda ui_key_new_state
 			sta ui_key_state
+			lda ui_key_new_state + 1
+            sta ui_key_state + 1
 
 			rts
 .endproc
@@ -259,14 +265,15 @@ chip8_key_port_b:
 ; 1: Load Prev		F3			0			5
 ; 2: Load Next		F5			0		    6
 ; 3: Pause			F7			0			3
-; 4: BGColor 		K			4			5
-; 5: FGColor 		J           4           2
-; 6: Pixel Style    M           4           4
-; 7: Toggle sound   O           4           6
+; 4: BGColor 		N           4           7
+; 5: FGColor 		M           4           4
+; 6: Pixel Style    B           3           4
+; 7: Key Repeat     T           2           6
+; 8: Toggle Sound   U           3           6
 
 ui_key_port_a:
-			.byte 0, 0, 0, 0, 4, 4, 4, 4
+			.byte 0, 0, 0, 0, 4, 4, 3, 2, 3
 
 ui_key_port_b:
 			.byte 1 << 4, 1 << 5, 1 << 6, 1 << 3
-			.byte 1 << 5, 1 << 2, 1 << 4, 1 << 6
+			.byte 1 << 7, 1 << 4, 1 << 4, 1 << 6, 1 << 6
