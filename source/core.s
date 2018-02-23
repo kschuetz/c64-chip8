@@ -11,6 +11,8 @@
 .import cycle_pixel_style
 .import exec
 .import reset
+.import sync_bgcolor_indicator
+.import sync_fgcolor_indicator
 .import update_screen_color
 .importzp frame_counter
 .importzp screen_bgcolor
@@ -79,7 +81,7 @@ ui_action_last_frame:
 			sta screen_bgcolor
 			cmp screen_fgcolor
 			beq handle_bgcolor_next		; if same as fgcolor, increment again
-			rts
+			jmp sync_bgcolor_indicator
 .endproc
 
 .proc handle_bgcolor_prev
@@ -90,7 +92,7 @@ ui_action_last_frame:
 			sta screen_bgcolor
 			cmp screen_fgcolor
 			beq handle_bgcolor_prev		; if same as fgcolor, decrement again
-			rts
+			jmp sync_bgcolor_indicator
 .endproc
 
 .proc handle_fgcolor_next
@@ -101,6 +103,7 @@ ui_action_last_frame:
 			sta screen_fgcolor
 			cmp screen_bgcolor
 			beq handle_fgcolor_next		; if same as bgcolor, increment again
+            jsr sync_fgcolor_indicator
 			jmp update_screen_color
 .endproc
 
@@ -112,6 +115,7 @@ ui_action_last_frame:
 			sta screen_fgcolor
 			cmp screen_bgcolor
 			beq handle_fgcolor_prev		; if same as bgcolor, decrement again
+			jsr sync_fgcolor_indicator
 			jmp update_screen_color
 .endproc
 

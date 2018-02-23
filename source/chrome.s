@@ -3,6 +3,8 @@
 .export build_chrome
 .export debug_output_hex
 .export display_rom_title
+.export sync_bgcolor_indicator
+.export sync_fgcolor_indicator
 
 .import bundle_count
 .import bundle_count_decimal
@@ -15,6 +17,8 @@
 .import host_screen
 .import is_guest_key_pressed
 .importzp irq_zp0
+.importzp screen_bgcolor
+.importzp screen_fgcolor
 .importzp zp0
 .importzp zp1
 .importzp zp2
@@ -24,7 +28,9 @@
 .importzp zp6
 
 chrome_text_column_1 = guest_screen_offset_x + 7
-chrome_text_origin = chrome_origin + 120 + chrome_text_column_1
+chrome_text_origin = 120 + chrome_text_column_1
+chrome_text_screen_origin = chrome_origin + chrome_text_origin
+chrome_text_color_origin = chrome_color_origin + chrome_text_origin
 
 .proc build_chrome
             ldx #180
@@ -46,17 +52,20 @@ chrome_text_origin = chrome_origin + 120 + chrome_text_column_1
 
             ldy #27
 @2:         lda chrome_line_1, y
-            sta chrome_text_origin, y
+            sta chrome_text_screen_origin, y
             lda chrome_line_2, y
-            sta chrome_text_origin + 40, y
+            sta chrome_text_screen_origin + 40, y
 			lda chrome_line_3, y
-            sta chrome_text_origin + 80, y
+            sta chrome_text_screen_origin + 80, y
             lda chrome_line_4, y
-            sta chrome_text_origin + 120, y
+            sta chrome_text_screen_origin + 120, y
             lda chrome_line_5, y
-            sta chrome_text_origin + 160, y
+            sta chrome_text_screen_origin + 160, y
             dey
             bpl @2
+
+            jsr sync_bgcolor_indicator
+            jsr sync_fgcolor_indicator
 
 			rts
 .endproc
@@ -245,6 +254,24 @@ debug_hex_origin = 958
 			sta host_screen + debug_hex_origin + 1
 			rts
 .endproc
+
+bgcolor_indicator = chrome_text_color_origin + 80 + 26
+fgcolor_indicator = bgcolor_indicator + 40
+
+.proc sync_bgcolor_indicator
+            lda screen_bgcolor
+            sta bgcolor_indicator
+            sta bgcolor_indicator + 1
+            rts
+.endproc
+
+.proc sync_fgcolor_indicator
+            lda screen_fgcolor
+            sta fgcolor_indicator
+            sta fgcolor_indicator + 1
+            rts
+.endproc
+
 
 .rodata
 ; TODO:  remove

@@ -43,5 +43,6 @@
 		bgcolor_next
 		fgcolor_next
 		pixel_style_next
+		toggle_key_repeat
 		toggle_sound
 .endenum
