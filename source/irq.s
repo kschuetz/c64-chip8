@@ -171,6 +171,7 @@ frame_counter:     .res 2
     end_irq
 
     begin_irq timer_update_3, model
+            jsr button_sprites_1
             jsr update_timers                          ; update_timers (3/4)
             setup_next model, 177, screen_bottom
     end_irq
@@ -180,7 +181,6 @@ frame_counter:     .res 2
             lda #chrome_bgcolor
             sta $d021
             sta $d020
-            jsr button_sprites_1
             setup_next model, 184, chrome_top
     end_irq
 
@@ -190,11 +190,11 @@ frame_counter:     .res 2
             ldy #0
 @next_line:
            .if model = ntsc_64
-                ldx title_bar_wait_ntsc, y
+                ldx title_bar_wait_ntsc_64, y
            .elseif model = ntsc_65
-                ldx title_bar_wait_ntsc, y
+                ldx title_bar_wait_ntsc_65, y
            .else
-                ldx title_bar_wait_pal, y
+                ldx title_bar_wait_pal_63, y
            .endif
 :           dex
             bne :-
@@ -273,19 +273,14 @@ define_irqs ntsc_65
 irq_entry_low:      .lobytes model_irqs
 irq_entry_high:     .hibytes model_irqs
 
+title_bar_colors:        .byte 11, 12, 15, 1, 15, 1, 1, 1, 1, 1, 15, 1, 15, 12, 11, chrome_bgcolor
+
 ; host_model:
 ; $01: OLD NTSC - 64 cycles
 ; $02: NTSC - 65 cycles
 ; $03: PAL - 63 cycles
 ; $04: Drean - 65 cycles
 
-
-title_bar_colors:        .byte 11, 12, 15, 1, 15, 1, 1, 1, 1, 1, 15, 1, 15, 12, 11, chrome_bgcolor
-
-title_bar_wait_ntsc:     .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
-
-title_bar_wait_pal:     .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
-
-
-;0b 0c 0f 01 03 0e 06 06 06 0e 03 01 0f 0c 0b 00
-;08 08  08 0a 09 0a  09 05 08 08  08 09 0a 09
+title_bar_wait_ntsc_65:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
+title_bar_wait_ntsc_64:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 7, 4, 8, 8, 9, 9, 10, 9
+title_bar_wait_pal_63:   .byte 7, 5, 8, 8, 8, 10, 9, 10, 6, 4, 8, 8, 8, 9, 10, 9
