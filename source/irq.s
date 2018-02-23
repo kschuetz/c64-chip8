@@ -9,29 +9,16 @@
 .import button_sprites_2
 .import button_sprites_3
 .import check_keyboard
-.import check_keyboard
-.import check_ui_keys
 .import check_ui_keys
 .import chrome_charset
-.import chrome_charset
-.import get_guest_keypress
 .import get_guest_keypress
 .import host_screen
-.import host_screen
-.import keyboard_debug
-.import keyboard_debug
-.import screen_charset
 .import screen_charset
 .import set_button_sprite_frames
-.import set_button_sprite_frames
-.import set_ui_action
 .import set_ui_action
 .import sprite_pointers
 .import update_timers
-.import update_timers
 .importzp host_model
-.importzp host_model
-.importzp screen_bgcolor
 .importzp screen_bgcolor
 
 .zeropage

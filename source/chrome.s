@@ -3,7 +3,6 @@
 .export build_chrome
 .export debug_output_hex
 .export display_rom_title
-.export keyboard_debug
 
 .import bundle_count
 .import bundle_count_decimal
@@ -24,6 +23,9 @@
 .importzp zp5
 .importzp zp6
 
+chrome_text_column_1 = guest_screen_offset_x + 7
+chrome_text_origin = chrome_origin + 120 + chrome_text_column_1
+
 .proc build_chrome
             ldx #180
 			ldy #1								; color ram
@@ -41,24 +43,20 @@
 :           sta chrome_color_origin, x
             dex
             bpl :-
-			
-			; jsr draw_keyboard_pic
-			jsr init_keyboard_debug
-			rts
-			
-			; test - remove soon
-			ldy #0
-			ldx #0
-@2:			tya
-			sta chrome_origin, x
-			ora #128
-			sta chrome_origin + 40, x
-			iny
-			inx
-			cpx #40
-			bne @2
-			
 
+            ldy #16
+@2:         lda chrome_line_1, y
+            sta chrome_text_origin, y
+            lda chrome_line_2, y
+            sta chrome_text_origin + 40, y
+			lda chrome_line_3, y
+            sta chrome_text_origin + 80, y
+            lda chrome_line_4, y
+            sta chrome_text_origin + 120, y
+            dey
+            bpl @2
+
+			rts
 .endproc
 
 ; TODO: remove
@@ -88,37 +86,37 @@
 .endproc
 
 
-keyboard_debug_origin = 984   ; last 16 characters of last row
-
-.proc init_keyboard_debug
-			ldy #15
-@loop:		lda keyboard_debug_chars, y
-			sta host_screen + keyboard_debug_origin, y
-			lda #2
-			sta COLOR_RAM + keyboard_debug_origin, y
-			dey
-			bpl @loop				
-			rts
-.endproc
-
-; must be called from irq
-.proc keyboard_debug
-            rts
-
-			ldy #15
-@loop:		sty irq_zp0
-			tya
-			jsr is_guest_key_pressed
-			beq @no
-			lda #1
-			bne @1
-@no:		lda #2
-@1:			ldy irq_zp0
-			sta COLOR_RAM + keyboard_debug_origin, y
-			dey
-			bpl @loop		
-			rts				
-.endproc
+;keyboard_debug_origin = 984   ; last 16 characters of last row
+;
+;.proc init_keyboard_debug
+;			ldy #15
+;@loop:		lda keyboard_debug_chars, y
+;			sta host_screen + keyboard_debug_origin, y
+;			lda #2
+;			sta COLOR_RAM + keyboard_debug_origin, y
+;			dey
+;			bpl @loop
+;			rts
+;.endproc
+;
+;; must be called from irq
+;.proc keyboard_debug
+;            rts
+;
+;			ldy #15
+;@loop:		sty irq_zp0
+;			tya
+;			jsr is_guest_key_pressed
+;			beq @no
+;			lda #1
+;			bne @1
+;@no:		lda #2
+;@1:			ldy irq_zp0
+;			sta COLOR_RAM + keyboard_debug_origin, y
+;			dey
+;			bpl @loop
+;			rts
+;.endproc
 
 ; zp0:zp1 - top row 
 ; zp2:zp3 - bottom row
@@ -262,3 +260,13 @@ keyboard_debug_chars:
 			
 decimal_digit_chars:
 			.byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
+
+
+chrome_line_1:
+            .byte 65, 66, 0, 210, 197, 211, 197, 212, 0, 0, 0, 0, 0, 0, 0, 0, 0
+chrome_line_2:
+            .byte 65, 67, 0, 208, 210, 197, 214, 0, 210, 207, 205, 0, 0, 0, 0, 0, 0
+chrome_line_3:
+            .byte 65, 68, 0, 206, 197, 216, 212, 0, 210, 207, 205, 0, 0, 0, 0, 0, 0
+chrome_line_4:
+            .byte 65, 69, 0, 208, 193, 213, 211, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0
