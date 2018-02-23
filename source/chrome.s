@@ -130,7 +130,7 @@ keyboard_debug_origin = 984   ; last 16 characters of last row
 			sta (zp2), y
 .endmacro
 
-rom_title_origin = chrome_origin + guest_screen_offset_x + 6
+rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 
 ; A - bundle index
 .proc display_rom_title

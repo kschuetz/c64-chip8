@@ -201,7 +201,7 @@ frame_counter:     .res 2
             lda title_bar_colors, y
             sta $d021
             iny
-            cpy #16
+            cpy #17
             bne @next_line
 
             setup_next model, 218, button_pic_1
@@ -273,7 +273,7 @@ define_irqs ntsc_65
 irq_entry_low:      .lobytes model_irqs
 irq_entry_high:     .hibytes model_irqs
 
-title_bar_colors:        .byte 11, 12, 15, 1, 15, 1, 1, 1, 1, 1, 15, 1, 15, 12, 11, chrome_bgcolor
+title_bar_colors:        .byte 11, 12, 15, 1, 15, 1, 1, 1, 1, 1, 1, 15, 1, 15, 12, 11, chrome_bgcolor
 
 ; host_model:
 ; $01: OLD NTSC - 64 cycles
@@ -281,6 +281,6 @@ title_bar_colors:        .byte 11, 12, 15, 1, 15, 1, 1, 1, 1, 1, 15, 1, 15, 12, 
 ; $03: PAL - 63 cycles
 ; $04: Drean - 65 cycles
 
-title_bar_wait_ntsc_65:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9
-title_bar_wait_ntsc_64:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 7, 4, 8, 8, 9, 9, 10, 9
-title_bar_wait_pal_63:   .byte 7, 5, 8, 8, 8, 10, 9, 10, 6, 4, 8, 8, 8, 9, 10, 9
+title_bar_wait_ntsc_65:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9, 10
+title_bar_wait_ntsc_64:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 7, 4, 8, 8, 9, 9, 10, 9, 10
+title_bar_wait_pal_63:   .byte 7, 5, 8, 8, 8, 10, 9, 10, 6, 4, 8, 8, 8, 9, 10, 9, 10
