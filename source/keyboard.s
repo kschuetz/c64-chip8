@@ -10,7 +10,7 @@ kbd_col0:		    .res 16
 key_repeat_mode:    .res 1
 
 .bss
-key_states:     .res 16
+key_states:         .res 16
 
 .code
 
@@ -258,15 +258,15 @@ chip8_key_port_b:
 ; 0: Reset			F1			0			4
 ; 1: Load Prev		F3			0			5
 ; 2: Load Next		F5			0		    6
-; 3: Pause			P			5			1
+; 3: Pause			F7			0			3
 ; 4: BGColor 		K			4			5
 ; 5: FGColor 		J           4           2
 ; 6: Pixel Style    M           4           4
 ; 7: Toggle sound   O           4           6
 
 ui_key_port_a:
-			.byte 0, 0, 0, 5, 4, 4, 4, 4
+			.byte 0, 0, 0, 0, 4, 4, 4, 4
 
 ui_key_port_b:
-			.byte 1 << 4, 1 << 5, 1 << 6, 1 << 1
+			.byte 1 << 4, 1 << 5, 1 << 6, 1 << 3
 			.byte 1 << 5, 1 << 2, 1 << 4, 1 << 6

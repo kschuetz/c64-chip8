@@ -44,7 +44,7 @@ chrome_text_origin = chrome_origin + 120 + chrome_text_column_1
             dex
             bpl :-
 
-            ldy #16
+            ldy #27
 @2:         lda chrome_line_1, y
             sta chrome_text_origin, y
             lda chrome_line_2, y
@@ -53,6 +53,8 @@ chrome_text_origin = chrome_origin + 120 + chrome_text_column_1
             sta chrome_text_origin + 80, y
             lda chrome_line_4, y
             sta chrome_text_origin + 120, y
+            lda chrome_line_5, y
+            sta chrome_text_origin + 160, y
             dey
             bpl @2
 
@@ -263,10 +265,17 @@ decimal_digit_chars:
 
 
 chrome_line_1:
-            .byte 65, 66, 0, 210, 197, 211, 197, 212, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            .byte 65, 66, 0, 210, 197, 211, 197, 212, 0, 0, 0, 0
+            .byte 212, 0, 203, 197, 217, 0, 210, 197, 208, 197, 193, 212, 0, 0, 207, 207
 chrome_line_2:
-            .byte 65, 67, 0, 208, 210, 197, 214, 0, 210, 207, 205, 0, 0, 0, 0, 0, 0
+            .byte 65, 67, 0, 208, 210, 197, 214, 0, 210, 207, 205, 0
+            .byte 194, 0, 208, 201, 216, 197, 204, 0, 211, 212, 217, 204, 197, 0, 207, 207
 chrome_line_3:
-            .byte 65, 68, 0, 206, 197, 216, 212, 0, 210, 207, 205, 0, 0, 0, 0, 0, 0
+            .byte 65, 68, 0, 206, 197, 216, 212, 0, 210, 207, 205, 0
+            .byte 206, 0, 194, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 207, 207
 chrome_line_4:
-            .byte 65, 69, 0, 208, 193, 213, 211, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            .byte 65, 69, 0, 208, 193, 213, 211, 197, 0, 0, 0, 0
+            .byte 205, 0, 198, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 207, 207
+chrome_line_5:
+            .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            .byte 213, 0, 211, 207, 213, 206, 196, 0, 0, 0, 0, 0, 0, 0, 207, 207
