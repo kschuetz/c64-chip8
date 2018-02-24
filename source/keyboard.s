@@ -1,6 +1,6 @@
 .export check_keyboard, is_guest_key_pressed, get_guest_keypress, init_keyboard, check_ui_keys
 .export chip8_key_port_a, chip8_key_port_b
-.exportzp ui_key_events, kbd_col0
+.exportzp ui_key_events, kbd_col0, key_repeat_mode
 
 .import debug_output_hex
 .importzp active_keymap, irq_zp0

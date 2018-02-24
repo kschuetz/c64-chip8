@@ -11,6 +11,7 @@
 .import init_debug
 .import load_bundled_rom
 .import load_font_set
+.import sync_key_repeat_indicator
 .import test_draw
 .importzp active_keymap
 .importzp paused
@@ -29,6 +30,7 @@
 			jsr load_bundled_rom
 			lda active_bundle
 			jsr display_rom_title
+			jsr sync_key_repeat_indicator
 
 			jsr init_debug
 			jsr clear_registers

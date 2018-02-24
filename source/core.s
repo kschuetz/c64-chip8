@@ -13,8 +13,10 @@
 .import reset
 .import sync_bgcolor_indicator
 .import sync_fgcolor_indicator
+.import sync_key_repeat_indicator
 .import update_screen_color
 .importzp frame_counter
+.importzp key_repeat_mode
 .importzp screen_bgcolor
 .importzp screen_fgcolor
 .importzp ui_key_events
@@ -84,17 +86,6 @@ ui_action_last_frame:
 			jmp sync_bgcolor_indicator
 .endproc
 
-.proc handle_bgcolor_prev
-			lda screen_bgcolor
-			sec
-			sbc #1
-			and #15
-			sta screen_bgcolor
-			cmp screen_fgcolor
-			beq handle_bgcolor_prev		; if same as fgcolor, decrement again
-			jmp sync_bgcolor_indicator
-.endproc
-
 .proc handle_fgcolor_next
 			lda screen_fgcolor
 			clc
@@ -104,18 +95,6 @@ ui_action_last_frame:
 			cmp screen_bgcolor
 			beq handle_fgcolor_next		; if same as bgcolor, increment again
             jsr sync_fgcolor_indicator
-			jmp update_screen_color
-.endproc
-
-.proc handle_fgcolor_prev
-			lda screen_fgcolor
-			sec
-			sbc #1
-			and #15
-			sta screen_fgcolor
-			cmp screen_bgcolor
-			beq handle_fgcolor_prev		; if same as bgcolor, decrement again
-			jsr sync_fgcolor_indicator
 			jmp update_screen_color
 .endproc
 
@@ -152,6 +131,13 @@ ui_action_last_frame:
             rts
 .endproc
 
+.proc handle_toggle_key_repeat
+            lda key_repeat_mode
+            eor #$ff
+            sta key_repeat_mode
+            jmp sync_key_repeat_indicator
+.endproc
+
 .proc set_ui_action
 			lda ui_key_events
 			beq @done
@@ -185,7 +171,7 @@ ui_action_last_frame:
 			bcs @done	
 @bit7:		lsr a
 			bcc @none
-			lda #UIAction::toggle_sound
+			lda #UIAction::toggle_key_repeat
 			bcs @done
 			
 @none:		lda #UIAction::none
@@ -203,4 +189,5 @@ action_handlers:
 			.addr handle_bgcolor_next
 			.addr handle_fgcolor_next
 			.addr cycle_pixel_style
+			.addr handle_toggle_key_repeat
 			.addr no_action         ; toggle sound

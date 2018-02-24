@@ -5,6 +5,7 @@
 .export display_rom_title
 .export sync_bgcolor_indicator
 .export sync_fgcolor_indicator
+.export sync_key_repeat_indicator
 
 .import bundle_count
 .import bundle_count_decimal
@@ -255,8 +256,8 @@ debug_hex_origin = 958
 			rts
 .endproc
 
-bgcolor_indicator = chrome_text_color_origin + 80 + 26
-fgcolor_indicator = bgcolor_indicator + 40
+bgcolor_indicator := chrome_text_color_origin + 80 + 26
+fgcolor_indicator := bgcolor_indicator + 40
 
 .proc sync_bgcolor_indicator
             lda screen_bgcolor
@@ -272,6 +273,9 @@ fgcolor_indicator = bgcolor_indicator + 40
             rts
 .endproc
 
+.proc sync_key_repeat_indicator
+            rts
+.endproc
 
 .rodata
 ; TODO:  remove
