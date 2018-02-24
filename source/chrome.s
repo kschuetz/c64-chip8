@@ -6,8 +6,10 @@
 .export sync_bgcolor_indicator
 .export sync_fgcolor_indicator
 .export sync_key_repeat_indicator
+.export sync_pixel_style_indicator
 .export sync_sound_indicator
 
+.import active_pixel_style
 .import bundle_count
 .import bundle_count_decimal
 .import bundle_index_high
@@ -20,6 +22,7 @@
 .import is_guest_key_pressed
 .importzp irq_zp0
 .importzp key_repeat_mode
+.importzp pixel_style_representative
 .importzp screen_bgcolor
 .importzp screen_fgcolor
 .importzp sound_enabled
@@ -79,6 +82,11 @@ chrome_text_color_origin = chrome_color_origin + chrome_text_origin
                 sta chrome_text_color_origin + 40 * i + 13
             .endrepeat
 
+            lda #13
+            sta pixel_style_indicator_color
+            sta pixel_style_indicator_color + 1
+
+            jsr sync_pixel_style_indicator
             jsr sync_bgcolor_indicator
             jsr sync_fgcolor_indicator
             jsr sync_key_repeat_indicator
@@ -281,6 +289,15 @@ key_repeat_indicator := chrome_text_screen_origin + 26
 pixel_style_indicator := key_repeat_indicator + 40
 sound_indicator := pixel_style_indicator + 120
 
+.proc sync_pixel_style_indicator
+            lda active_pixel_style
+            clc
+            adc #pixel_style_representative
+            sta pixel_style_indicator
+            sta pixel_style_indicator + 1
+            rts
+.endproc
+
 .proc sync_bgcolor_indicator
             lda screen_bgcolor
             sta bgcolor_indicator_color
@@ -346,7 +363,7 @@ chrome_line_1:
             .byte 70, 71, 203, 197, 217, 0, 210, 197, 208, 197, 193, 212, 0, 0, 0, 0
 chrome_line_2:
             .byte 65, 67, 0, 208, 210, 197, 214, 0, 210, 207, 205, 0
-            .byte 72, 71, 208, 201, 216, 197, 204, 0, 211, 212, 217, 204, 197, 0, 207, 207
+            .byte 72, 71, 208, 201, 216, 197, 204, 0, 211, 212, 217, 204, 197, 0, 0, 0
 chrome_line_3:
             .byte 65, 68, 0, 206, 197, 216, 212, 0, 210, 207, 205, 0
             .byte 73, 71, 194, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 76, 76

@@ -1,9 +1,12 @@
 .include "common.s"
 
+.export active_pixel_style
 .export cycle_pixel_style
 .export init_charsets
 .export load_font_set
 .export load_pixel_set
+.exportzp pixel_style_count
+.exportzp pixel_style_representative
 
 .import chrome_charset
 .import fill
@@ -15,6 +18,8 @@
 .importzp zp4
 
 pixel_style_count = 8
+
+pixel_style_representative = 112
 
 .bss
 
@@ -32,7 +37,19 @@ active_pixel_style:
 			istore zp0, chrome_charset_data
 			istore zp2, chrome_charset
 			istore zp4, $0800
-			jmp move_up
+			jsr move_up
+
+            ; copy pixel style representatives
+            ; (chrome_charset characters 112..127)
+            ldy #7
+@loop:
+            .repeat 8, i
+                lda pixel_set_data + 128 * i + 72, y
+                sta chrome_charset + (pixel_style_representative + i) * 8, y
+            .endrepeat
+            dey
+            bpl @loop
+            rts
 .endproc	
 		
 .proc build_screen_charset

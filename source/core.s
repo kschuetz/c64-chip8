@@ -14,6 +14,7 @@
 .import sync_bgcolor_indicator
 .import sync_fgcolor_indicator
 .import sync_key_repeat_indicator
+.import sync_pixel_style_indicator
 .import update_screen_color
 .importzp frame_counter
 .importzp key_repeat_mode
@@ -138,6 +139,11 @@ ui_action_last_frame:
             jmp sync_key_repeat_indicator
 .endproc
 
+.proc handle_cycle_pixel_style
+            jsr cycle_pixel_style
+            jmp sync_pixel_style_indicator
+.endproc
+
 .proc set_ui_action
 			lda ui_key_events
 			beq @done
@@ -188,6 +194,6 @@ action_handlers:
 			.addr handle_pause			; pause
 			.addr handle_bgcolor_next
 			.addr handle_fgcolor_next
-			.addr cycle_pixel_style
+			.addr handle_cycle_pixel_style
 			.addr handle_toggle_key_repeat
 			.addr no_action         ; toggle sound
