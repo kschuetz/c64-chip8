@@ -14,6 +14,7 @@
 .import program_start
 .import set_button_colors
 .importzp active_keymap
+.importzp key_repeat_mode
 .importzp zp0
 .importzp zp1
 .importzp zp2
@@ -114,11 +115,17 @@ bundle_index_high: 	.res max_bundled_roms
             sta zp1
             jsr set_button_colors
 
+            ; keymap
             ldy #2
             lda (zp2), y
             sta active_keymap
             iny
             lda (zp2), y
             sta active_keymap + 1
+
+            ; key_repeat_default
+            iny
+            lda (zp2), y
+            sta key_repeat_mode
 			rts
 .endproc

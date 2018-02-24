@@ -18,7 +18,7 @@
 
 .segment "BUNDLE"
 
-.macro bundle filename, title, enabled_key_mask, keymap_addr
+.macro bundle filename, title, enabled_key_mask, keymap_addr, key_repeat
 		.local @end
 		.word @end
 		scrcode title
@@ -35,6 +35,11 @@
 		.else
 		    .addr default_keymap
 		.endif
+		.ifnblank key_repeat
+		    .byte $ff
+        .else
+            .byte 0
+        .endif
 
 		.incbin filename
 @end:
@@ -49,7 +54,7 @@ bundle_start:
 		bundle "roms/GUESS", "guess"
 		bundle "roms/HIDDEN", "hidden", hidden_enabled_keys, hidden_keymap
 		bundle "roms/INVADERS", "invaders"
-		bundle "roms/KALEID", "kaleid"
+		bundle "roms/KALEID", "kaleid", , , $ff
 		bundle "roms/MAZE", "maze"
 		bundle "roms/MERLIN", "merlin"
 		bundle "roms/MISSILE", "missile"
@@ -57,7 +62,7 @@ bundle_start:
 		bundle "roms/PONG2", "pong 2"
 		bundle "roms/PUZZLE", "puzzle"
 		bundle "roms/SYZYGY", "syzygy"
-		bundle "roms/TANK", "tank", tank_enabled_keys, tank_keymap
+		bundle "roms/TANK", "tank", tank_enabled_keys, tank_keymap, $ff
 		bundle "roms/TETRIS", "tetris", tetris_enabled_keys, tetris_keymap
 		bundle "roms/TICTAC", "tictac", tictac_enabled_keys, tictac_keymap
 		bundle "roms/UFO", "ufo"

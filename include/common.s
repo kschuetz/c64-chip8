@@ -31,6 +31,7 @@
 	    title .byte title_length
 	    enabled_keys .word
 	    keymap .addr
+	    key_repeat_default .byte
 	    data .byte
 .endstruct
 
