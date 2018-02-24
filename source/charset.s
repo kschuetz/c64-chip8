@@ -117,6 +117,7 @@ active_pixel_style:
 
 .proc load_pixel_set
             load_pixel_set_impl
+            rts
 .endproc
 
 ;; Y - pixel_set index (0..15)
