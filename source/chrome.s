@@ -6,6 +6,7 @@
 .export sync_bgcolor_indicator
 .export sync_fgcolor_indicator
 .export sync_key_repeat_indicator
+.export sync_sound_indicator
 
 .import bundle_count
 .import bundle_count_decimal
@@ -18,8 +19,10 @@
 .import host_screen
 .import is_guest_key_pressed
 .importzp irq_zp0
+.importzp key_repeat_mode
 .importzp screen_bgcolor
 .importzp screen_fgcolor
+.importzp sound_enabled
 .importzp zp0
 .importzp zp1
 .importzp zp2
@@ -65,9 +68,21 @@ chrome_text_color_origin = chrome_color_origin + chrome_text_origin
             dey
             bpl @2
 
+            lda #15
+            .repeat 4, i
+                sta chrome_text_color_origin + 40 * i
+                sta chrome_text_color_origin + 40 * i + 1
+            .endrepeat
+
+            .repeat 5, i
+                sta chrome_text_color_origin + 40 * i + 12
+                sta chrome_text_color_origin + 40 * i + 13
+            .endrepeat
+
             jsr sync_bgcolor_indicator
             jsr sync_fgcolor_indicator
-
+            jsr sync_key_repeat_indicator
+            jsr sync_sound_indicator
 			rts
 .endproc
 
@@ -256,25 +271,56 @@ debug_hex_origin = 958
 			rts
 .endproc
 
-bgcolor_indicator := chrome_text_color_origin + 80 + 26
-fgcolor_indicator := bgcolor_indicator + 40
+key_repeat_indicator_color := chrome_text_color_origin + 26
+pixel_style_indicator_color := key_repeat_indicator_color + 40
+bgcolor_indicator_color := pixel_style_indicator_color + 40
+fgcolor_indicator_color := bgcolor_indicator_color + 40
+sound_indicator_color := fgcolor_indicator_color + 40
+
+key_repeat_indicator := chrome_text_screen_origin + 26
+pixel_style_indicator := key_repeat_indicator + 40
+sound_indicator := pixel_style_indicator + 120
 
 .proc sync_bgcolor_indicator
             lda screen_bgcolor
-            sta bgcolor_indicator
-            sta bgcolor_indicator + 1
+            sta bgcolor_indicator_color
+            sta bgcolor_indicator_color + 1
             rts
 .endproc
 
 .proc sync_fgcolor_indicator
             lda screen_fgcolor
-            sta fgcolor_indicator
-            sta fgcolor_indicator + 1
+            sta fgcolor_indicator_color
+            sta fgcolor_indicator_color + 1
             rts
 .endproc
 
-.proc sync_key_repeat_indicator
+.macro sync_on_off_indicator source, screen_mem, color_mem
+            lda source
+            beq @off1
+            ldx #77
+            .byte $2c   ; BIT
+@off1:      ldx #79
+            stx screen_mem
+            inx
+            stx screen_mem + 1
+
+            lda source
+            beq @off2
+            lda #5      ; green
+            .byte $2c   ; BIT
+@off2:      lda #2      ; red
+            sta color_mem
+            sta color_mem + 1
             rts
+.endmacro
+
+.proc sync_key_repeat_indicator
+            sync_on_off_indicator key_repeat_mode, key_repeat_indicator, key_repeat_indicator_color
+.endproc
+
+.proc sync_sound_indicator
+            sync_on_off_indicator sound_enabled, sound_indicator, sound_indicator_color
 .endproc
 
 .rodata
@@ -297,16 +343,16 @@ decimal_digit_chars:
 
 chrome_line_1:
             .byte 65, 66, 0, 210, 197, 211, 197, 212, 0, 0, 0, 0
-            .byte 212, 0, 203, 197, 217, 0, 210, 197, 208, 197, 193, 212, 0, 0, 207, 207
+            .byte 70, 71, 203, 197, 217, 0, 210, 197, 208, 197, 193, 212, 0, 0, 0, 0
 chrome_line_2:
             .byte 65, 67, 0, 208, 210, 197, 214, 0, 210, 207, 205, 0
-            .byte 194, 0, 208, 201, 216, 197, 204, 0, 211, 212, 217, 204, 197, 0, 207, 207
+            .byte 72, 71, 208, 201, 216, 197, 204, 0, 211, 212, 217, 204, 197, 0, 207, 207
 chrome_line_3:
             .byte 65, 68, 0, 206, 197, 216, 212, 0, 210, 207, 205, 0
-            .byte 206, 0, 194, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 207, 207
+            .byte 73, 71, 194, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 76, 76
 chrome_line_4:
             .byte 65, 69, 0, 208, 193, 213, 211, 197, 0, 0, 0, 0
-            .byte 205, 0, 198, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 207, 207
+            .byte 74, 71, 198, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 76, 76
 chrome_line_5:
             .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-            .byte 213, 0, 211, 207, 213, 206, 196, 0, 0, 0, 0, 0, 0, 0, 207, 207
+            .byte 75, 71, 211, 207, 213, 206, 196, 0, 0, 0, 0, 0, 0, 0, 0, 0

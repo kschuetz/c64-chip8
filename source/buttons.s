@@ -81,7 +81,7 @@
 
 button_sprites_left_edge = 54
 button_sprites_spacing = 12
-button_sprites_top = 204
+button_sprites_top = 206
 button_sprites_vertical_spacing = 11
 
 

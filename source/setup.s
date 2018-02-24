@@ -18,6 +18,7 @@
 .import init_graphics_tables
 .import init_keyboard
 .import init_random
+.import init_sound
 .import init_timers
 .import load_bundled_rom
 .import reset
@@ -71,6 +72,7 @@
 			jsr init_charsets
 			jsr init_vars
 			jsr init_buttons
+			jsr init_sound
 			
 			lda screen_fgcolor
 			jsr update_screen_color
