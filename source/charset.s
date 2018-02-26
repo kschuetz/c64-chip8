@@ -51,27 +51,6 @@ active_pixel_style:
             bpl @loop
             rts
 .endproc	
-		
-.proc build_screen_charset
-			istore zp0, (screen_charset + 16 * 8)
-			ldy #$7f
-			ldx #$07
-			lda #0
-			jsr fill
-
-			ldy #0
-			ldx #0
-@loop:		lda row_bits, x
-			.repeat 4
-				sta screen_charset, y
-				iny
-			.endrep
-			inx
-			cpx #32
-			bne @loop
-			
-			rts
-.endproc
 
 .proc init_screen_charset
             istore zp0, screen_charset
@@ -120,26 +99,6 @@ active_pixel_style:
             rts
 .endproc
 
-;; Y - pixel_set index (0..15)
-;; X - character index (0..15)
-;.proc load_partial_pixel_set
-;            clc
-;            lda times_8, x
-;            adc pixel_set_address_low, y
-;            sta @source + 1
-;            lda pixel_set_address_high, y
-;            adc #0
-;            sta @source + 2
-;            ldy #8
-;@loop:
-;@source:    lda $ffff, y
-;            sta screen_charset, y
-;            dey
-;            bpl @loop
-;.endproc
-
-
-
 .proc load_font_set
 			ldy #79
 @loop:		lda font_set, y
@@ -149,29 +108,6 @@ active_pixel_style:
 .endproc
 
 .rodata
-
-oo = %00000000
-ox = %00001111
-xo = %11110000
-xx = %11111111
-
-row_bits:
-            .byte oo, oo
-			.byte oo, ox
-			.byte oo, xo
-			.byte oo, xx
-			.byte ox, oo
-			.byte ox, ox
-			.byte ox, xo
-			.byte ox, xx
-			.byte xo, oo
-			.byte xo, ox
-			.byte xo, xo
-			.byte xo, xx
-			.byte xx, oo
-			.byte xx, ox
-			.byte xx, xo
-			.byte xx, xx
 
 pixel_set_address_low:
             .repeat 16, i
@@ -188,8 +124,6 @@ times_8:
                 .byte i * 8
             .endrepeat
 
-chrome_charset_data:
-			.incbin "data/chrome-charset.bin"
 pixel_set_data:
             .incbin "data/pixel-sets.bin"
 
@@ -211,3 +145,8 @@ font_set:
             .byte $e0, $90, $90, $90, $e0 ; d
             .byte $f0, $80, $f0, $80, $f0 ; e
             .byte $f0, $80, $f0, $80, $80 ; f
+
+.segment "INITDATA"
+
+chrome_charset_data:
+			.incbin "data/chrome-charset.bin"

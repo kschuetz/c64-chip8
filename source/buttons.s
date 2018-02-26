@@ -222,6 +222,7 @@ button_sprites_vertical_spacing = 11
 .endproc
 
 .segment "LOW"
+
 button_sprite_pointer:
             .res 16
 
@@ -229,9 +230,6 @@ button_color:
             .res 16
 
 .rodata
-cs_to_sprite:
-            .byte 0, 3, 6, 9, 12, 15, 18, 21
-            .byte 1, 4, 7, 10, 13, 16, 19, 22
 
 button_up_frame:
             .byte $80, $81, $82, $83, $84, $85, $86, $87
@@ -240,6 +238,12 @@ button_up_frame:
 button_down_frame:
             .byte $90, $91, $92, $93, $94, $95, $96, $97
             .byte $98, $99, $9a, $9b, $9c, $9d, $9e, $9f
+
+.segment "INITDATA"
+
+cs_to_sprite:
+            .byte 0, 3, 6, 9, 12, 15, 18, 21
+            .byte 1, 4, 7, 10, 13, 16, 19, 22
 
 buttons_sprite_data:
            .incbin "data/buttons.bin", 0, $0400

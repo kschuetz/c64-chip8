@@ -1,7 +1,6 @@
 .include "common.s"
 
 .export build_chrome
-.export debug_output_hex
 .export display_rom_title
 .export sync_bgcolor_indicator
 .export sync_fgcolor_indicator
@@ -93,65 +92,6 @@ chrome_text_color_origin = chrome_color_origin + chrome_text_origin
             jsr sync_sound_indicator
 			rts
 .endproc
-
-; TODO: remove
-.proc draw_keyboard_pic
-
-@kbd_origin = chrome_origin + 80 + guest_screen_offset_x
-			ldx #0
-			istore zp0, @kbd_origin
-@1:			ldy #0
-@2:			lda keyboard_pic, x
-			sta (zp0), y
-			inx
-			iny
-			cpy #5
-			bne @2
-			clc
-			lda zp0
-			adc #40
-			sta zp0
-			lda zp1
-			adc #0
-			sta zp1
-			cpx #30
-			bne @1					
-					
-			rts
-.endproc
-
-
-;keyboard_debug_origin = 984   ; last 16 characters of last row
-;
-;.proc init_keyboard_debug
-;			ldy #15
-;@loop:		lda keyboard_debug_chars, y
-;			sta host_screen + keyboard_debug_origin, y
-;			lda #2
-;			sta COLOR_RAM + keyboard_debug_origin, y
-;			dey
-;			bpl @loop
-;			rts
-;.endproc
-;
-;; must be called from irq
-;.proc keyboard_debug
-;            rts
-;
-;			ldy #15
-;@loop:		sty irq_zp0
-;			tya
-;			jsr is_guest_key_pressed
-;			beq @no
-;			lda #1
-;			bne @1
-;@no:		lda #2
-;@1:			ldy irq_zp0
-;			sta COLOR_RAM + keyboard_debug_origin, y
-;			dey
-;			bpl @loop
-;			rts
-;.endproc
 
 ; zp0:zp1 - top row 
 ; zp2:zp3 - bottom row
@@ -261,24 +201,6 @@ rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 			rts
 .endproc
 
-debug_hex_origin = 958
-.proc debug_output_hex
-			tax
-			lsr a
-			lsr a
-			lsr a
-			lsr a
-			tay
-			lda keyboard_debug_chars, y
-			sta host_screen + debug_hex_origin
-			txa
-			and #$0f
-			tay
-			lda keyboard_debug_chars, y
-			sta host_screen + debug_hex_origin + 1
-			rts
-.endproc
-
 key_repeat_indicator_color := chrome_text_color_origin + 26
 pixel_style_indicator_color := key_repeat_indicator_color + 40
 bgcolor_indicator_color := pixel_style_indicator_color + 40
@@ -341,22 +263,11 @@ sound_indicator := pixel_style_indicator + 120
 .endproc
 
 .rodata
-; TODO:  remove
-keyboard_pic:	
-			.byte 64, 65, 66, 67, 68
-			.byte 96, 97, 98, 99, 100
-			.byte 69, 70, 71, 72, 73
-			.byte 101, 102, 103, 104, 105
-			.byte 74, 75, 76, 77, 78
-			.byte 106, 107, 108, 109, 110
-			
-keyboard_debug_chars:
-			.byte 240, 241, 242, 243, 244, 245, 246, 247, 248, 249
-			.byte 193, 194, 195, 196, 197, 198
-			
+
 decimal_digit_chars:
 			.byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
 
+.segment "INITDATA"
 
 chrome_line_1:
             .byte 65, 66, 0, 210, 197, 211, 197, 212, 0, 0, 0, 0
