@@ -22,8 +22,8 @@
 guest_ram = $c000
 guest_ram_page = >guest_ram
 program_start = guest_ram + $0200
-stack_low = $ef00		    ; low bytes of return addresses
-stack_high = $ee00	        ; high bytes of return addresses
+stack_low = $0700		    ; low bytes of return addresses
+stack_high = $0600	        ; high bytes of return addresses
 host_screen = $b000
 screen_charset = $b800	
 chrome_charset = $a800
