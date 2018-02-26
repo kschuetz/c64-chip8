@@ -5,7 +5,7 @@
 .define guest_screen_offset_x 4
 .define guest_screen_offset_y 0
 .define chrome_height 8
-vic_bank_base = $8000
+vic_bank_base = $c000
 
 ; ************** configurable ****************
 

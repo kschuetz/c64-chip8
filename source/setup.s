@@ -34,7 +34,7 @@
 			sta $dd02
 			lda $dd00
 			and #$fc
-			ora #1
+			;ora #1
 			sta $dd00
 			
 			switch_vic_mem host_screen, chrome_charset
