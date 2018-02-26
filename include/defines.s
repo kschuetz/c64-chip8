@@ -12,7 +12,7 @@ vic_bank_base = $c000
 .define default_rom_index 0
 .define title_length 16
 
-.define max_bundled_roms 64
+.define max_bundled_roms 100
 
 .define chrome_bgcolor 0
 

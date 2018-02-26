@@ -22,6 +22,9 @@
             .local @end
             .word @end
             scrcode title
+            .if (.strlen(title) > title_length)
+                .error "Title too long"
+            .endif
             .repeat (title_length - .strlen(title))
                 .byte 0
             .endrep
@@ -54,7 +57,7 @@ bundle_start:
             bundle "roms/games/Blinky [Hans Christian Egeberg, 1991].ch8", "blinky"
             bundle "roms/games/Blitz [David Winter].ch8", "blitz"
             bundle "roms/games/Brix [Andreas Gustafsson, 1990].ch8", "brix"
-            ;bundle "roms/games/Bowling [Gooitzen van der Wal].ch8", "bowling"
+            bundle "roms/games/Bowling [Gooitzen van der Wal].ch8", "bowling"
             bundle "roms/games/Cave.ch8", "cave"
             bundle "roms/games/Coin Flipping [Carmelo Cortez, 1978].ch8", "coin flipping"
             bundle "roms/games/Connect 4 [David Winter].ch8", "connect 4", connect4_enabled_keys, connect4_keymap
@@ -108,3 +111,25 @@ bundle_start:
             bundle "roms/games/Worm V4 [RB-Revival Studios, 2007].ch8", "worm v4"
             bundle "roms/games/X-Mirror.ch8", "x-mirror"
             bundle "roms/games/ZeroPong [zeroZshadow, 2007].ch8", "zeropong"
+
+            bundle "roms/demos/Particle Demo [zeroZshadow, 2008].ch8", "particle demo"
+            bundle "roms/demos/Sierpinski [Sergey Naydenov, 2010].ch8", "sierpinski"
+            bundle "roms/demos/Stars [Sergey Naydenov, 2010].ch8", "stars"
+            bundle "roms/demos/Zero Demo [zeroZshadow, 2007].ch8", "zero demo"
+
+            bundle "roms/programs/BMP Viewer - Hello (C8 example) [Hap, 2005].ch8", "hello"
+            bundle "roms/programs/Chip8 emulator Logo [Garstyciuks].ch8", "chip8 logo"
+            bundle "roms/programs/Chip8 Picture.ch8", "chip8 picture"
+            bundle "roms/programs/Clock Program [Bill Fisher, 1981].ch8", "clock"
+            bundle "roms/programs/Delay Timer Test [Matthew Mikolay, 2010].ch8", "delay timer test"
+;            bundle "roms/programs/Division Test [Sergey Naydenov, 2010].ch8", "division test"
+            bundle "roms/programs/Fishie [Hap, 2005].ch8", "fishie"
+            bundle "roms/programs/Framed MK1 [GV Samways, 1980].ch8", "framed mk1"
+            bundle "roms/programs/Framed MK2 [GV Samways, 1980].ch8", "framed mk2"
+            bundle "roms/programs/IBM Logo.ch8", "ibm logo"
+            bundle "roms/programs/Jumping X and O [Harry Kleinberg, 1977].ch8", "jumping x & o"
+            bundle "roms/programs/Keypad Test [Hap, 2006].ch8", "keypad test"
+            bundle "roms/programs/Life [GV Samways, 1980].ch8", "life"
+            bundle "roms/programs/Minimal game [Revival Studios, 2007].ch8", "minimal game"
+            bundle "roms/programs/Random Number Test [Matthew Mikolay, 2010].ch8", "random test"
+;            bundle "roms/programs/SQRT Test [Sergey Naydenov, 2010].ch8", "sqrt test"

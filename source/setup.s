@@ -29,7 +29,7 @@
 .importzp screen_fgcolor
 
 .proc init_vic
-			lda $dd02	;change VIC to bank 2
+			lda $dd02	;change VIC to bank 3
 			ora #3
 			sta $dd02
 			lda $dd00
@@ -44,9 +44,6 @@
 			ora #%00001011
 			sta $d011
 
-			; lda #0
-			; sta $d015           ; disable all sprites
-
 			jmp init_button_sprites
 .endproc
 
@@ -60,6 +57,21 @@
             lda $d011               ; blank screen during initialization
             and #%11101111
             sta $d011
+
+            jsr init_vic
+            lda #$1f    ;Disable CIA IRQ's
+            sta $dc0d
+            sta $dd0d
+
+            lda #<nmi   ;Install NMI into
+            ldx #>nmi   ;Hardware NMI and
+            sta $fffa   ;RESET Vectors
+            sta $fffc
+            stx $fffb
+            stx $fffd
+
+            lda #$35
+            sta $1
             
             jsr init_random
             jsr init_timers
@@ -80,20 +92,20 @@
 			jsr build_screen_margins
 			jsr build_chrome
 
-			jsr init_vic
-			lda #$1f    ;Disable CIA IRQ's
-			sta $dc0d
-			sta $dd0d
-
-			lda #<nmi   ;Install NMI into
-			ldx #>nmi   ;Hardware NMI and
-			sta $fffa   ;RESET Vectors
-			sta $fffc
-			stx $fffb
-			stx $fffd
-			
-			lda #$35
-			sta $1
+;			jsr init_vic
+;			lda #$1f    ;Disable CIA IRQ's
+;			sta $dc0d
+;			sta $dd0d
+;
+;			lda #<nmi   ;Install NMI into
+;			ldx #>nmi   ;Hardware NMI and
+;			sta $fffa   ;RESET Vectors
+;			sta $fffc
+;			stx $fffb
+;			stx $fffd
+;
+;			lda #$35
+;			sta $1
 			
 			lda #default_rom_index	
 			jsr reset
