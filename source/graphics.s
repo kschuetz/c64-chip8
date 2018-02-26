@@ -451,6 +451,6 @@ param_sprite_width = zp6
 			rts
 .endproc
 
-.bss
+.segment "LOW"
 screen_row_table_low:		.res 16
 screen_row_table_high:		.res 16

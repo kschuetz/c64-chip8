@@ -19,7 +19,7 @@
 kbd_col0:		    .res 16
 key_repeat_mode:    .res 1
 
-.bss
+.segment "LOW"
 key_states:         .res 16
 
 .code

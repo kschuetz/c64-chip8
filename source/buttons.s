@@ -221,7 +221,7 @@ button_sprites_vertical_spacing = 11
             rts
 .endproc
 
-.bss
+.segment "LOW"
 button_sprite_pointer:
             .res 16
 

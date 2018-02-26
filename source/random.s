@@ -69,6 +69,6 @@
 .zeropage
 next_random:    .res 1
 
-.bss
+.segment "LOW"
 random_buffer:  .res 255
 sid_stash:      .res 3

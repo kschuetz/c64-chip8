@@ -21,7 +21,7 @@ pixel_style_count = 8
 
 pixel_style_representative = 112
 
-.bss
+.segment "LOW"
 
 active_pixel_style:
             .res 1

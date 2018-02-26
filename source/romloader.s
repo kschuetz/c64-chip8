@@ -22,7 +22,7 @@
 .importzp zp4
 .importzp zp5
 
-.bss
+.segment "LOW"
 
 bundle_count: 		.res 1
 active_bundle:		.res 1
