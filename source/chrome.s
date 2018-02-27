@@ -35,8 +35,8 @@
 
 chrome_text_column_1 = guest_screen_offset_x + 7
 chrome_text_origin = 120 + chrome_text_column_1
-chrome_text_screen_origin = chrome_origin + chrome_text_origin
-chrome_text_color_origin = chrome_color_origin + chrome_text_origin
+chrome_text_screen_origin := chrome_origin + chrome_text_origin
+chrome_text_color_origin := chrome_color_origin + chrome_text_origin
 
 .proc build_chrome
             ldx #180

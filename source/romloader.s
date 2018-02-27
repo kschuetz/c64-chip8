@@ -29,7 +29,6 @@ active_bundle:		.res 1
 bundle_index_low: 	.res max_bundled_roms				
 bundle_index_high: 	.res max_bundled_roms
 
-
 .code
 
 .proc build_bundle_index

@@ -105,6 +105,7 @@ active_pixel_style:
 			sta guest_ram, y
 			dey
 			bpl @loop
+			rts
 .endproc
 
 .rodata

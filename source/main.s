@@ -15,7 +15,7 @@ __LOADADDR__: .word head	    ; Load address
 
 .segment "EXEHDR"
 head:	    .word @next
-			.word 666		    ; Line number
+			.word 2018		    ; Line number
 			.byte $9E,"2061"	    ; SYS 2061
 			.byte $00		    ; End of BASIC line
 @next:	    .word 0		    ; BASIC end marker
@@ -32,4 +32,3 @@ head:	    .word @next
 .segment "BUNDLEEND"
 bundle_end:	
 	        .word 0
-	      

@@ -92,21 +92,6 @@
 			jsr build_screen_margins
 			jsr build_chrome
 
-;			jsr init_vic
-;			lda #$1f    ;Disable CIA IRQ's
-;			sta $dc0d
-;			sta $dd0d
-;
-;			lda #<nmi   ;Install NMI into
-;			ldx #>nmi   ;Hardware NMI and
-;			sta $fffa   ;RESET Vectors
-;			sta $fffc
-;			stx $fffb
-;			stx $fffd
-;
-;			lda #$35
-;			sta $1
-			
 			lda #default_rom_index	
 			jsr reset
 
