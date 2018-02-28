@@ -3,6 +3,7 @@
 .export connect4_enabled_keys: absolute, hidden_enabled_keys
 .export slide_enabled_keys
 .export space_invaders_enabled_keys: absolute
+.export brix_enabled_keys: absolute
 .exportzp active_keymap
 
 .zeropage
@@ -103,3 +104,6 @@ slide_enabled_keys = %0010000000000000
 
 ;                              FEDCBA9876543210
 space_invaders_enabled_keys = %0000000001110000
+
+;                    FEDCBA9876543210
+brix_enabled_keys = %0000000001010000

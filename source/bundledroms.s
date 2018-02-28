@@ -2,6 +2,7 @@
 
 .export bundle_start
 
+.import brix_enabled_keys
 .import connect4_enabled_keys
 .import connect4_keymap
 .import default_keymap
@@ -59,7 +60,7 @@ bundle_start:
             bundle "roms/games/Blinky [Hans Christian Egeberg, 1991].ch8", "blinky"
             bundle "roms/games/Blitz [David Winter].ch8", "blitz"
             bundle "roms/games/Bowling [Gooitzen van der Wal].ch8", "bowling"
-            bundle "roms/games/Brix [Andreas Gustafsson, 1990].ch8", "brix"
+            bundle "roms/games/Brix [Andreas Gustafsson, 1990].ch8", "brix", brix_enabled_keys, , false
             bundle "roms/games/Cave.ch8", "cave"
             bundle "roms/games/Coin Flipping [Carmelo Cortez, 1978].ch8", "coin flipping"
             bundle "roms/games/Connect 4 [David Winter].ch8", "connect 4", connect4_enabled_keys, connect4_keymap
