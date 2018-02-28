@@ -21,26 +21,26 @@
 ;.endproc
 ;
 ;.proc test_draw_0
-;			istore zp0, test_data_2
+;			istore zp0, test_data_1
 ;			istore zp2, test_sprite_1
 ;			istore zp4, 16
 ;			jsr move_up
 ;
 ;			istore reg_i, test_sprite_1
 ;			ldx #0
-;			ldy #0
+;			ldy #31
 ;			lda #15
 ;			jsr draw_sprite
 ;			lda collision_flag
 ;			jsr debug_output_hex
 ;
-;			istore reg_i, test_sprite_1
-;            ldx #1
-;            ldy #1
-;            lda #13
-;            jsr draw_sprite
-;            lda collision_flag
-;            jsr debug_output_hex
+;;			istore reg_i, test_sprite_1
+;;            ldx #1
+;;            ldy #1
+;;            lda #13
+;;            jsr draw_sprite
+;;            lda collision_flag
+;;            jsr debug_output_hex
 ;
 ;			rts
 ;.endproc
