@@ -4,6 +4,7 @@
 .export slide_enabled_keys
 .export space_invaders_enabled_keys: absolute
 .export brix_enabled_keys: absolute
+.export blitz_enabled_keys: absolute
 .exportzp active_keymap
 
 .zeropage
@@ -107,3 +108,6 @@ space_invaders_enabled_keys = %0000000001110000
 
 ;                    FEDCBA9876543210
 brix_enabled_keys = %0000000001010000
+
+;                     FEDCBA9876543210
+blitz_enabled_keys = %0000000000100000
