@@ -9,7 +9,7 @@ vic_bank_base = $c000
 
 ; ************** configurable ****************
 
-.define default_rom_index 0
+.define default_rom_index 48
 .define title_length 16
 
 .define max_bundled_roms 100
@@ -22,3 +22,5 @@ default_screen_fgcolor = 13
 
 enabled_button_color = 1
 disabled_button_color = 11
+
+key_delay_frame_count = 15

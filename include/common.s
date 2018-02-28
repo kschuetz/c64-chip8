@@ -3,6 +3,9 @@
 
 .linecont +
 
+.define true $ff
+.define false $00
+
 .macro istore m, value
 		lda #<value
 		sta m

@@ -8,7 +8,7 @@
 .export init_keyboard
 .export is_guest_key_pressed
 .exportzp kbd_col0
-.exportzp key_repeat_mode
+.exportzp key_delay_mode
 .exportzp ui_key_events
 
 .import debug_output_hex
@@ -17,16 +17,33 @@
 
 .zeropage
 kbd_col0:		    .res 16
-key_repeat_mode:    .res 1
+key_delay_mode:     .res 1
 
 .segment "LOW"
 key_states:         .res 16
+key_delay_timer:    .res 16
 
 .code
 
+.enum KeyState
+            up
+            down
+            waiting_for_delay
+            delay_expired
+.endenum
+;; key states (in key delay mode):
+;; -------------------------------
+;;
+;; 0: up.  Transitions to 1 when key is down.
+;; 1: down.  Yields true on first query, then immediayely transitions to state 2.
+;; 2: waiting for delay.  Yields false for queries.  Transitions to 3 when delay timer expires.
+;; 3. delay expired.  Always yields true.
+;;
+;; If key_delay_mode is off, all states except 0 yield true.
+
 .proc init_keyboard
-            lda #0
-            sta key_repeat_mode
+            lda #true
+            sta key_delay_mode
 .endproc
 
 .proc reset_keyboard
@@ -37,6 +54,8 @@ key_states:         .res 16
 @loop:      sta kbd_col0, y
             sta key_states, y
             sta key_states + 8, y
+            sta key_delay_timer, y
+            sta key_delay_timer + 8, y
             dey
             bpl @loop
 			rts
@@ -63,6 +82,31 @@ key_states:         .res 16
             ; continue to update_key_states
 .endproc
 
+;.proc update_key_states
+;         	ldy #15
+;@loop:     	sty irq_zp0
+;         	lda (active_keymap), y
+;         	bmi @up                 ; keymap contains $ff, so no key is mapped to this one
+;         	tay
+;         	ldx chip8_key_port_a, y
+;            lda kbd_col0, x
+;            and chip8_key_port_b, y
+;            beq @up
+;@down:      ldy irq_zp0
+;            lda key_states, y
+;            bne @next_key           ; key is already down, or event has been fired
+;            lda #1
+;            sta key_states, y
+;            bne @next_key           ; unconditional
+;@up:        ldy irq_zp0
+;            lda #0
+;            sta key_states, y
+;@next_key:  dey
+;            bpl @loop
+;
+;         	rts
+;.endproc
+
 .proc update_key_states
          	ldy #15
 @loop:     	sty irq_zp0
@@ -75,10 +119,23 @@ key_states:         .res 16
             beq @up
 @down:      ldy irq_zp0
             lda key_states, y
-            bne @next_key           ; key is already down, or event has been fired
-            lda #1
+            bne @already_down       ; key is already down, or event has been fired
+            lda #KeyState::down
             sta key_states, y
             bne @next_key           ; unconditional
+@already_down:
+            cmp #KeyState::waiting_for_delay
+            bne @next_key
+            tya
+            tax
+            dec key_delay_timer, x
+            bpl @next_key           ; delay hasn't run out
+
+@delay_expired:
+            lda #KeyState::delay_expired
+            sta key_states, y
+            bne @next_key           ; unconditional
+
 @up:        ldy irq_zp0
             lda #0
             sta key_states, y
@@ -90,10 +147,11 @@ key_states:         .res 16
 
 
 ; A - logical chip8 key to check
-; returns nonzero in A is key is pressed
+; Returns:  Z = 0: key pressed
+;           Z = 1: key not pressed
 .proc is_guest_key_pressed
-			ldy key_repeat_mode
-			beq is_guest_key_pressed_single_mode
+			ldy key_delay_mode
+			bne is_guest_key_pressed_delay_mode
 			; continue to is_guest_key_pressed_repeat_mode
 .endproc
 
@@ -104,25 +162,34 @@ key_states:         .res 16
             rts
 .endproc
 
-.proc is_guest_key_pressed_single_mode
+.proc is_guest_key_pressed_delay_mode
             and #$0f
             tay
             lda key_states, y
             bne @down
             rts             ; a = 0
-@down:      cmp #1
-            bne @no         ; if a > 1, event has already fired
-            lda #2          ; event fired state
+@down:      cmp #KeyState::down
+            beq @transition_to_delay
+            cmp #KeyState::delay_expired
+            bne @no
+@delay_expired:
+            lda #true
+            rts             
+@transition_to_delay:
+            lda #key_delay_frame_count - 1
+            sta key_delay_timer, y
+            lda #KeyState::waiting_for_delay
             sta key_states, y
+                            ; state was 1, return true (a = 2)
             rts
-@no:        lda #0
+@no:        lda #0          ; state was 2, return false (a = 0)
             rts
 .endproc
 
 ; returns pressed key in A, or $ff if no key pressed
 .proc get_guest_keypress
-			ldy key_repeat_mode
-            beq get_guest_keypress_single_mode
+			ldy key_delay_mode
+            bne get_guest_keypress_delay_mode
             ; continue to get_guest_keypress_repeat_mode
 .endproc
 
@@ -140,15 +207,20 @@ key_states:         .res 16
             rts
 .endproc
 
-.proc get_guest_keypress_single_mode
+.proc get_guest_keypress_delay_mode
             ldy #0
 @loop:      lda key_states, y
             beq @next_key
-            cmp #1
-            bne @next_key   ; if a > 1, event has already fired
-            ;found
-            lda #2          ; event fired state
+            cmp #KeyState::down
+            beq @found
+            cmp #KeyState::delay_expired
+            bne @next_key   ; key is either not down, or waiting for delay
+            tya             ; state is delay_expired, so return true
+            rts
+@found:     lda #2          ; event fired state
             sta key_states, y
+            lda #key_delay_frame_count - 1
+            sta key_delay_timer, y
             tya
             rts
 @next_key:  iny

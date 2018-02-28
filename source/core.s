@@ -13,11 +13,11 @@
 .import reset
 .import sync_bgcolor_indicator
 .import sync_fgcolor_indicator
-.import sync_key_repeat_indicator
+.import sync_key_delay_indicator
 .import sync_pixel_style_indicator
 .import update_screen_color
 .importzp frame_counter
-.importzp key_repeat_mode
+.importzp key_delay_mode
 .importzp screen_bgcolor
 .importzp screen_fgcolor
 .importzp ui_key_events
@@ -133,10 +133,10 @@ ui_action_last_frame:
 .endproc
 
 .proc handle_toggle_key_repeat
-            lda key_repeat_mode
+            lda key_delay_mode
             eor #$ff
-            sta key_repeat_mode
-            jmp sync_key_repeat_indicator
+            sta key_delay_mode
+            jmp sync_key_delay_indicator
 .endproc
 
 .proc handle_cycle_pixel_style

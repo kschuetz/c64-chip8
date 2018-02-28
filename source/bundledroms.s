@@ -1,4 +1,4 @@
-.include "defines.s"
+.include "common.s"
 
 .export bundle_start
 
@@ -18,7 +18,7 @@
 
 .segment "BUNDLE"
 
-.macro bundle filename, title, enabled_key_mask, keymap_addr, key_repeat
+.macro bundle filename, title, enabled_key_mask, keymap_addr, key_delay_enabled
             .local @end
             .word @end
             scrcode title
@@ -38,10 +38,10 @@
             .else
                 .addr default_keymap
             .endif
-            .ifnblank key_repeat
-                .byte $ff
+            .ifblank key_delay_enabled
+                .byte true
             .else
-                .byte 0
+                .byte key_delay_enabled
             .endif
 
             .incbin filename
@@ -67,7 +67,7 @@ bundle_start:
             bundle "roms/games/Filter.ch8", "filter"
             bundle "roms/games/Guess [David Winter].ch8", "guess"
             bundle "roms/games/Hidden [David Winter, 1996].ch8", "hidden", hidden_enabled_keys, hidden_keymap
-            bundle "roms/games/Kaleidoscope [Joseph Weisbecker, 1978].ch8", "kaleid", , , $ff
+            bundle "roms/games/Kaleidoscope [Joseph Weisbecker, 1978].ch8", "kaleid", , , false
             bundle "roms/games/Landing.ch8", "landing"
             bundle "roms/games/Lunar Lander (Udo Pernisz, 1979).ch8", "lunar lander"
             bundle "roms/games/Mastermind FourRow (Robert Lindley, 1978).ch8", "mastermind 4-row"
@@ -96,7 +96,7 @@ bundle_start:
             bundle "roms/games/Submarine [Carmelo Cortez, 1978].ch8", "submarine"
             bundle "roms/games/Sum Fun [Joyce Weisbecker].ch8", "sum fun"
             bundle "roms/games/Syzygy [Roy Trevino, 1990].ch8", "syzygy"
-            bundle "roms/games/Tank.ch8", "tank", tank_enabled_keys, tank_keymap, $ff
+            bundle "roms/games/Tank.ch8", "tank", tank_enabled_keys, tank_keymap, false
             bundle "roms/games/Tapeworm [JDR, 1999].ch8", "tapeworm"
             bundle "roms/games/Tetris [Fran Dachille, 1991].ch8", "tetris", tetris_enabled_keys, tetris_keymap
             bundle "roms/games/Tic-Tac-Toe [David Winter].ch8", "tictac", tictac_enabled_keys, tictac_keymap

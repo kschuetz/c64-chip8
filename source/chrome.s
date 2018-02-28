@@ -4,7 +4,7 @@
 .export display_rom_title
 .export sync_bgcolor_indicator
 .export sync_fgcolor_indicator
-.export sync_key_repeat_indicator
+.export sync_key_delay_indicator
 .export sync_pixel_style_indicator
 .export sync_sound_indicator
 
@@ -20,7 +20,7 @@
 .import host_screen
 .import is_guest_key_pressed
 .importzp irq_zp0
-.importzp key_repeat_mode
+.importzp key_delay_mode
 .importzp pixel_style_representative
 .importzp screen_bgcolor
 .importzp screen_fgcolor
@@ -88,7 +88,7 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
             jsr sync_pixel_style_indicator
             jsr sync_bgcolor_indicator
             jsr sync_fgcolor_indicator
-            jsr sync_key_repeat_indicator
+            jsr sync_key_delay_indicator
             jsr sync_sound_indicator
 			rts
 .endproc
@@ -201,14 +201,14 @@ rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 			rts
 .endproc
 
-key_repeat_indicator_color := chrome_text_color_origin + 26
-pixel_style_indicator_color := key_repeat_indicator_color + 40
+key_delay_indicator_color := chrome_text_color_origin + 26
+pixel_style_indicator_color := key_delay_indicator_color + 40
 bgcolor_indicator_color := pixel_style_indicator_color + 40
 fgcolor_indicator_color := bgcolor_indicator_color + 40
 sound_indicator_color := fgcolor_indicator_color + 40
 
-key_repeat_indicator := chrome_text_screen_origin + 26
-pixel_style_indicator := key_repeat_indicator + 40
+key_delay_indicator := chrome_text_screen_origin + 26
+pixel_style_indicator := key_delay_indicator + 40
 sound_indicator := pixel_style_indicator + 120
 
 .proc sync_pixel_style_indicator
@@ -254,8 +254,8 @@ sound_indicator := pixel_style_indicator + 120
             rts
 .endmacro
 
-.proc sync_key_repeat_indicator
-            sync_on_off_indicator key_repeat_mode, key_repeat_indicator, key_repeat_indicator_color
+.proc sync_key_delay_indicator
+            sync_on_off_indicator key_delay_mode, key_delay_indicator, key_delay_indicator_color
 .endproc
 
 .proc sync_sound_indicator
@@ -271,7 +271,7 @@ decimal_digit_chars:
 
 chrome_line_1:
             .byte 65, 66, 0, 210, 197, 211, 197, 212, 0, 0, 0, 0
-            .byte 70, 71, 203, 197, 217, 0, 210, 197, 208, 197, 193, 212, 0, 0, 0, 0
+            .byte 70, 71, 203, 197, 217, 0, 196, 197, 204, 193, 217, 0, 0, 0, 0, 0
 chrome_line_2:
             .byte 65, 67, 0, 208, 210, 197, 214, 0, 210, 207, 205, 0
             .byte 72, 71, 208, 201, 216, 197, 204, 0, 211, 212, 217, 204, 197, 0, 0, 0
