@@ -7,6 +7,8 @@
 .import default_keymap
 .import hidden_enabled_keys
 .import hidden_keymap
+.import slide_enabled_keys
+.import space_invaders_enabled_keys
 .import tank_enabled_keys
 .import tank_keymap
 .import tetris_enabled_keys
@@ -86,11 +88,11 @@ bundle_start:
             bundle "roms/games/Russian Roulette [Carmelo Cortez, 1978].ch8", "russian roulette"
             bundle "roms/games/Sequence Shoot [Joyce Weisbecker].ch8", "sequence shoot"
             bundle "roms/games/Shooting Stars [Philip Baltzer, 1978].ch8", "shooting stars"
-            bundle "roms/games/Slide [Joyce Weisbecker].ch8", "slide"
+            bundle "roms/games/Slide [Joyce Weisbecker].ch8", "slide", slide_enabled_keys, , false
             bundle "roms/games/Soccer.ch8", "soccer"
             bundle "roms/games/Space Flight.ch8", "space flight"
 ;            bundle "roms/games/Space Intercept [Joseph Weisbecker, 1978].ch8", "space intercept"
-            bundle "roms/games/Space Invaders [David Winter].ch8", "invaders"
+            bundle "roms/games/Space Invaders [David Winter].ch8", "space invaders", space_invaders_enabled_keys, , false
             bundle "roms/games/Spooky Spot [Joseph Weisbecker, 1978].ch8", "spooky spot"
             bundle "roms/games/Squash [David Winter].ch8", "squash"
             bundle "roms/games/Submarine [Carmelo Cortez, 1978].ch8", "submarine"

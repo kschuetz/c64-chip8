@@ -1,6 +1,8 @@
 .export default_keymap, tictac_keymap, tetris_keymap, tank_keymap, connect4_keymap, hidden_keymap
 .export tictac_enabled_keys, tetris_enabled_keys: absolute, tank_enabled_keys
 .export connect4_enabled_keys: absolute, hidden_enabled_keys
+.export slide_enabled_keys
+.export space_invaders_enabled_keys: absolute
 .exportzp active_keymap
 
 .zeropage
@@ -93,3 +95,11 @@ hidden_keymap = default_keymap
 
 ;                      FEDCBA9876543210
 hidden_enabled_keys = %0000001001110010
+
+
+;                     FEDCBA9876543210
+slide_enabled_keys = %0010000000000000
+
+
+;                              FEDCBA9876543210
+space_invaders_enabled_keys = %0000000001110000
