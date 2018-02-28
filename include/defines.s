@@ -23,4 +23,4 @@ default_screen_fgcolor = 13
 enabled_button_color = 1
 disabled_button_color = 11
 
-key_delay_frame_count = 15
+key_delay_frame_count = 18

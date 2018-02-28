@@ -349,13 +349,13 @@ chip8_key_port_b:
 ; 3: Pause			F7			0			3
 ; 4: BGColor 		N           4           7
 ; 5: FGColor 		M           4           4
-; 6: Pixel Style    B           3           4
-; 7: Key Repeat     T           2           6
+; 6: Pixel Style    P           5           1
+; 7: Key Delay      K           4           5
 ; 8: Toggle Sound   U           3           6
 
 ui_key_port_a:
-			.byte 0, 0, 0, 0, 4, 4, 3, 2, 3
+			.byte 0, 0, 0, 0, 4, 4, 5, 4, 3
 
 ui_key_port_b:
 			.byte 1 << 4, 1 << 5, 1 << 6, 1 << 3
-			.byte 1 << 7, 1 << 4, 1 << 4, 1 << 6, 1 << 6
+			.byte 1 << 7, 1 << 4, 1 << 1, 1 << 5, 1 << 6
