@@ -398,16 +398,16 @@ return_from_subroutine:
 ;; ExA1 - SKNP Vx
 ;; Skip next instruction if key with the value of Vx is not pressed.
 .macro opcode_e_impl
+            op1_to_y
+            lda reg_v, y
         	cpx #$9e
         	beq @skp
         	cpx #$a1
         	beq @sknp
         	jmp next
-@skp:       lda op1
-            jsr is_guest_key_pressed
+@skp:       jsr is_guest_key_pressed
             skip_if_ne
-@sknp:      lda op1
-            jsr is_guest_key_pressed
+@sknp:      jsr is_guest_key_pressed
             skip_if_eq
 .endmacro
 
