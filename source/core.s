@@ -23,12 +23,13 @@
 .importzp ui_key_events
 
 .zeropage
+
 ui_action:			.res 1
 paused:             .res 1
 ui_action_last_frame:
                     .res 1
 
-.code
+.segment "INITCODE"
 
 .proc init_core
 			lda #0
@@ -38,6 +39,8 @@ ui_action_last_frame:
 
 			rts	
 .endproc
+
+.code
 
 .proc main_loop
 			nop

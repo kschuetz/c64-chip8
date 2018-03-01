@@ -1,11 +1,9 @@
 .export blitz_enabled_keys: absolute
 .export brix_enabled_keys: absolute
 .export connect4_enabled_keys: absolute
-.export connect4_keymap
 .export default_keymap
 .export delay_time_test_enabled_keys
 .export hidden_enabled_keys
-.export hidden_keymap
 .export merlin_enabled_keys
 .export missile_enabled_keys
 .export nim_enabled_keys
@@ -21,6 +19,7 @@
 .exportzp active_keymap
 
 .zeropage
+
 active_keymap:  .res 2
 
 ; Keymaps:
@@ -49,14 +48,12 @@ default_keymap:
             .byte $9, $a, $c, $e
             .byte $3, $7, $b, $f
 
-
 ; Tank logical keys:
 ; left: 8
 ; right: 9
 ; up: A
 ; down: 7
 ; fire: 0
-
 
 tank_keymap:
             .byte $5, $ff, $ff, $ff
@@ -96,25 +93,17 @@ tictac_keymap:
             .byte $9, $a, $ff, $ff
             .byte $ff, $ff, $ff, $ff
 
-
 ;                      FEDCBA9876543210
 tictac_enabled_keys = %0000011101110111
-
-
-connect4_keymap = default_keymap
 
 ;                        FEDCBA9876543210
 connect4_enabled_keys = %0000000001110000
 
-hidden_keymap = default_keymap
-
 ;                      FEDCBA9876543210
 hidden_enabled_keys = %0000001001110010
 
-
 ;                     FEDCBA9876543210
 slide_enabled_keys = %0010000000000000
-
 
 ;                              FEDCBA9876543210
 space_invaders_enabled_keys = %0000000001110000
@@ -134,10 +123,8 @@ ufo_enabled_keys = %0000000001110000
 ;                      FEDCBA9876543210
 merlin_enabled_keys = %0000001100110000
 
-
 ;                       FEDCBA9876543210
 missile_enabled_keys = %0000001000000000
-
 
 ;                   FEDCBA9876543210
 nim_enabled_keys = %1000000000000111

@@ -13,6 +13,7 @@
 .importzp paused
 
 .zeropage
+
 delay_timer:        .res 1
 sound_timer:        .res 1
 delay_timer_fine:   .res 1
@@ -83,6 +84,8 @@ dec_sound:
 done:       rts ;jmp new_exit_irq
 
 .endproc
+
+.segment "INITCODE"
 
 ;; fine counters are decremented 4 times per frame
 ntsc_decrement_amount = 64     ; 256 / 4

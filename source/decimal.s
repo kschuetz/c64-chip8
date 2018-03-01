@@ -7,6 +7,8 @@
 .importzp zp0
 .importzp zp1
 
+.segment "INITCODE"
+
 .proc build_decimal_table
 			ldx #0
 			sed
@@ -30,5 +32,6 @@
 .endproc
 
 .segment "LOW"
+
 decimal_table_low:		.res 256
 decimal_table_high:		.res 256

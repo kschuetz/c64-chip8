@@ -3,11 +3,15 @@
 .export get_random
 .export init_random
 
+.segment "INITCODE"
+
 .proc init_random
             lda #0
             sta next_random
             jmp refresh_randoms
 .endproc
+
+.code
 
 ; loads A with a random value $00 - $ff
 .proc get_random
@@ -44,7 +48,7 @@
 
             lda #$ff        ; maximum frequency value
             sta $d40e       ; voice 3 frequency low byte
-            sta $d40f        ; voice 3 frequency high byte
+            sta $d40f       ; voice 3 frequency high byte
             lda #$80        ; noise waveform, gate bit off
             sta $d412       ; voice 3 control register
 

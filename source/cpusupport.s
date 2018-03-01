@@ -172,6 +172,7 @@
 .endproc
 
 .rodata
+
 font_digit_ptrs:
             .byte 0, 5, 10, 15, 20, 25, 30, 35
             .byte 40, 45, 50, 55, 60, 65, 70, 75

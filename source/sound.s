@@ -7,10 +7,12 @@
 
 sound_enabled:      .res 1
 
-.code
+.segment "INITCODE"
 
 .proc init_sound
             lda #0                  ; disabled by default
             sta sound_enabled
             rts
 .endproc
+
+.code

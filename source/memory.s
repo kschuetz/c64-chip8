@@ -22,8 +22,6 @@
 guest_ram = $c000
 guest_ram_page = >guest_ram
 program_start = guest_ram + $0200
-stack_low = $fc00		    ; low bytes of return addresses
-stack_high = $fd00	        ; high bytes of return addresses
 host_screen = $f800
 screen_charset = $e800
 chrome_charset = $f000
@@ -44,3 +42,8 @@ chrome_color_origin = COLOR_RAM + 40 * (guest_screen_offset_y + guest_screen_phy
 			lda #0
 			jmp fill
 .endproc
+
+.segment "HIGH"
+
+stack_low:          .res 256    ; low bytes of return addresses
+stack_high:         .res 256    ; high bytes of return addresses

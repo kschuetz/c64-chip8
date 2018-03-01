@@ -14,11 +14,12 @@
 __LOADADDR__: .word head	    ; Load address
 
 .segment "EXEHDR"
+
 head:	    .word @next
 			.word 2018		    ; Line number
-			.byte $9E,"2061"	    ; SYS 2061
-			.byte $00		    ; End of BASIC line
-@next:	    .word 0		    ; BASIC end marker
+			.byte $9e, "2061"	; SYS 2061
+			.byte 0		        ; End of BASIC line
+@next:	    .word 0		        ; BASIC end marker
 	      	jmp start
 
 .code
@@ -30,5 +31,6 @@ head:	    .word @next
 .endproc
 
 .segment "BUNDLEEND"
+
 bundle_end:	
 	        .word 0

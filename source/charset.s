@@ -26,7 +26,7 @@ pixel_style_representative = 112
 active_pixel_style:
             .res 1
 
-.code
+.segment "INITCODE"
 
 .proc init_charsets
 			jsr init_chrome_charset
@@ -69,6 +69,8 @@ active_pixel_style:
             ldy #default_pixel_style_index
             jmp load_pixel_set
 .endproc
+
+.code
 
 ; Y - index of pixel set (0..15)
 .macro load_pixel_set_impl
@@ -126,8 +128,7 @@ times_8:
             .endrepeat
 
 pixel_set_data:
-            .incbin "data/pixel-sets.bin"
-
+            .incbin "data/pixel-sets.bin", 0, pixel_style_count * 128
 
 font_set:
             .byte $f0, $90, $90, $90, $f0 ; 0

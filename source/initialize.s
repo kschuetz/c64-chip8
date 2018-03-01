@@ -28,6 +28,43 @@
 .importzp screen_bgcolor
 .importzp screen_fgcolor
 
+.code
+
+.proc initialize
+            cld
+            jsr check_host_model
+
+            lda #$35
+            sta $1
+
+            ; after we have switched out basic and kernal, it is safe to run code in INITCODE segment
+            jsr initialize_phase_2
+
+            lda $d011               ; enable screen
+            ora #%00010000
+            sta $d011
+            rts
+.endproc
+
+; TODO: nmi
+.proc nmi
+			asl $d019   ;Ack all IRQs
+			lda $dc0d
+			lda $dd0d
+			lda #$81    ;reset CIA 1 IRQ
+			ldx #$00    ;remove raster IRQ
+			ldy #$37    ;reset MMU to roms
+			sta $dc0d
+			stx $d01a
+			sty $01
+			ldx #$ff    ;clear the stack
+			txs
+			cli         ;reenable IRQs
+			jmp start   ;reset!
+.endproc
+
+.segment "INITCODE"
+
 .proc init_vic
 			lda $dd02	;change VIC to bank 3
 			ora #3
@@ -47,10 +84,7 @@
 			jmp init_button_sprites
 .endproc
 
-.proc initialize
-            cld
-            jsr check_host_model
-
+.proc initialize_phase_2
             lda #chrome_bgcolor
             sta $d020
 
@@ -70,9 +104,6 @@
             stx $fffb
             stx $fffd
 
-            lda #$35
-            sta $1
-            
             jsr init_random
             jsr init_timers
 			jsr init_graphics_tables
@@ -93,14 +124,7 @@
 			jsr build_chrome
 
 			lda #default_rom_index	
-			jsr reset
-
-
-            lda $d011               ; enable screen
-            ora #%00010000
-            sta $d011
-			
-			rts
+			jmp reset                   ; at this point, everything in INITCODE and INITDATA is clobbered
 .endproc
 
 .proc init_vars
@@ -109,20 +133,4 @@
 			lda #default_screen_fgcolor
 			sta screen_fgcolor
 			rts
-.endproc
-
-.proc nmi
-			asl $d019   ;Ack all IRQ's
-			lda $dc0d
-			lda $dd0d
-			lda #$81    ;reset CIA 1 IRQ
-			ldx #$00    ;remove raster IRQ
-			ldy #$37    ;reset MMU to roms
-			sta $dc0d
-			stx $d01a
-			sty $01
-			ldx #$ff    ;clear the stack
-			txs
-			cli         ;reenable IRQ's
-			jmp start    ;reset!
 .endproc

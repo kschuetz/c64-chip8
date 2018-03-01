@@ -16,7 +16,6 @@ title_screen_header:
             .addr default_keymap
             .byte true
 
-
 .proc title_screen
             .byte $a0 | >title_screen_graphics_guest
             .byte <title_screen_graphics_guest          ; LD I, title_screen_graphics
@@ -49,7 +48,6 @@ title_screen_header:
             .byte $10 | >@done
             .byte <@done
 .endproc            
-
 
 title_screen_graphics_host:
             .incbin "data/title-screen.bin", 0, $100

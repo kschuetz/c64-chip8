@@ -20,6 +20,8 @@
 .importzp zp1
 .importzp zp2
 
+.segment "INITCODE"
+
 .proc init_buttons
 @current = zp2
 
@@ -84,7 +86,6 @@ button_sprites_spacing = 12
 button_sprites_top = 206
 button_sprites_vertical_spacing = 11
 
-
 ; call once before setup_irq
 .proc init_button_sprites
             .repeat 4, i
@@ -121,6 +122,8 @@ button_sprites_vertical_spacing = 11
             sta $d015
             rts
 .endproc
+
+.code
 
 .proc button_sprites_1
             ldy #7

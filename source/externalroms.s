@@ -6,11 +6,9 @@
 .import blitz_enabled_keys
 .import brix_enabled_keys
 .import connect4_enabled_keys
-.import connect4_keymap
 .import default_keymap
 .import delay_time_test_enabled_keys
 .import hidden_enabled_keys
-.import hidden_keymap
 .import merlin_enabled_keys
 .import missile_enabled_keys
 .import nim_enabled_keys
@@ -38,13 +36,13 @@ external_roms_start:
             bundle "roms/games/Brix [Andreas Gustafsson, 1990].ch8", "brix", brix_enabled_keys, , false
             bundle "roms/games/Cave.ch8", "cave"
             bundle "roms/games/Coin Flipping [Carmelo Cortez, 1978].ch8", "coin flipping"
-            bundle "roms/games/Connect 4 [David Winter].ch8", "connect 4", connect4_enabled_keys, connect4_keymap
+            bundle "roms/games/Connect 4 [David Winter].ch8", "connect 4", connect4_enabled_keys
             bundle "roms/games/Craps [Camerlo Cortez, 1978].ch8", "craps"
             bundle "roms/games/Deflection [John Fort].ch8", "deflection"
             bundle "roms/games/Figures.ch8", "figures"
             bundle "roms/games/Filter.ch8", "filter"
             bundle "roms/games/Guess [David Winter].ch8", "guess"
-            bundle "roms/games/Hidden [David Winter, 1996].ch8", "hidden", hidden_enabled_keys, hidden_keymap
+            bundle "roms/games/Hidden [David Winter, 1996].ch8", "hidden", hidden_enabled_keys
             bundle "roms/games/Kaleidoscope [Joseph Weisbecker, 1978].ch8", "kaleid", , , false
             bundle "roms/games/Landing.ch8", "landing"
             bundle "roms/games/Lunar Lander (Udo Pernisz, 1979).ch8", "lunar lander"

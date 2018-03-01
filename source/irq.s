@@ -22,6 +22,7 @@
 .importzp screen_bgcolor
 
 .zeropage
+
 frame_counter:     .res 2
 
 .code
@@ -40,7 +41,6 @@ frame_counter:     .res 2
 .define timer_update_3 "timer_update_3"
 .define screen_bottom "screen_bottom"
 .define chrome_top "chrome_top"
-.define timer_update_4 "timer_update_4"
 .define button_pic_1 "button_pic_1"
 .define button_pic_2 "button_pic_2"
 
@@ -204,11 +204,6 @@ frame_counter:     .res 2
             setup_next model, 0, host_screen_top
     end_irq
 
-    begin_irq timer_update_4, model
-            jsr update_timers
-            setup_next model, 0, host_screen_top
-    end_irq
-
 .endmacro
 
 .proc setup_irq
@@ -235,7 +230,6 @@ frame_counter:     .res 2
 			rts
 .endproc
 
-
 define_irqs pal_63
 
 define_irqs ntsc_64
@@ -253,8 +247,8 @@ define_irqs ntsc_65
             rti
 .endproc
 
-
 .rodata
+
 .define model_irqs host_screen_top_ntsc_64, host_screen_top_ntsc_65, host_screen_top_pal_63, host_screen_top_ntsc_65
 
 irq_entry_low:      .lobytes model_irqs

@@ -41,28 +41,7 @@ sprite_buffer:      .res 5          ; staging area for drawing a row for a sprit
 row_base_ptr:       .res 2          ; physical screen address of row being drawn
 sprite_source_ptr:  .res 2          ; physical address of source for sprite bitmap data
 
-.code
-
-.proc clear_screen
-			lda #0
-			ldy #guest_screen_physical_width - 1
-@loop:		.repeat guest_screen_physical_height, i
-				sta guest_screen_origin + 40 * i, y
-			.endrepeat
-			dey
-			bpl @loop
-			rts
-.endproc
-
-.proc update_screen_color
-			ldy #guest_screen_physical_width - 1
-@loop:		.repeat guest_screen_physical_height, i
-				sta guest_screen_color_origin + 40 * i, y
-			.endrepeat
-			dey
-			bpl @loop
-			rts						
-.endproc
+.segment "INITCODE"
 
 .proc build_screen_margins
 				; set character of margins to 15
@@ -95,6 +74,49 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 			dex
 			bne @loop
 			rts
+.endproc
+
+.proc init_graphics_tables
+			istore zp0, guest_screen_origin
+
+			ldx #0
+@1:			clc
+			lda zp0
+			sta screen_row_table_low, x
+			adc #40
+			sta zp0
+			lda zp1
+			sta screen_row_table_high, x
+			adc #0
+			sta zp1
+			inx
+			cpx #16
+			bne @1
+
+			rts
+.endproc
+
+.code
+
+.proc clear_screen
+			lda #0
+			ldy #guest_screen_physical_width - 1
+@loop:		.repeat guest_screen_physical_height, i
+				sta guest_screen_origin + 40 * i, y
+			.endrepeat
+			dey
+			bpl @loop
+			rts
+.endproc
+
+.proc update_screen_color
+			ldy #guest_screen_physical_width - 1
+@loop:		.repeat guest_screen_physical_height, i
+				sta guest_screen_color_origin + 40 * i, y
+			.endrepeat
+			dey
+			bpl @loop
+			rts						
 .endproc
 
 .macro top_even
@@ -431,26 +453,7 @@ param_sprite_width = zp6
             jmp draw_even_sprite
 .endproc
 
-.proc init_graphics_tables
-			istore zp0, guest_screen_origin
-
-			ldx #0
-@1:			clc
-			lda zp0
-			sta screen_row_table_low, x
-			adc #40
-			sta zp0
-			lda zp1
-			sta screen_row_table_high, x
-			adc #0
-			sta zp1
-			inx
-			cpx #16
-			bne @1
-
-			rts
-.endproc
-
 .segment "LOW"
+
 screen_row_table_low:		.res 16
 screen_row_table_high:		.res 16

@@ -29,7 +29,7 @@ active_bundle:		.res 1
 bundle_index_low: 	.res max_bundled_roms				
 bundle_index_high: 	.res max_bundled_roms
 
-.code
+.segment "INITCODE"
 
 .proc build_bundle_index
 			lda #0
@@ -67,6 +67,7 @@ bundle_index_high: 	.res max_bundled_roms
 			rts				
 .endproc
 
+.code
 
 ; y - index of bundle to load
 .proc load_bundled_rom

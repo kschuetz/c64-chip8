@@ -16,21 +16,24 @@
 .importzp irq_zp0
 
 .zeropage
+
 kbd_col0:		    .res 16
 key_delay_mode:     .res 1
 
 .segment "LOW"
+
 key_states:         .res 16
 key_delay_timer:    .res 16
 
 .code
 
 .enum KeyState
-            up
-            down
-            waiting_for_delay
-            delay_expired
+            up = 0
+            down = 1
+            waiting_for_delay = 2
+            delay_expired = 3
 .endenum
+
 ;; key states (in key delay mode):
 ;; -------------------------------
 ;;
@@ -81,31 +84,6 @@ key_delay_timer:    .res 16
          	.endrep
             ; continue to update_key_states
 .endproc
-
-;.proc update_key_states
-;         	ldy #15
-;@loop:     	sty irq_zp0
-;         	lda (active_keymap), y
-;         	bmi @up                 ; keymap contains $ff, so no key is mapped to this one
-;         	tay
-;         	ldx chip8_key_port_a, y
-;            lda kbd_col0, x
-;            and chip8_key_port_b, y
-;            beq @up
-;@down:      ldy irq_zp0
-;            lda key_states, y
-;            bne @next_key           ; key is already down, or event has been fired
-;            lda #1
-;            sta key_states, y
-;            bne @next_key           ; unconditional
-;@up:        ldy irq_zp0
-;            lda #0
-;            sta key_states, y
-;@next_key:  dey
-;            bpl @loop
-;
-;         	rts
-;.endproc
 
 .proc update_key_states
          	ldy #15
@@ -231,6 +209,7 @@ key_delay_timer:    .res 16
 .endproc
 
 .zeropage
+
 ui_key_state:	    .res 2
 ui_key_events:	    .res 2
 ui_key_new_state:   .res 2
@@ -305,8 +284,6 @@ ui_key_new_state:   .res 2
 ; Q W E R
 ; A S D F
 ; Z X C V
-
-
 
 ; Mapping to CIA Ports A (row) and B (column)
 ; Key index   	C64 Key		Row			Column
