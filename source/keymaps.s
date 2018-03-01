@@ -1,10 +1,23 @@
-.export default_keymap, tictac_keymap, tetris_keymap, tank_keymap, connect4_keymap, hidden_keymap
-.export tictac_enabled_keys, tetris_enabled_keys: absolute, tank_enabled_keys
-.export connect4_enabled_keys: absolute, hidden_enabled_keys
+.export blitz_enabled_keys: absolute
+.export brix_enabled_keys: absolute
+.export connect4_enabled_keys: absolute
+.export connect4_keymap
+.export default_keymap
+.export delay_time_test_enabled_keys
+.export hidden_enabled_keys
+.export hidden_keymap
+.export merlin_enabled_keys
+.export missile_enabled_keys
+.export nim_enabled_keys
 .export slide_enabled_keys
 .export space_invaders_enabled_keys: absolute
-.export brix_enabled_keys: absolute
-.export blitz_enabled_keys: absolute
+.export tank_enabled_keys
+.export tank_keymap
+.export tetris_enabled_keys: absolute
+.export tetris_keymap
+.export tictac_enabled_keys
+.export tictac_keymap
+.export ufo_enabled_keys: absolute
 .exportzp active_keymap
 
 .zeropage
@@ -111,3 +124,20 @@ brix_enabled_keys = %0000000001010000
 
 ;                     FEDCBA9876543210
 blitz_enabled_keys = %0000000000100000
+
+;                               FEDCBA9876543210
+delay_time_test_enabled_keys = %0000001000100010
+
+;                   FEDCBA9876543210
+ufo_enabled_keys = %0000000001110000
+
+;                      FEDCBA9876543210
+merlin_enabled_keys = %0000001100110000
+
+
+;                       FEDCBA9876543210
+missile_enabled_keys = %0000001000000000
+
+
+;                   FEDCBA9876543210
+nim_enabled_keys = %1000000000000111

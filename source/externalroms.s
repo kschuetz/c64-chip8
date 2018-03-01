@@ -8,8 +8,12 @@
 .import connect4_enabled_keys
 .import connect4_keymap
 .import default_keymap
+.import delay_time_test_enabled_keys
 .import hidden_enabled_keys
 .import hidden_keymap
+.import merlin_enabled_keys
+.import missile_enabled_keys
+.import nim_enabled_keys
 .import slide_enabled_keys
 .import space_invaders_enabled_keys
 .import tank_enabled_keys
@@ -18,6 +22,7 @@
 .import tetris_keymap
 .import tictac_enabled_keys
 .import tictac_keymap
+.import ufo_enabled_keys
 
 .segment "EXTERNALROMS"
 
@@ -44,10 +49,10 @@ external_roms_start:
             bundle "roms/games/Landing.ch8", "landing"
             bundle "roms/games/Lunar Lander (Udo Pernisz, 1979).ch8", "lunar lander"
             bundle "roms/games/Mastermind FourRow (Robert Lindley, 1978).ch8", "mastermind 4-row"
-            bundle "roms/games/Merlin [David Winter].ch8", "merlin"
-            bundle "roms/games/Missile [David Winter].ch8", "missile"
+            bundle "roms/games/Merlin [David Winter].ch8", "merlin", merlin_enabled_keys
+            bundle "roms/games/Missile [David Winter].ch8", "missile", missile_enabled_keys
             bundle "roms/games/Most Dangerous Game [Peter Maruhnic].ch8", "most dangerous"
-            bundle "roms/games/Nim [Carmelo Cortez, 1978].ch8", "nim"
+            bundle "roms/games/Nim [Carmelo Cortez, 1978].ch8", "nim", nim_enabled_keys
             bundle "roms/games/Paddles.ch8", "paddles"
             bundle "roms/games/Pong 2 (Pong hack) [David Winter, 1997].ch8", "pong 2"
             bundle "roms/games/Pong [Paul Vervalin, 1990].ch8", "pong"
@@ -75,7 +80,7 @@ external_roms_start:
             bundle "roms/games/Tic-Tac-Toe [David Winter].ch8", "tictac", tictac_enabled_keys, tictac_keymap
             bundle "roms/games/Timebomb.ch8", "timebomb"
             bundle "roms/games/Tron.ch8", "tron"
-            bundle "roms/games/UFO [Lutz V, 1992].ch8", "ufo"
+            bundle "roms/games/UFO [Lutz V, 1992].ch8", "ufo", ufo_enabled_keys
             bundle "roms/games/Vers [JMN, 1991].ch8", "vers"
             bundle "roms/games/Vertical Brix [Paul Robson, 1996].ch8", "vbrix"
             bundle "roms/games/Wall [David Winter].ch8", "wall"
@@ -93,9 +98,9 @@ external_roms_start:
             bundle "roms/programs/Chip8 Picture.ch8", "chip8 picture"
             bundle "roms/programs/Chip8 emulator Logo [Garstyciuks].ch8", "chip8 logo"
             bundle "roms/programs/Clock Program [Bill Fisher, 1981].ch8", "clock"
-            bundle "roms/programs/Delay Timer Test [Matthew Mikolay, 2010].ch8", "delay timer test"
-            bundle "roms/programs/Division Test [Sergey Naydenov, 2010].ch8", "division test"
-            bundle "roms/programs/Fishie [Hap, 2005].ch8", "fishie"
+            bundle "roms/programs/Delay Timer Test [Matthew Mikolay, 2010].ch8", "delay timer test", delay_time_test_enabled_keys
+;            bundle "roms/programs/Division Test [Sergey Naydenov, 2010].ch8", "division test"
+;            bundle "roms/programs/Fishie [Hap, 2005].ch8", "fishie"
             bundle "roms/programs/Framed MK1 [GV Samways, 1980].ch8", "framed mk1"
             bundle "roms/programs/Framed MK2 [GV Samways, 1980].ch8", "framed mk2"
             bundle "roms/programs/IBM Logo.ch8", "ibm logo"
