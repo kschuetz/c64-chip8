@@ -1,3 +1,6 @@
+.ifndef DEFINES_S
+
+.define DEFINES_S 1
 
 ; ************** not configurable *************
 .define guest_screen_physical_width 32
@@ -9,7 +12,7 @@ vic_bank_base = $c000
 
 ; ************** configurable ****************
 
-.define default_rom_index 6
+.define default_rom_index 0
 .define title_length 16
 
 .define max_bundled_roms 100
@@ -24,3 +27,5 @@ enabled_button_color = 1
 disabled_button_color = 11
 
 key_delay_frame_count = 18
+
+.endif

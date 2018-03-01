@@ -1,6 +1,7 @@
 .include "common.s"
+.include "bundlehelpers.s"
 
-.export bundle_start
+.export external_roms_start
 
 .import blitz_enabled_keys
 .import brix_enabled_keys
@@ -18,41 +19,9 @@
 .import tictac_enabled_keys
 .import tictac_keymap
 
-.macpack cbm
+.segment "EXTERNALROMS"
 
-.segment "BUNDLE"
-
-.macro bundle filename, title, enabled_key_mask, keymap_addr, key_delay_enabled
-            .local @end
-            .word @end
-            scrcode title
-            .if (.strlen(title) > title_length)
-                .error "Title too long"
-            .endif
-            .repeat (title_length - .strlen(title))
-                .byte 0
-            .endrep
-            .ifnblank enabled_key_mask
-                .word enabled_key_mask
-            .else
-                .word $ffff ; all keys enabled
-            .endif
-            .ifnblank keymap_addr
-                .addr keymap_addr
-            .else
-                .addr default_keymap
-            .endif
-            .ifblank key_delay_enabled
-                .byte true
-            .else
-                .byte key_delay_enabled
-            .endif
-
-            .incbin filename
-@end:
-.endmacro
-
-bundle_start:
+external_roms_start:
             bundle "roms/games/15 Puzzle [Roger Ivie].ch8", "15 puzzle"
             bundle "roms/games/Airplane.ch8", "airplane"
             bundle "roms/games/Animal Race [Brian Astle].ch8", "animal race"

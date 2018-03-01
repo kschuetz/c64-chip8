@@ -7,7 +7,7 @@
 .export bundle_index_low
 .export load_bundled_rom
 
-.import bundle_start
+.import internal_roms_start
 .import decimal_table_high
 .import decimal_table_low
 .import move_up
@@ -34,10 +34,10 @@ bundle_index_high: 	.res max_bundled_roms
 .proc build_bundle_index
 			lda #0
 			sta bundle_count
-			lda #<bundle_start
+			lda #<internal_roms_start
 			sta zp0
 			sta bundle_index_low
-			lda #>bundle_start
+			lda #>internal_roms_start
 			sta zp1
 			sta bundle_index_high
 
