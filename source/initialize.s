@@ -38,6 +38,7 @@
             sta $1
 
             ; after we have switched out basic and kernal, it is safe to run code in INITCODE segment
+            jsr init_nmi
             jsr initialize_phase_2
 
             lda $d011               ; enable screen
@@ -46,24 +47,30 @@
             rts
 .endproc
 
-; TODO: nmi
 .proc nmi
-			asl $d019   ;Ack all IRQs
-			lda $dc0d
-			lda $dd0d
-			lda #$81    ;reset CIA 1 IRQ
-			ldx #$00    ;remove raster IRQ
-			ldy #$37    ;reset MMU to roms
-			sta $dc0d
-			stx $d01a
-			sty $01
-			ldx #$ff    ;clear the stack
-			txs
-			cli         ;reenable IRQs
-			jmp start   ;reset!
+            rti
 .endproc
 
 .segment "INITCODE"
+
+; Disables 'restore' key
+.proc init_nmi
+            lda #<nmi             ;Set NMI vector
+            sta $0318
+            sta $fffa
+            lda #>nmi
+            sta $0319
+            sta $fffb
+            lda #$81
+            sta $dd0d             ;Use Timer A
+            lda #$01              ;Timer A count ($0001)
+            sta $dd04
+            lda #$00
+            sta $dd05
+            lda #%00011001        ;Run Timer A
+            sta $dd0e
+            rts
+.endproc
 
 .proc init_vic
 			lda $dd02	;change VIC to bank 3
@@ -96,13 +103,6 @@
             lda #$1f    ;Disable CIA IRQ's
             sta $dc0d
             sta $dd0d
-
-            lda #<nmi   ;Install NMI into
-            ldx #>nmi   ;Hardware NMI and
-            sta $fffa   ;RESET Vectors
-            sta $fffc
-            stx $fffb
-            stx $fffd
 
             jsr init_random
             jsr init_timers
