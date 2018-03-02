@@ -4,6 +4,7 @@
 .export update_sound
 .exportzp sound_enabled
 
+.importzp frame_counter
 .importzp paused
 .importzp sound_timer
 
@@ -48,9 +49,9 @@ sound_playing:      .res 1
             sta $d401       ; freq hi
             lda #$11
             sta $d405       ; AD
-            lda #$74
+            lda #$68
             sta $d406       ; SR
-            lda #33
+            lda #65
             sta $d404       ; pulse
 
             lda #15
@@ -59,19 +60,35 @@ sound_playing:      .res 1
             lda #1
             sta sound_playing
 @playing:
+.endproc
+
+.proc update_pulse_envelope
+            lda #3
+            sta $d403
+
+            lda frame_counter
+            bpl @low
+            eor #$ff
+            clc
+            adc #1
+@low:
+            asl a
+            sta $d402
+
             rts
 .endproc
 
 .proc beep_off
             lda sound_playing
-            beq @done
+            bne @playing
+            rts
 
-            lda #32
+@playing:   lda #64
             sta $d404       ; gate off
                    
             lda #0
             sta sound_playing
-@done:      rts
+            jmp update_pulse_envelope
 .endproc
 
 .proc no_sound

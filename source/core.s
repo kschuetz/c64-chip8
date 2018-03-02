@@ -203,7 +203,8 @@ ui_action_last_frame:
 			rts				 			
 .endproc
 
-.rodata 
+.rodata
+
 action_handlers:
 			.addr no_action 		; none
 			.addr handle_reset
