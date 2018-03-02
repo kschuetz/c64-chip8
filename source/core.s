@@ -14,6 +14,7 @@
 .import sync_bgcolor_indicator
 .import sync_fgcolor_indicator
 .import sync_key_delay_indicator
+.import sync_paused_indicator
 .import sync_pixel_style_indicator
 .import update_screen_color
 .importzp frame_counter
@@ -132,7 +133,7 @@ ui_action_last_frame:
             lda paused
             eor #$ff
             sta paused
-            rts
+            jmp sync_paused_indicator
 .endproc
 
 .proc handle_toggle_key_repeat

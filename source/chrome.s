@@ -5,6 +5,7 @@
 .export sync_bgcolor_indicator
 .export sync_fgcolor_indicator
 .export sync_key_delay_indicator
+.export sync_paused_indicator
 .export sync_pixel_style_indicator
 .export sync_sound_indicator
 
@@ -21,6 +22,7 @@
 .import is_guest_key_pressed
 .importzp irq_zp0
 .importzp key_delay_mode
+.importzp paused
 .importzp pixel_style_representative
 .importzp screen_bgcolor
 .importzp screen_fgcolor
@@ -92,6 +94,7 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
             jsr sync_fgcolor_indicator
             jsr sync_key_delay_indicator
             jsr sync_sound_indicator
+            jsr sync_paused_indicator
 			rts
 .endproc
 
@@ -210,6 +213,7 @@ pixel_style_indicator_color := key_delay_indicator_color + 40
 bgcolor_indicator_color := pixel_style_indicator_color + 40
 fgcolor_indicator_color := bgcolor_indicator_color + 40
 sound_indicator_color := fgcolor_indicator_color + 40
+paused_indicator_color := chrome_text_color_origin + 163
 
 key_delay_indicator := chrome_text_screen_origin + 26
 pixel_style_indicator := key_delay_indicator + 40
@@ -235,6 +239,19 @@ sound_indicator := pixel_style_indicator + 120
             lda screen_fgcolor
             sta fgcolor_indicator_color
             sta fgcolor_indicator_color + 1
+            rts
+.endproc
+
+.proc sync_paused_indicator
+            lda paused
+            beq @off
+            lda #7      ; yellow
+            .byte $2c   ; BIT
+@off:       lda #chrome_bgcolor
+            ldy #6
+@loop:      sta paused_indicator_color, y
+            dey
+            bpl @loop
             rts
 .endproc
 
@@ -286,5 +303,5 @@ chrome_line_4:
             .byte 65, 69, 0, 208, 193, 213, 211, 197, 0, 0, 0, 0
             .byte 74, 71, 198, 199, 0, 195, 207, 204, 207, 210, 0, 0, 0, 0, 76, 76
 chrome_line_5:
-            .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            .byte 0, 0, 0, 81, 82, 83, 84, 85, 86, 87, 0, 0
             .byte 75, 71, 211, 207, 213, 206, 196, 0, 0, 0, 0, 0, 0, 0, 0, 0
