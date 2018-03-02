@@ -8,7 +8,6 @@
 .import clear_screen
 .import default_keymap
 .import display_rom_title
-.import init_debug
 .import load_bundled_rom
 .import load_font_set
 .import sync_key_delay_indicator
@@ -32,7 +31,6 @@
 			jsr display_rom_title
 			jsr sync_key_delay_indicator
 
-			jsr init_debug
 			jsr clear_registers
 			rts
 .endproc

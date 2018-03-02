@@ -4,3 +4,5 @@ build/
 dist/
 *.ps1
 *.iml
+.local/
+.old/
