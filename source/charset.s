@@ -4,7 +4,7 @@
 .export cycle_pixel_style
 .export init_charsets
 .export load_font_set
-.export load_pixel_set
+.export load_pixel_style
 .exportzp pixel_style_count
 .exportzp pixel_style_representative
 
@@ -44,7 +44,7 @@ active_pixel_style:
             ldy #7
 @loop:
             .repeat 8, i
-                lda pixel_set_data + 128 * i + 72, y
+                lda pixel_style_data + 128 * i + 72, y
                 sta chrome_charset + (pixel_style_representative + i) * 8, y
             .endrepeat
             dey
@@ -67,25 +67,10 @@ active_pixel_style:
             bpl @loop
 
             ldy #default_pixel_style_index
-            jmp load_pixel_set
+            jmp load_pixel_style
 .endproc
 
 .code
-
-; Y - index of pixel set (0..15)
-.macro load_pixel_set_impl
-            sty active_pixel_style
-            lda pixel_set_address_low, y
-            sta @source + 1
-            lda pixel_set_address_high, y
-            sta @source + 2
-            ldy #127
-@loop:
-@source:    lda $ffff, y
-            sta screen_charset, y
-            dey
-            bpl @loop
-.endmacro
 
 .proc cycle_pixel_style
              ldy active_pixel_style
@@ -93,11 +78,22 @@ active_pixel_style:
              cpy #pixel_style_count
              bcc @ok
              ldy #0
-@ok:         ; continue to load_pixel_set
+@ok:         ; continue to load_pixel_style
 .endproc
 
-.proc load_pixel_set
-            load_pixel_set_impl
+; Y - index of pixel set (0..15)
+.proc load_pixel_style
+            sty active_pixel_style
+            lda pixel_style_address_low, y
+            sta @source + 1
+            lda pixel_style_address_high, y
+            sta @source + 2
+            ldy #127
+@loop:
+@source:    lda $ffff, y
+            sta screen_charset, y
+            dey
+            bpl @loop
             rts
 .endproc
 
@@ -112,14 +108,14 @@ active_pixel_style:
 
 .rodata
 
-pixel_set_address_low:
+pixel_style_address_low:
             .repeat 16, i
-                .byte <(pixel_set_data + 128 * i)
+                .byte <(pixel_style_data + 128 * i)
             .endrepeat
 
-pixel_set_address_high:
+pixel_style_address_high:
             .repeat 16, i
-                .byte >(pixel_set_data + 128 * i)
+                .byte >(pixel_style_data + 128 * i)
             .endrepeat
 
 times_8:
@@ -127,8 +123,8 @@ times_8:
                 .byte i * 8
             .endrepeat
 
-pixel_set_data:
-            .incbin "data/pixel-sets.bin", 0, pixel_style_count * 128
+pixel_style_data:
+            .incbin "data/pixel-styles.bin", 0, pixel_style_count * 128
 
 font_set:
             .byte $f0, $90, $90, $90, $f0 ; 0
