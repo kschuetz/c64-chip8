@@ -49,33 +49,31 @@ default_keymap:
             .byte $3, $7, $b, $f
 
 ; Tank logical keys:
-; left: 8
-; right: 9
-; up: A
-; down: 7
-; fire: 0
+; left: 4
+; right: 6
+; up: 8
+; down: 2
+; fire: 5
 
 tank_keymap:
-            .byte $5, $ff, $ff, $ff
-            .byte $ff, $ff, $ff, $9
-            .byte $4, $6, $1, $ff
+            .byte $ff, $ff, $9, $ff
+            .byte $4, $5, $6, $ff
+            .byte $1, $ff, $ff, $ff
             .byte $ff, $ff, $ff, $ff
 
 ;                    FEDCBA9876543210
 tank_enabled_keys = %0000001001110010
 
 ; Tetris logical keys:
-; left: 7
-; right: 8
-; rotate: 9
-; drop:   2
-
-; enabled keys:
+; left: 5
+; right: 6
+; rotate: 4
+; drop:   7
 
 tetris_keymap:
-            .byte $ff, $ff, $1, $ff
-            .byte $ff, $ff, $ff, $4
-            .byte $6, $5, $ff, $ff
+            .byte $ff, $ff, $ff, $ff
+            .byte $5, $4, $6, $1
+            .byte $ff, $ff, $ff, $ff
             .byte $ff, $ff, $ff, $ff
 
 ;                      FEDCBA9876543210
