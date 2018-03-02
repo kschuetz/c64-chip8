@@ -1,3 +1,0 @@
-
-COLOR_RAM = $d800
-IRQ_VECTOR = $fffe
