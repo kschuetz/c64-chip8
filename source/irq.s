@@ -13,6 +13,7 @@
 .import chrome_charset
 .import get_guest_keypress
 .import host_screen
+.import update_sound
 .import screen_charset
 .import set_button_sprite_frames
 .import set_ui_action
@@ -153,6 +154,7 @@ frame_counter:     .res 2
             inc frame_counter + 1
 :
             jsr set_button_sprite_frames
+            jsr update_sound
             jsr update_timers                          ; update_timers (2/4)
             setup_next model, 128, timer_update_3
     end_irq

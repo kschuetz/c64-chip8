@@ -12,7 +12,7 @@ vic_bank_base = $c000
 
 ; ************** configurable ****************
 
-.define default_rom_index 0
+.define default_rom_index 41
 .define title_length 16
 
 .define max_bundled_roms 100

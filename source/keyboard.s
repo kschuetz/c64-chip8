@@ -242,7 +242,7 @@ ui_key_new_state:   .res 2
 		    lda kbd_col0, x
             and ui_key_port_b, y
             beq :+
-            lda #1
+@debug_tap: lda #1
             .byte $2c  ; BIT instruction
 :           lda #0
             sta ui_key_new_state + 1

@@ -16,11 +16,13 @@
 .import sync_key_delay_indicator
 .import sync_paused_indicator
 .import sync_pixel_style_indicator
+.import sync_sound_indicator
 .import update_screen_color
 .importzp frame_counter
 .importzp key_delay_mode
 .importzp screen_bgcolor
 .importzp screen_fgcolor
+.importzp sound_enabled
 .importzp ui_key_events
 
 .zeropage
@@ -143,6 +145,13 @@ ui_action_last_frame:
             jmp sync_key_delay_indicator
 .endproc
 
+.proc handle_toggle_sound
+            lda sound_enabled
+            eor #$ff
+            sta sound_enabled
+            jmp sync_sound_indicator
+.endproc
+
 .proc handle_cycle_pixel_style
             jsr cycle_pixel_style
             jmp sync_pixel_style_indicator
@@ -150,7 +159,7 @@ ui_action_last_frame:
 
 .proc set_ui_action
 			lda ui_key_events
-			beq @done
+			beq @bit8
 			lsr a
 			bcc @bit1
 @bit0:		lda #UIAction::reset
@@ -180,9 +189,14 @@ ui_action_last_frame:
 			lda #UIAction::pixel_style_next
 			bcs @done	
 @bit7:		lsr a
-			bcc @none
+			bcc @bit8
 			lda #UIAction::toggle_key_repeat
 			bcs @done
+@bit8:      lda ui_key_events + 1
+            lsr a
+            bcc @none
+            lda #UIAction::toggle_sound
+            bcs @done
 			
 @none:		lda #UIAction::none
 @done:		sta ui_action
@@ -192,12 +206,12 @@ ui_action_last_frame:
 .rodata 
 action_handlers:
 			.addr no_action 		; none
-			.addr handle_reset		; reset
+			.addr handle_reset
 			.addr handle_load_prev
 			.addr handle_load_next
-			.addr handle_pause			; pause
+			.addr handle_pause			
 			.addr handle_bgcolor_next
 			.addr handle_fgcolor_next
 			.addr handle_cycle_pixel_style
 			.addr handle_toggle_key_repeat
-			.addr no_action         ; toggle sound
+			.addr handle_toggle_sound
