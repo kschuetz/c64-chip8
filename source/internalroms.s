@@ -1,6 +1,7 @@
 .include "common.s"
 .include "bundlehelpers.s"
 
+.export bundle_end
 .export internal_roms_start
 
 .import external_roms_start
@@ -53,3 +54,9 @@ title_screen_graphics_host:
             .incbin "data/title-screen.bin", 0, $100
 
 title_screen_graphics_guest := $200 + title_screen_graphics_host - title_screen
+
+.segment "BUNDLEEND"
+
+;; This is the null at the end of the bundled roms linked-list
+bundle_end:
+	        .word 0

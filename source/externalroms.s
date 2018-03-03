@@ -24,6 +24,16 @@
 
 .segment "EXTERNALROMS"
 
+;; The `bundle` macro has the following arguments:
+;; 1. Path to ROM file
+;; 2. Title (up to 16 characters)
+;; 3. Enabled key mask (optional) -  keys that are illuminated on the keyboard display.   Default $ffff.
+;; 4. Keymap (optional) - address of the keymap if it is different than the default.
+;; 5. Key delay mode (otpional) - determines if key delay mode is enabled by default when reset.  Default true.
+
+;; Be careful that the EXTERNALROMS segment ends before $c000, or some ROMs could get clobbered.
+;; (After building, see the segment list in `build/chip8.map`)
+
 external_roms_start:
             bundle "roms/games/15 Puzzle [Roger Ivie].ch8", "15 puzzle"
             bundle "roms/games/Airplane.ch8", "airplane"

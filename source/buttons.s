@@ -1,3 +1,5 @@
+;; Sprite multiplexer for buttons display
+
 .include "common.s"
 
 .export button_sprite_pointer
@@ -25,7 +27,7 @@
 .proc init_buttons
 @current = zp2
 
-            istore zp0, buttons_sprite_set
+            store16 zp0, buttons_sprite_set
             lda #0
             ldx #$07
             ldy #$ff
@@ -86,7 +88,7 @@ button_sprites_spacing = 12
 button_sprites_top = 206
 button_sprites_vertical_spacing = 11
 
-; call once before setup_irq
+;; call once before setup_irq
 .proc init_button_sprites
             .repeat 4, i
                 lda #button_sprites_left_edge + (i * button_sprites_spacing)
@@ -199,14 +201,15 @@ button_sprites_vertical_spacing = 11
             rts
 .endproc
 
-; zp0 - buttons 0..7 enabled
-; zp1 - buttons 8..F enabled
+;; Called on reset.  Sets button colors depending on enabled_keys mask.
+;; zp0 - buttons 0..7 enabled
+;; zp1 - buttons 8..F enabled
 .proc set_button_colors
             ldy #0
 @loop1:     lsr zp0
             bcc @off1
             lda #enabled_button_color
-            .byte $2c  ; BIT
+            .byte $2c  ; BIT instruction
 @off1:      lda #disabled_button_color
             sta button_color, y
             iny
@@ -215,7 +218,7 @@ button_sprites_vertical_spacing = 11
 @loop2:     lsr zp1
             bcc @off2
             lda #enabled_button_color
-            .byte $2c  ; BIT
+            .byte $2c  ; BIT instruction
 @off2:      lda #disabled_button_color
             sta button_color, y
             iny

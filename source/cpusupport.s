@@ -15,7 +15,7 @@
 .importzp reg_i
 .importzp reg_v
 
-;; These routines should only be called by CPU routines
+;; These routines should only be called by CPU routines, since they jump directly to cpu_next.
 
 ;; Store BCD representation of Vx in memory locations I, I+1, and I+2.
 ;; Y: V register to read from.  Must be $0 - $f before calling.
@@ -31,13 +31,13 @@
             lda reg_v, y
             tax
 
-            ; hundreds in *i           
+            ;; hundreds in *i
             ldy #0
             lda decimal_table_high, x
             and #15
             sta (cpu_temp_addr0), y
             
-            ; tens in *i + 1
+            ;; tens in *i + 1
             lda decimal_table_low, x
             tax                             ; don't need x anymore
             lsr a
@@ -47,7 +47,7 @@
             iny
             sta (cpu_temp_addr0), y
             
-            ; ones in *i + 2
+            ;; ones in *i + 2
             txa
             and #15
             iny
@@ -56,8 +56,8 @@
             jmp cpu_next
             
 @handle_edge_cases:
-            ; edge cases are if I contains $ffe or $fff
-            ; in those cases, we will only write 2 or 1 digits (respectively)
+            ;; edge cases are if I contains $ffe or $fff
+            ;; in those cases, we will only write 2 or 1 digits (respectively)
             lda reg_i
             cmp $fe
             beq @limit_to_two
@@ -89,9 +89,9 @@
             jmp @done
 .endproc
 
-; Y: V register to read from.  Must be $0 - $f before calling.
+;; Y: V register to read from.  Must be $0 - $f before calling.
 .proc get_digit_font_location
-            ; base location of digit in fontset is digit * 5
+            ;; base location of digit in fontset is digit * 5
             lda reg_v, y        
             and #15
             tay
@@ -125,11 +125,11 @@
 @check_boundary:
             lda reg_i
             sta cpu_temp_addr0
-            ; if a <= $f0, safe to read/write all
+            ;; if a <= $f0, safe to read/write all
             cmp #$f1
             bcc @safe
 
-            ; otherwise, safe to read/write $100 - a
+            ;; otherwise, safe to read/write $100 - a
             eor #$ff
             tax
             inx

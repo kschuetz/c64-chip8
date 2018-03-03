@@ -18,6 +18,7 @@
 .import set_button_sprite_frames
 .import set_ui_action
 .import sprite_pointers
+.import title_bar_colors
 .import update_timers
 .importzp host_model
 .importzp screen_bgcolor
@@ -48,7 +49,7 @@ frame_counter:     .res 2
 .macro stabilize model
             .local @wedge, @stable
 
-            istore IRQ_VECTOR, @wedge
+            store16 IRQ_VECTOR, @wedge
 
             inc $d012
             lda #1
@@ -118,7 +119,7 @@ frame_counter:     .res 2
 
             lda #screen_line
             sta $d012
-            istore IRQ_VECTOR, @vector
+            store16 IRQ_VECTOR, @vector
             jmp exit_irq
 .endmacro
 
@@ -144,7 +145,6 @@ frame_counter:     .res 2
 
     begin_irq frame_services, model
             jsr check_keyboard
-            ; jsr keyboard_debug
 
             jsr check_ui_keys
             jsr set_ui_action
@@ -256,13 +256,11 @@ define_irqs ntsc_65
 irq_entry_low:      .lobytes model_irqs
 irq_entry_high:     .hibytes model_irqs
 
-title_bar_colors:        .byte 11, 12, 15, 1, 15, 1, 1, 1, 1, 1, 1, 15, 1, 15, 12, 11, chrome_bgcolor
-
-; host_model:
-; $01: OLD NTSC - 64 cycles
-; $02: NTSC - 65 cycles
-; $03: PAL - 63 cycles
-; $04: Drean - 65 cycles
+;; host_model:
+;; $01: OLD NTSC - 64 cycles
+;; $02: NTSC - 65 cycles
+;; $03: PAL - 63 cycles
+;; $04: Drean - 65 cycles
 
 title_bar_wait_ntsc_65:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 9, 5, 8, 8, 8, 9, 10, 9, 10
 title_bar_wait_ntsc_64:  .byte 7, 5, 8, 8, 8, 10, 9, 10, 7, 4, 8, 8, 9, 9, 10, 9, 10

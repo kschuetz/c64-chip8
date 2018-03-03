@@ -1,6 +1,5 @@
 .include "common.s"
 
-.export bundle_end
 .export start
 
 .import initialize
@@ -9,7 +8,7 @@
 	
 .segment "LOADADDR"
 
-; BASIC header with a SYS call
+;; BASIC header with a SYS call
 
 __LOADADDR__: .word head	    ; Load address
 
@@ -29,8 +28,3 @@ head:	    .word @next
 			jsr setup_irq
 			jmp main_loop
 .endproc
-
-.segment "BUNDLEEND"
-
-bundle_end:	
-	        .word 0

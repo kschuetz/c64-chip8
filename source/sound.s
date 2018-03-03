@@ -24,10 +24,10 @@ sound_playing:      .res 1
 
 .code
 
-; Make sound only if all three are true:
-; 1.  sound_enabled is true
-; 2.  paused is false
-; 3.  sound_timer is nonzero
+;; Make sound only if all three are true:
+;;   1. sound_enabled is true
+;;   2. paused is false
+;;   3. sound_timer is nonzero
 .proc update_sound
             lda sound_enabled
             beq no_sound
@@ -37,7 +37,6 @@ sound_playing:      .res 1
             beq beep_off
             ; continue to beep_on
 .endproc
-
 
 .proc beep_on
             lda sound_playing

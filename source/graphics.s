@@ -5,22 +5,11 @@
 .export draw_sprite
 .export init_graphics_tables
 .export update_screen_color
-.exportzp screen_bgcolor
-.exportzp screen_fgcolor
-
-; temp - for debugging:
-.export draw_even_sprite
-.export draw_odd_sprite
-.exportzp sprite_buffer 
-.exportzp collision_flag 
-.exportzp row_base_ptr 
-.exportzp sprite_source_ptr
-; -------------
+.exportzp collision_flag
 
 .import guest_screen_color_origin
 .import guest_screen_origin
 .import host_screen
-
 .importzp guest_ram_page
 .importzp reg_i
 .importzp zp0
@@ -34,8 +23,6 @@
 
 .zeropage
 
-screen_bgcolor:     .res 1
-screen_fgcolor:     .res 1
 collision_flag:     .res 1
 sprite_buffer:      .res 5          ; staging area for drawing a row for a sprite
 row_base_ptr:       .res 2          ; physical screen address of row being drawn
@@ -44,13 +31,13 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 .segment "INITCODE"
 
 .proc build_screen_margins
-				; set character of margins to 15
-			istore zp0, (host_screen + 40 * guest_screen_offset_y)
+				;; set character of margins to 15
+			store16 zp0, (host_screen + 40 * guest_screen_offset_y)
 			lda #16
 			sta zp2
 			jsr @go
-				; set color ram of margins to 0
-			istore zp0, (COLOR_RAM + 40 * guest_screen_offset_y)
+				;; set color ram of margins to 0
+			store16 zp0, (COLOR_RAM + 40 * guest_screen_offset_y)
 			lda #chrome_bgcolor
 			sta zp2
 @go:		ldx #guest_screen_physical_height
@@ -77,7 +64,7 @@ sprite_source_ptr:  .res 2          ; physical address of source for sprite bitm
 .endproc
 
 .proc init_graphics_tables
-			istore zp0, guest_screen_origin
+			store16 zp0, guest_screen_origin
 
 			ldx #0
 @1:			clc
@@ -253,15 +240,14 @@ param_is_bottom_half = zp4
 param_rows_left = zp5
 param_sprite_width = zp6
 
-; blit - copies from sprite_buffer to screen
-; Input:
-;
-;   row_base_ptr - physical screen address of column 0 of row
-;   param_right_column - physical column offset of _right-most_  pixel to copy; must be 0 <= y < 32
-;   requires normalized data in sprite_buffer (i.e., only values from $0 - $f)
-; Output:
-;   collision_flag will contain nonzero if collision
-
+;; blit - copies from sprite_buffer to screen
+;; Input:
+;;
+;;   row_base_ptr - physical screen address of column 0 of row
+;;   param_right_column - physical column offset of _right-most_  pixel to copy; must be 0 <= y < 32
+;;   requires normalized data in sprite_buffer (i.e., only values from $0 - $f)
+;; Output:
+;;   collision_flag will contain nonzero if collision
 .macro blit sprite_width
             .local @loop, @no_collision, @no_wrap, @stash
 
@@ -284,11 +270,11 @@ param_sprite_width = zp6
 			bpl @loop
 .endmacro
 
-; sprite_source_ptr:            source data for sprite
-; param_physical_row:           physical row (0 - 15); used as index into screen_row_table
-; param_right_column:           physical column offset of _right-most_  pixel to copy; must be 0 <= y < 32
-; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
-; param_rows_left:              number of logical rows to draw
+;; sprite_source_ptr:            source data for sprite
+;; param_physical_row:           physical row (0 - 15); used as index into screen_row_table
+;; param_right_column:           physical column offset of _right-most_  pixel to copy; must be 0 <= y < 32
+;; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
+;; param_rows_left:              number of logical rows to draw
 .macro make_draw_sprite strategy, sprite_width
 
 @src_ptr = zp7
@@ -351,11 +337,11 @@ param_sprite_width = zp6
 
 .endmacro
 
-; sprite_source_ptr:            source data for sprite
-; param_physical_row:           physical row (0 - 15); used as index into screen_row_table
-; param_right_column:           physical column offset of _right-most_  pixel to copy; must be 0 <= y < 32
-; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
-; param_rows_left:              number of logical rows to draw
+;; sprite_source_ptr:            source data for sprite
+;; param_physical_row:           physical row (0 - 15); used as index into screen_row_table
+;; param_right_column:           physical column offset of _right-most_  pixel to copy; must be 0 <= y < 32
+;; param_is_bottom_half:         zero if drawing top half, non-zero if bottom half
+;; param_rows_left:              number of logical rows to draw
 .proc draw_even_sprite
 			make_draw_sprite "even", 4
 .endproc
@@ -364,43 +350,43 @@ param_sprite_width = zp6
 			make_draw_sprite "odd", 5
 .endproc
 
-; x:  		X coordinate
-; y:  		Y coordinate
-; a:  		height
-; reg_i:	points to sprite
+;; X:  		X coordinate
+;; Y:  		Y coordinate
+;; A:  		height
+;; reg_i:	points to sprite
 .proc draw_sprite
 			sta @stash1 + 1                     ; temporary stash
 			lda #0
 			sta collision_flag
 
-			; x = x % 64
+			;; X = X % 64
 			txa
 			and #63
 			tax
 
-			; y = y % 32
+			;; Y = Y % 32
 			tya
 			and #31
 			tay
 
-			; a = a & 15
+			;; A = A & 15
 @stash1:	lda #0
 			and #15
 
-			; check a > 0
+			;; check A > 0
 			beq @invalid		; 0 height
 
-			; param_rows_left = height
+			;; param_rows_left = height
 			sta param_rows_left
 
-			; source_ptr = *reg_i
+			;; source_ptr = *reg_i
 			lda reg_i
 			sta sprite_source_ptr
 			lda reg_i + 1
 			map_to_host
 			sta sprite_source_ptr + 1
 
-			; will source_ptr overflow ram?
+			;; will source_ptr overflow ram?
 			cmp #(guest_ram_page + $f)
 			bne @source_ptr_ok
 
@@ -409,8 +395,8 @@ param_sprite_width = zp6
 			adc param_rows_left
 			bcc @source_ptr_ok
 
-			; if so, height exceeds ram by a bytes
-			; height -= a
+			;; if so, height exceeds ram by A bytes
+			;; height -= a
 			clc
 			sbc param_rows_left
 			eor #$ff
@@ -418,7 +404,7 @@ param_sprite_width = zp6
 
 @source_ptr_ok:
 
-			; is y even?
+			;; is Y even?
 			tya
 			and #1
             sta param_is_bottom_half
@@ -426,7 +412,7 @@ param_sprite_width = zp6
 			lsr a
 			sta param_physical_row
 
-			; determine strategy depending on if x is even or odd
+			;; determine strategy depending on if X is even or odd
 			txa
 			lsr a
 			bcc @x_even
@@ -435,21 +421,21 @@ param_sprite_width = zp6
 			rts
 
 @x_odd:
-            ; a contains physical_col 0..31
-            adc #3          ; right-most physical column = a + 4  (adding 3 since carry is set)
+            ;; A contains physical_col 0..31
+            adc #3          ; right-most physical column = A + 4  (adding 3 since carry is set)
             and #31         ; wrap
             sta param_right_column
 
-			; ready - draw the sprite
+			;; ready - draw the sprite
 			jmp draw_odd_sprite
 
 @x_even:
-            ; a contains physical_col 0..31
-            adc #3          ; right-most physical column = a + 3  (carry is clear)
-            and #31         ; wrap
+            ;; A contains physical_col 0..31
+            adc #3          ;; right-most physical column = A + 3  (carry is clear)
+            and #31         ;; wrap
             sta param_right_column
 
-            ; ready - draw the sprite
+            ;; ready - draw the sprite
             jmp draw_even_sprite
 .endproc
 

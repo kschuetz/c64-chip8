@@ -29,6 +29,7 @@
 .importzp reg_vf
 
 .zeropage
+
 op1:	            .res 1
 cpu_temp0:          .res 1
 cpu_temp1:          .res 1
@@ -55,7 +56,7 @@ cpu_temp_addr0:     .res 2
             tay
 .endmacro        
 
-	;;  op1 will contain first operand, X will contain second
+;;  op1 will contain first operand, X will contain second
 .proc exec
             ldy #1
             lda (reg_pc), y
@@ -84,7 +85,10 @@ cpu_temp_addr0:     .res 2
             beq next
             bne skip
 .endmacro  	
-    	
+
+;; Implementations of opcodes are in macros so we can define them in order,
+;; and rearrange them later in memory to optimize use of branching instructions
+
 ;; 0nnn - SYS addr
 ;; No-op
 ;;
@@ -93,7 +97,6 @@ cpu_temp_addr0:     .res 2
 ;;
 ;; 00EE - RET
 ;; Return from subroutine
-
 .macro opcode_0_impl
             cpx #$e0
             bne @1
@@ -517,7 +520,7 @@ def_opcode "2"
 def_opcode "3"
 def_opcode "4"
 
-; pc = pc + 2
+;; pc = pc + 2
 cpu_next:               ; exported name of next
 .proc next
             clc
@@ -531,7 +534,7 @@ next1:      sta reg_pc
             rts
 .endproc
 
-; pc = pc + 4
+;; pc = pc + 4
 .proc skip
             clc
             lda reg_pc
@@ -551,7 +554,7 @@ def_opcode "8_2"
 def_opcode "8_3"
 def_opcode "8_4"
 
-; must immediately follow def_opcode_8_4
+;; must immediately follow def_opcode_8_4
 .proc set_carry_and_exit
             lda #1
             sta reg_vf

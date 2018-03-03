@@ -33,5 +33,8 @@
 
 .segment "LOW"
 
+;; decimal_table_low contains tens and ones digits
+;; decimal_table_high contains hundreds digit (in lower nybble)
+
 decimal_table_low:		.res 256
 decimal_table_high:		.res 256

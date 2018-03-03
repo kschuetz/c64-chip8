@@ -13,16 +13,18 @@
 .code
 	
 ;;  Move memory up
-;;    zp0:zp1 = source start address
-;;    zp2:zp3 = destination start address
-;;    zp4:zp5 = number of bytes to move
+;;  Adapted from http://www.6502.org/source/general/memory_move.html by Bruce Clark
+;;
+;;  zp0:zp1 = source start address
+;;  zp2:zp3 = destination start address
+;;  zp4:zp5 = number of bytes to move
 .proc move_up
 
 move_from = zp0
 move_to = zp2
 move_size = zp4
 
-		    ldx move_size+1     ; the last byte must be moved first
+		    ldx move_size + 1   ; the last byte must be moved first
 			clc                 ; start at the final pages of FROM and TO
 		    txa
 		    adc move_from+1
@@ -50,12 +52,13 @@ move_size = zp4
 		    rts
 .endproc
 
-;; fill:
-;;   length must be > 0
-;;   zp0:zp1 = dest address
-;;   x = (length - 1) high
-;;   y = (length - 1) low
-;;   a = fill value
+;; Fill
+;;
+;; length must be > 0
+;; zp0:zp1 = dest address
+;; X = (length - 1) high
+;; Y = (length - 1) low
+;; A = fill value
 .proc fill
 			cpx #0
 			beq @last_page

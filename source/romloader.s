@@ -31,6 +31,8 @@ bundle_index_high: 	.res max_bundled_roms
 
 .segment "INITCODE"
 
+;; Traverses the linked list of ROMs in the INTERNALROMS and EXTERNALROMS segments, counts them, and builds an O(1) lookup table.
+;; bundle_index_low and bundle_index_high will contain the start addresses of the BundleNodes for each bundled rom.
 .proc build_bundle_index
 			lda #0
 			sta bundle_count
@@ -44,9 +46,9 @@ bundle_index_high: 	.res max_bundled_roms
 @loop:		
 			ldy #0
 			lda (zp0), y
-			tax					; x = next low
+			tax					; X = next low
 			iny
-			lda (zp0), y		; a = next high
+			lda (zp0), y		; A = next high
 			bne @not_null
 			cpx #0
 			beq @done			; next = null; exit
@@ -69,7 +71,7 @@ bundle_index_high: 	.res max_bundled_roms
 
 .code
 
-; y - index of bundle to load
+; y - index of rom to load
 .proc load_bundled_rom
 			sty active_bundle
 
@@ -95,7 +97,7 @@ bundle_index_high: 	.res max_bundled_roms
 			sbc zp1
 			sta zp5
 									; zp4:zp5 contains size
-			istore zp2, program_start						
+			store16 zp2, program_start
 			jsr move_up
 
 			; enabled_keys

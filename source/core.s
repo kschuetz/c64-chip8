@@ -1,3 +1,5 @@
+;; Contains the main loop that handles user actions and repeatedly calls the CPU to execute instructions.
+
 .include "common.s"
 
 .export init_core
@@ -72,11 +74,9 @@ ui_action_last_frame:
             lda paused
             bne main_loop
 
-            ; execute a CPU instruction
-            jsr exec
+            jsr exec                    ; execute a CPU instruction
 			jmp main_loop
 .endproc
-
 
 .proc no_action
 			rts

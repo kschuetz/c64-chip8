@@ -1,3 +1,8 @@
+;; Timers (delay_timer and sound_timer) are 16-bits and are updated 4 times per frame, called at various positions of the raster.
+;; The amount to decrement on each update depends on CPU model (PAL is 50Hz and NTSC is 60Hz).  The goal is to get as close to a 60Hz
+;; timer (the official CHIP-8 frequency) as possible, regardless of host model.
+;; Applications only have access to the upper 8-bits of the timers.
+
 .include "common.s"
 
 .export clear_timers
@@ -46,7 +51,7 @@ sound_timer_fine:   .res 1
             rts
 .endproc
 
-; call this 4 times per frame
+;; Call this 4 times per frame
 .proc update_timers
 
 delay_dec_value = dec_delay + 1
@@ -59,7 +64,7 @@ sound_dec_value = dec_sound + 1
             sec
             lda delay_timer_fine
 dec_delay:
-            sbc #$40                       ; operand will be modifier by init_timers on startup
+            sbc #$40                       ; operand will be modified by init_timers on startup
             sta delay_timer_fine
             bcs check_sound_timer          ; no borrow, so timer won't change
 
@@ -73,15 +78,15 @@ check_sound_timer:
             sec
             lda sound_timer_fine
 dec_sound:
-            sbc #$40                       ; operand will be modifier by init_timers on startup
+            sbc #$40                       ; operand will be modified by init_timers on startup
             sta sound_timer_fine
-            bcs done                       ; no borrow, so timer won't change won't change
+            bcs done                       ; no borrow, so timer won't change
 
                                            ; x contains nonzero here
             dex
             stx sound_timer
 
-done:       rts ;jmp new_exit_irq
+done:       rts
 
 .endproc
 
@@ -91,7 +96,7 @@ done:       rts ;jmp new_exit_irq
 ntsc_decrement_amount = 64     ; 256 / 4
 pal_decrement_amount = 76      ; (312/262) * ntsc
 
-; modifies the update_timers routine
+;; modifies the update_timers routine depending on host model
 .proc init_timers
             ldx host_model
             dex

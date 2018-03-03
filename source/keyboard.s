@@ -40,7 +40,7 @@ key_delay_timer:    .res 16
 ;; 0: up.  Transitions to 1 when key is down.
 ;; 1: down.  Yields true on first query, then immediayely transitions to state 2.
 ;; 2: waiting for delay.  Yields false for queries.  Transitions to 3 when delay timer expires.
-;; 3. delay expired.  Always yields true.
+;; 3: delay expired.  Always yields true.
 ;;
 ;; If key_delay_mode is off, all states except 0 yield true.
 
@@ -124,9 +124,9 @@ key_delay_timer:    .res 16
 .endproc
 
 
-; A - logical chip8 key to check
-; Returns:  Z = 0: key pressed
-;           Z = 1: key not pressed
+;; A - logical chip8 key to check
+;; Returns:  Z = 0: key pressed
+;;           Z = 1: key not pressed
 .proc is_guest_key_pressed
 			ldy key_delay_mode
 			bne is_guest_key_pressed_delay_mode
@@ -164,11 +164,11 @@ key_delay_timer:    .res 16
             rts
 .endproc
 
-; returns pressed key in A, or $ff if no key pressed
+;; Returns pressed key ($0-$f) in A, or $ff if no key pressed
 .proc get_guest_keypress
 			ldy key_delay_mode
             bne get_guest_keypress_delay_mode
-            ; continue to get_guest_keypress_repeat_mode
+            ;; continue to get_guest_keypress_repeat_mode
 .endproc
 
 .proc get_guest_keypress_repeat_mode
@@ -223,7 +223,7 @@ ui_key_new_state:   .res 2
 			lda #0
 			sta ui_key_new_state
 
-			; events 0..7
+			;; events 0..7
 			ldy #7
 @loop:		ldx ui_key_port_a, y
 			lda kbd_col0, x
@@ -237,7 +237,7 @@ ui_key_new_state:   .res 2
 @next:		dey
 			bpl @loop
 
-		    ; event 8
+		    ;; event 8
 		    ldx ui_key_port_a + 8
 		    lda kbd_col0, x
             and ui_key_port_b, y
@@ -247,7 +247,7 @@ ui_key_new_state:   .res 2
 :           lda #0
             sta ui_key_new_state + 1
 
-			; events = ui_key_new_state & ~ui_key_state
+			;; events = ui_key_new_state & ~ui_key_state
 			lda ui_key_state
 			eor #$ff
 			and ui_key_new_state
@@ -258,7 +258,7 @@ ui_key_new_state:   .res 2
             and ui_key_new_state + 1
             sta ui_key_events + 1
 
-			; ui_key_state = ui_key_new_state
+			;; ui_key_state = ui_key_new_state
 			lda ui_key_new_state
 			sta ui_key_state
 			lda ui_key_new_state + 1
@@ -269,41 +269,43 @@ ui_key_new_state:   .res 2
 
 .rodata
 
-; Keyboard tables
+;; Keyboard tables
 
-; Physical key indices
-;
-; 0	1 2	3
-; 4 5 6 7
-; 8 9 A C
-; C D E F
+;; Physical key indices
+;;
+;; 0 1 2 3
+;; 4 5 6 7
+;; 8 9 A C
+;; C D E F
 
-; C64 keys
-;
-; 1 2 3 4
-; Q W E R
-; A S D F
-; Z X C V
+;; C64 keys
+;;
+;; 1 2 3 4
+;; Q W E R
+;; A S D F
+;; Z X C V
 
-; Mapping to CIA Ports A (row) and B (column)
-; Key index   	C64 Key		Row			Column
-; ------------------------------------------
-; 0				1			7			0
-; 1				2			7			3
-; 2				3			1           0
-; 3				4			1           3
-; 4				Q			7           6
-; 5				W			1           1
-; 6				E			1           6
-; 7				R			2           1
-; 8				A			1           2
-; 9				S		    1           5
-; A				D		    2           2
-; B				F		    2           5
-; C				Z			1           4
-; D				X			2           7
-; E				C			2           4
-; F				V			3           7
+;; See the entries for $dc00-$dc01 in "Mapping the C64" for an explanation of row and column values.
+
+;; Mapping to CIA Ports A (row) and B (column)
+;; Key index   	C64 Key		Row			Column
+;; ------------------------------------------
+;; 0				1			7			0
+;; 1				2			7			3
+;; 2				3			1           0
+;; 3				4			1           3
+;; 4				Q			7           6
+;; 5				W			1           1
+;; 6				E			1           6
+;; 7				R			2           1
+;; 8				A			1           2
+;; 9				S		    1           5
+;; A				D		    2           2
+;; B				F		    2           5
+;; C				Z			1           4
+;; D				X			2           7
+;; E				C			2           4
+;; F				V			3           7
 
 chip8_key_port_a:
 			.byte 7, 7, 1, 1
@@ -317,18 +319,18 @@ chip8_key_port_b:
 			.byte 1 << 2, 1 << 5, 1 << 2, 1 << 5
 			.byte 1 << 4, 1 << 7, 1 << 4, 1 << 7
 
-; UI Keys
-; Function   	    C64 Key		Row			Column
-; ------------------------------------------
-; 0: Reset			F1			0			4
-; 1: Load Prev		F3			0			5
-; 2: Load Next		F5			0		    6
-; 3: Pause			F7			0			3
-; 4: BGColor 		N           4           7
-; 5: FGColor 		M           4           4
-; 6: Pixel Style    P           5           1
-; 7: Key Delay      K           4           5
-; 8: Toggle Sound   U           3           6
+;; UI Keys
+;; Function   	    C64 Key		Row			Column
+;; ------------------------------------------
+;; 0: Reset			F1			0			4
+;; 1: Load Prev		F3			0			5
+;; 2: Load Next		F5			0		    6
+;; 3: Pause			F7			0			3
+;; 4: BGColor 		N           4           7
+;; 5: FGColor 		M           4           4
+;; 6: Pixel Style   P           5           1
+;; 7: Key Delay     K           4           5
+;; 8: Toggle Sound  U           3           6
 
 ui_key_port_a:
 			.byte 0, 0, 0, 0, 4, 4, 5, 4, 3

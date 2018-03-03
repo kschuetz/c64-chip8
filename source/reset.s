@@ -16,7 +16,10 @@
 .importzp active_keymap
 .importzp paused
 
-; A - bundle to load
+;; Loads a ROM and resets the guest machine state.
+;; Once this is called, code and data in the INITCODE and INITDATA segments are no longer usable.
+;;
+;; A - index of ROM to load
 .proc reset
 			pha
 			jsr clear_ram
@@ -33,6 +36,5 @@
 			jsr sync_key_delay_indicator
             jsr sync_paused_indicator
             
-			jsr clear_registers
-			rts
+			jmp clear_registers
 .endproc

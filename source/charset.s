@@ -19,7 +19,8 @@
 
 pixel_style_count = 8
 
-pixel_style_representative = 112
+;; The index of the chrome charset for the characters used in the pixel style indicator
+pixel_style_representative = 112        ; 112..127
 
 .segment "LOW"
 
@@ -34,17 +35,17 @@ active_pixel_style:
 .endproc
 
 .proc init_chrome_charset
-			istore zp0, chrome_charset_data
-			istore zp2, chrome_charset
-			istore zp4, $0800
+			store16 zp0, chrome_charset_data
+			store16 zp2, chrome_charset
+			store16 zp4, $0800
 			jsr move_up
 
-            ; copy pixel style representatives
-            ; (chrome_charset characters 112..127)
+            ;; copy pixel style representatives
+            ;; (chrome_charset characters 112..127)
             ldy #7
 @loop:
             .repeat 8, i
-                lda pixel_style_data + 128 * i + 72, y
+                lda pixel_style_data + 128 * i + 72, y              ; get character 9 from the pixel_style
                 sta chrome_charset + (pixel_style_representative + i) * 8, y
             .endrepeat
             dey
@@ -52,14 +53,19 @@ active_pixel_style:
             rts
 .endproc	
 
+;; screen charset:
+;;
+;; 0 - 15:      screen pixel combinations for current pixel style
+;; 16:          solid (independent of pixel style)
+;; 17 - 255:    unused; must be blank
 .proc init_screen_charset
-            istore zp0, screen_charset
+            store16 zp0, screen_charset
             ldy #$7f
             ldx #$07
             lda #0
             jsr fill
 
-            ; character 16 solid
+            ;; character 16 solid
             lda #255
             ldy #7
 @loop:      sta screen_charset + 16 * 8, y
@@ -81,7 +87,7 @@ active_pixel_style:
 @ok:         ; continue to load_pixel_style
 .endproc
 
-; Y - index of pixel set (0..15)
+;; Y - index of pixel set (0..15)
 .proc load_pixel_style
             sty active_pixel_style
             lda pixel_style_address_low, y
@@ -97,6 +103,10 @@ active_pixel_style:
             rts
 .endproc
 
+;; Loads factory font set into guest locations $000 - $04f.
+;; Contains representations of hex digits 0-F, 4 pixels wide by 5 pixels high.
+;; The Fx29 CPU instruction and some ROMs will depend on this.
+;; Should be called on every reset after clearing RAM
 .proc load_font_set
 			ldy #79
 @loop:		lda font_set, y

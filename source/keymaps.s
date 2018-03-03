@@ -22,25 +22,25 @@
 
 active_keymap:  .res 2
 
-; Keymaps:
-; physical_key_to_test = keymap[logical_key]
-; if no physical key for a logical key, map to $ff
+;; Keymaps:
+;; physical_key_to_test = keymap[logical_key]
+;; if no physical key for a logical key, map to $ff
 
 .rodata
 
-; The default layout of the Chip 8 keyboard:
-;
-; 1	2 3	C
-; 4 5 6 D
-; 7 8 9 E
-; A 0 B F
-;
-; Physical layout:
-;
-; 0 1 2 3
-; 4 5 6 7
-; 8 9 A B
-; C D E F
+;; The default layout of the Chip 8 keyboard:
+;;
+;; 1 2 3 C
+;; 4 5 6 D
+;; 7 8 9 E
+;; A 0 B F
+;;
+;; Physical layout:
+;;
+;; 0 1 2 3
+;; 4 5 6 7
+;; 8 9 A B
+;; C D E F
 
 default_keymap:
             .byte $d, $0, $1, $2
@@ -48,12 +48,12 @@ default_keymap:
             .byte $9, $a, $c, $e
             .byte $3, $7, $b, $f
 
-; Tank logical keys:
-; left: 4
-; right: 6
-; up: 8
-; down: 2
-; fire: 5
+;; Tank logical keys:
+;; left: 4
+;; right: 6
+;; up: 8
+;; down: 2
+;; fire: 5
 
 tank_keymap:
             .byte $ff, $ff, $9, $ff
@@ -64,11 +64,11 @@ tank_keymap:
 ;                    FEDCBA9876543210
 tank_enabled_keys = %0000001001110010
 
-; Tetris logical keys:
-; left: 5
-; right: 6
-; rotate: 4
-; drop:   7
+;; Tetris logical keys:
+;; left: 5
+;; right: 6
+;; rotate: 4
+;; drop:   7
 
 tetris_keymap:
             .byte $ff, $ff, $ff, $ff
@@ -79,11 +79,11 @@ tetris_keymap:
 ;                      FEDCBA9876543210
 tetris_enabled_keys = %0000000001110010
 
-; Tic Tac
-; 23Cx
-; 456x
-; D78x
-; xxxx
+;; Tic Tac
+;; 23Cx
+;; 456x
+;; D78x
+;; xxxx
 
 tictac_keymap:
             .byte $ff, $0, $1, $2

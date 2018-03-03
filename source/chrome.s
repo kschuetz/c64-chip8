@@ -44,7 +44,7 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
 
 .proc build_chrome
             ldx #180
-			ldy #1								; color ram
+			ldy #chrome_text_color				; color ram
 @1:			lda #0								; screen ram
 			sta chrome_origin - 1, x
 			sta chrome_origin + 179, x
@@ -54,7 +54,7 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
 			dex
 			bne @1
 
-			lda #0
+			lda #chrome_bgcolor
 			ldx #79
 :           sta chrome_color_origin, x
             dex
@@ -74,7 +74,7 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
             dey
             bpl @2
 
-            lda #15
+            lda #chrome_ui_key_color
             .repeat 4, i
                 sta chrome_text_color_origin + 40 * i
                 sta chrome_text_color_origin + 40 * i + 1
@@ -85,9 +85,9 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
                 sta chrome_text_color_origin + 40 * i + 13
             .endrepeat
 
-            lda #13
-            sta pixel_style_indicator_color
-            sta pixel_style_indicator_color + 1
+            lda #pixel_style_indicator_color
+            sta pixel_style_indicator_color_addr
+            sta pixel_style_indicator_color_addr + 1
 
             jsr sync_pixel_style_indicator
             jsr sync_bgcolor_indicator
@@ -100,10 +100,10 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
 
 .code
 
-; zp0:zp1 - top row 
-; zp2:zp3 - bottom row
-; y - offset
-; a - char
+;; zp0:zp1 - top row
+;; zp2:zp3 - bottom row
+;; Y - offset
+;; A - char
 .macro output_big_char
 			sta (zp0), y
 			ora #128
@@ -112,13 +112,13 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
 
 rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 
-; A - bundle index
+;; A - rom index
 .proc display_rom_title
-			tax			; save bundle_index
+			tax			; save rom index
 			tay
 
-			istore zp0, rom_title_origin
-			istore zp2,(rom_title_origin + 40)
+			store16 zp0, rom_title_origin
+			store16 zp2,(rom_title_origin + 40)
 			clc
 			lda bundle_index_low, y
 			adc #<BundleNode::title
@@ -129,7 +129,7 @@ rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 			
 			ldy #0
 			inx
-			jsr output_big_decimal			; bundle number
+			jsr output_big_decimal			; show rom index + 1
 			
 			lda #47							; slash
 			output_big_char
@@ -145,7 +145,7 @@ rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 			output_big_char
 			iny
 			
-					; zp0:zp1 += y
+		    ;; zp0:zp1 += y
 			clc
 			tya
 			adc zp0
@@ -172,8 +172,8 @@ rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 			rts
 .endproc
 
-; x - value
-; y - next char position; return value contains new next char position
+;; X - value
+;; Y - next char position; return value contains new next char position
 .proc output_big_decimal
 			sty zp6
 			lda decimal_table_high, x
@@ -208,48 +208,48 @@ rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 			rts
 .endproc
 
-key_delay_indicator_color := chrome_text_color_origin + 26
-pixel_style_indicator_color := key_delay_indicator_color + 40
-bgcolor_indicator_color := pixel_style_indicator_color + 40
-fgcolor_indicator_color := bgcolor_indicator_color + 40
-sound_indicator_color := fgcolor_indicator_color + 40
-paused_indicator_color := chrome_text_color_origin + 163
+key_delay_indicator_color_addr := chrome_text_color_origin + 26
+pixel_style_indicator_color_addr := key_delay_indicator_color_addr + 40
+bgcolor_indicator_color_addr := pixel_style_indicator_color_addr + 40
+fgcolor_indicator_color_addr := bgcolor_indicator_color_addr + 40
+sound_indicator_color_addr := fgcolor_indicator_color_addr + 40
+paused_indicator_color_addr := chrome_text_color_origin + 163
 
-key_delay_indicator := chrome_text_screen_origin + 26
-pixel_style_indicator := key_delay_indicator + 40
-sound_indicator := pixel_style_indicator + 120
+key_delay_indicator_addr := chrome_text_screen_origin + 26
+pixel_style_indicator_addr := key_delay_indicator_addr + 40
+sound_indicator_addr := pixel_style_indicator_addr + 120
 
 .proc sync_pixel_style_indicator
             lda active_pixel_style
             clc
             adc #pixel_style_representative
-            sta pixel_style_indicator
-            sta pixel_style_indicator + 1
+            sta pixel_style_indicator_addr
+            sta pixel_style_indicator_addr + 1
             rts
 .endproc
 
 .proc sync_bgcolor_indicator
             lda screen_bgcolor
-            sta bgcolor_indicator_color
-            sta bgcolor_indicator_color + 1
+            sta bgcolor_indicator_color_addr
+            sta bgcolor_indicator_color_addr + 1
             rts
 .endproc
 
 .proc sync_fgcolor_indicator
             lda screen_fgcolor
-            sta fgcolor_indicator_color
-            sta fgcolor_indicator_color + 1
+            sta fgcolor_indicator_color_addr
+            sta fgcolor_indicator_color_addr + 1
             rts
 .endproc
 
 .proc sync_paused_indicator
             lda paused
             beq @off
-            lda #7      ; yellow
-            .byte $2c   ; BIT
+            lda #paused_indicator_color
+            .byte $2c   ; BIT instruction
 @off:       lda #chrome_bgcolor
             ldy #6
-@loop:      sta paused_indicator_color, y
+@loop:      sta paused_indicator_color_addr, y
             dey
             bpl @loop
             rts
@@ -259,7 +259,7 @@ sound_indicator := pixel_style_indicator + 120
             lda source
             beq @off1
             ldx #77
-            .byte $2c   ; BIT
+            .byte $2c   ; BIT instruction
 @off1:      ldx #79
             stx screen_mem
             inx
@@ -267,20 +267,20 @@ sound_indicator := pixel_style_indicator + 120
 
             lda source
             beq @off2
-            lda #5      ; green
-            .byte $2c   ; BIT
-@off2:      lda #2      ; red
+            lda #indicator_off_color
+            .byte $2c   ; BIT instruction
+@off2:      lda #indicator_on_color
             sta color_mem
             sta color_mem + 1
             rts
 .endmacro
 
 .proc sync_key_delay_indicator
-            sync_on_off_indicator key_delay_mode, key_delay_indicator, key_delay_indicator_color
+            sync_on_off_indicator key_delay_mode, key_delay_indicator_addr, key_delay_indicator_color_addr
 .endproc
 
 .proc sync_sound_indicator
-            sync_on_off_indicator sound_enabled, sound_indicator, sound_indicator_color
+            sync_on_off_indicator sound_enabled, sound_indicator_addr, sound_indicator_color_addr
 .endproc
 
 .rodata

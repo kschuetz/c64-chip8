@@ -59,6 +59,6 @@ registers_end:
                 dey
                 bpl @loop
 
-                istore reg_pc, program_start
+                store16 reg_pc, program_start
                 rts
 .endproc
