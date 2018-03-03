@@ -38,7 +38,7 @@ key_delay_timer:    .res 16
 ;; -------------------------------
 ;;
 ;; 0: up.  Transitions to 1 when key is down.
-;; 1: down.  Yields true on first query, then immediayely transitions to state 2.
+;; 1: down.  Yields true on first query, then immediately transitions to state 2.
 ;; 2: waiting for delay.  Yields false for queries.  Transitions to 3 when delay timer expires.
 ;; 3: delay expired.  Always yields true.
 ;;
