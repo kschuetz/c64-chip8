@@ -30,7 +30,7 @@
 
 .zeropage
 
-op1:             .res 1
+op1:                .res 1
 cpu_temp0:          .res 1
 cpu_temp1:          .res 1
 cpu_temp_addr0:     .res 2
@@ -151,7 +151,7 @@ return_from_subroutine:
             op1_to_y
             txa
             cmp reg_v, y
-         skip_if_eq
+            skip_if_eq
 .endmacro
 
 ;; 4xkk - SNE Vx, byte
@@ -160,7 +160,7 @@ return_from_subroutine:
             op1_to_y
             txa
             cmp reg_v, y
-         skip_if_ne
+            skip_if_ne
 .endmacro
 
 ;; 5xy0 - SE Vx, Vy
@@ -181,7 +181,7 @@ return_from_subroutine:
 .macro opcode_6_impl
             op1_to_y
             stx reg_v, y
-         jmp next
+            jmp next
 .endmacro
 
 ;; 7xkk - ADD Vx, byte
@@ -194,7 +194,7 @@ return_from_subroutine:
             clc
             adc cpu_temp0
             sta reg_v, y           
-         jmp next
+            jmp next
 .endmacro
 
 .macro opcode_8_impl
@@ -320,7 +320,7 @@ return_from_subroutine:
             lda op1
             map_to_host
             sta reg_i + 1               
-         jmp next
+            jmp next
 .endmacro
 
 ; Bnnn - JP V0, addr
