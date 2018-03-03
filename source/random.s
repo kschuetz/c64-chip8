@@ -3,76 +3,106 @@
 .export get_random
 .export init_random
 
+.zeropage
+
+random_seed:        .res 4
+random_seed_arg:    .res 4
+
 .segment "INITCODE"
 
+;; Initializes random_seed from SID noise generator
 .proc init_random
-            lda #0
-            sta next_random
-            jmp refresh_randoms
+            lda #$ff
+            sta $d40e
+            sta $d40f
+
+            lda #143
+            sta $d418
+
+            lda #129
+            sta $d412
+
+            ldy #3
+@loop:      lda $d41b
+            sta random_seed, y
+
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+
+            dey
+            bpl @loop
+
+            rts
 .endproc
 
 .code
 
-; loads A with a random value $00 - $ff
+;; loads A with a random value $00 - $ff
 .proc get_random
-            ldy next_random
-            cpy #$ff
-            bne @no_refresh
-            jsr refresh_randoms
-@no_refresh:
-            lda random_buffer, y
-            inc next_random
+            lda random_seed + 3
+            asl a
+            sta random_seed_arg + 3
+            
+            ; rotate 3
+            lda random_seed + 2
+            rol a
+            sta random_seed_arg + 2
+
+            ; rotate 2
+            lda random_seed + 1
+            rol a
+            sta random_seed_arg + 1
+
+            ; rotate 1
+            lda random_seed + 0
+            rol a
+            sta random_seed_arg + 0
+
+            sec
+            rol random_seed_arg + 3
+            rol random_seed_arg + 2
+            rol random_seed_arg + 1
+            rol random_seed_arg + 0
+            clc
+            
+            ;; add 4
+            lda random_seed_arg + 3
+            adc random_seed + 3
+            sta random_seed_arg + 3
+            pha
+                
+            ;; add 3
+            lda random_seed_arg + 2
+            adc random_seed + 2
+            sta random_seed_arg + 2
+
+            pha
+            ;; add 2
+            lda random_seed_arg + 1
+            adc random_seed + 1
+            sta random_seed_arg + 1
+
+            ;; add 1
+            lda random_seed_arg + 0
+            adc random_seed + 0
+            sta random_seed_arg + 0
+
+            clc
+            lda random_seed_arg + 1
+            adc random_seed + 3
+            sta random_seed + 1
+            lda random_seed_arg + 0
+            adc random_seed + 2
+            sta random_seed + 0
+            pla
+            sta random_seed + 2
+            pla
+            sta random_seed + 3
+            lda random_seed + 0      ; most significant byte
             rts
 .endproc
-
-.macro save_sid
-            lda $d40e
-            sta sid_stash
-            lda $d40f
-            sta sid_stash + 1
-            lda $d412
-            sta sid_stash + 2
-.endmacro
-
-.macro restore_sid
-            lda sid_stash
-            sta $d40e
-            lda sid_stash + 1
-            sta $d40f
-            lda sid_stash + 2
-            sta $d412
-.endmacro
-
-.proc refresh_randoms
-            save_sid
-
-            lda #$ff        ; maximum frequency value
-            sta $d40e       ; voice 3 frequency low byte
-            sta $d40f       ; voice 3 frequency high byte
-            lda #$80        ; noise waveform, gate bit off
-            sta $d412       ; voice 3 control register
-
-            ldx #0
-@loop:      lda $d41b
-            sta random_buffer, x
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            dex
-            bne @loop
-
-            restore_sid
-
-            rts
-.endproc
-
-.zeropage
-next_random:    .res 1
-
-.segment "LOW"
-random_buffer:  .res 255
-sid_stash:      .res 3
