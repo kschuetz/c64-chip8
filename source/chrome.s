@@ -267,9 +267,9 @@ sound_indicator_addr := pixel_style_indicator_addr + 120
 
             lda source
             beq @off2
-            lda #indicator_off_color
+            lda #indicator_on_color
             .byte $2c   ; BIT instruction
-@off2:      lda #indicator_on_color
+@off2:      lda #indicator_off_color
             sta color_mem
             sta color_mem + 1
             rts
