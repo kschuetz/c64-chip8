@@ -8,39 +8,30 @@
 random_seed:        .res 4
 random_seed_arg:    .res 4
 
-.segment "INITCODE"
+.code
 
 ;; Initializes random_seed from SID noise generator
 .proc init_random
-            lda #$ff
-            sta $d40e
-            sta $d40f
-
-            lda #143
-            sta $d418
-
-            lda #129
-            sta $d412
+            lda #$ff        ; maximum frequency value
+            sta $d40e       ; voice 3 frequency low byte
+            sta $d40f       ; voice 3 frequency high byte
+            lda #$80        ; noise waveform, gate bit off
+            sta $d412       ; voice 3 control register
 
             ldy #3
 @loop:      lda $d41b
             sta random_seed, y
 
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
+            ; add a little more entropy from raster register
+            ldx $d012
+@2:         dex
+            bne @2
 
             dey
             bpl @loop
 
             rts
 .endproc
-
-.code
 
 ;; loads A with a random value $00 - $ff
 .proc get_random

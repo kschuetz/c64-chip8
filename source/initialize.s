@@ -34,6 +34,7 @@
 .proc initialize
             cld
             jsr check_host_model
+            jsr init_random
 
             lda #$35                ; switch out BASIC and Kernal
             sta $1
@@ -104,7 +105,6 @@
             sta $dc0d
             sta $dd0d
 
-            jsr init_random
             jsr init_timers
             jsr init_graphics_tables
             jsr build_decimal_table
