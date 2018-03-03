@@ -45,9 +45,9 @@ reg_vc:         .res 1
 reg_vd:         .res 1
 reg_ve:         .res 1
 reg_vf:         .res 1
-reg_pc:	        .res 2
-reg_i:	        .res 2
-reg_sp:	        .res 1
+reg_pc:         .res 2
+reg_i:          .res 2
+reg_sp:         .res 1
 registers_end:
 
 .code

@@ -30,11 +30,11 @@
 
 .zeropage
 
-op1:	            .res 1
+op1:             .res 1
 cpu_temp0:          .res 1
 cpu_temp1:          .res 1
 cpu_temp_addr0:     .res 2
-	
+ 
 .code
 
 .macro op1_to_y
@@ -84,7 +84,7 @@ cpu_temp_addr0:     .res 2
 .macro skip_if_ne
             beq next
             bne skip
-.endmacro  	
+.endmacro   
 
 ;; Implementations of opcodes are in macros so we can define them in order,
 ;; and rearrange them later in memory to optimize use of branching instructions
@@ -102,7 +102,7 @@ cpu_temp_addr0:     .res 2
             bne @1
             jsr clear_screen
             jmp next
-@1:	        cpx #$ee
+@1:         cpx #$ee
             bne next
 
 return_from_subroutine:
@@ -127,7 +127,7 @@ return_from_subroutine:
             sta reg_pc + 1
             rts
 .endmacro
-	
+ 
 ;; 2nnn - CALL addr
 ;; Call subroutine at nnn
 .macro opcode_2_impl
@@ -151,7 +151,7 @@ return_from_subroutine:
             op1_to_y
             txa
             cmp reg_v, y
-	        skip_if_eq
+         skip_if_eq
 .endmacro
 
 ;; 4xkk - SNE Vx, byte
@@ -160,7 +160,7 @@ return_from_subroutine:
             op1_to_y
             txa
             cmp reg_v, y
-	        skip_if_ne
+         skip_if_ne
 .endmacro
 
 ;; 5xy0 - SE Vx, Vy
@@ -181,7 +181,7 @@ return_from_subroutine:
 .macro opcode_6_impl
             op1_to_y
             stx reg_v, y
-	        jmp next
+         jmp next
 .endmacro
 
 ;; 7xkk - ADD Vx, byte
@@ -194,7 +194,7 @@ return_from_subroutine:
             clc
             adc cpu_temp0
             sta reg_v, y           
-	        jmp next
+         jmp next
 .endmacro
 
 .macro opcode_8_impl
@@ -303,7 +303,7 @@ return_from_subroutine:
 ;; 9xy0 - SNE Vx, Vy
 ;; Skip next instruction if Vx != Vy.
 .macro opcode_9_impl
-        	op1_to_y             
+         op1_to_y             
             lda reg_v, y
             sta cpu_temp0
             x_shr_4_to_a
@@ -320,7 +320,7 @@ return_from_subroutine:
             lda op1
             map_to_host
             sta reg_i + 1               
-        	jmp next
+         jmp next
 .endmacro
 
 ; Bnnn - JP V0, addr
@@ -328,8 +328,8 @@ return_from_subroutine:
 .macro opcode_b_impl
             txa
             clc
-        	adc reg_v
-        	sta reg_pc
+            adc reg_v
+            sta reg_pc
             lda op1
             adc #0
             map_to_host
@@ -344,13 +344,13 @@ return_from_subroutine:
             lda op1
             and #15
             sta @stash_y + 1
-        	jsr get_random
+            jsr get_random
 @stash_mask:
-        	and #0
+            and #0
 @stash_y:
-  	        ldy #0
-        	sta reg_v, y
-        	jmp next
+            ldy #0
+            sta reg_v, y
+            jmp next
 .endmacro
 
 ;; Cxkk - RND Vx, byte
@@ -360,11 +360,11 @@ return_from_subroutine:
             sty cpu_temp0
             lda reg_v, y
             sta cpu_temp1
-        	jsr get_random
-        	and cpu_temp1
-        	ldy cpu_temp0
-        	sta reg_v, y
-        	jmp next
+            jsr get_random
+            and cpu_temp1
+            ldy cpu_temp0
+            sta reg_v, y
+            jmp next
 .endmacro
 
 ;; Dxyn - DRW Vx, Vy, nibble
@@ -392,7 +392,7 @@ return_from_subroutine:
 @no_collision:
             lda #0
             sta reg_vf
-        	jmp next
+            jmp next
 .endmacro
 
 ;; Ex9E - SKP Vx
@@ -403,11 +403,11 @@ return_from_subroutine:
 .macro opcode_e_impl
             op1_to_y
             lda reg_v, y
-        	cpx #$9e
-        	beq @skp
-        	cpx #$a1
-        	beq @sknp
-        	jmp next
+            cpx #$9e
+            beq @skp
+            cpx #$a1
+            beq @sknp
+            jmp next
 @skp:       jsr is_guest_key_pressed
             skip_if_ne
 @sknp:      jsr is_guest_key_pressed
@@ -464,7 +464,7 @@ return_from_subroutine:
 :           cpx #$65
             bne :+
             jmp read_registers_from_ram
-:        	jmp next
+:           jmp next
 
 @add_to_i:
             clc
@@ -540,7 +540,7 @@ next1:      sta reg_pc
             lda reg_pc
             adc #4
             jmp next::next1
-.endproc	
+.endproc 
 
 def_opcode "5"
 def_opcode "9"
@@ -583,20 +583,20 @@ def_opcode "f"
 .define opcodes_8_thru_f opcode_8, opcode_9, opcode_a, opcode_b, opcode_c, opcode_d, opcode_e, opcode_f
 
 opcode_dispatch_low:
-	.lobytes opcodes_0_thru_7
-	.lobytes opcodes_8_thru_f
+            .lobytes opcodes_0_thru_7
+            .lobytes opcodes_8_thru_f
 
 opcode_dispatch_high:
-	.hibytes opcodes_0_thru_7
-	.hibytes opcodes_8_thru_f
+            .hibytes opcodes_0_thru_7
+            .hibytes opcodes_8_thru_f
 
 .define opcodes_8_0_thru_8_7 opcode_8_0, opcode_8_1, opcode_8_2, opcode_8_3, opcode_8_4, opcode_8_5, opcode_8_6, opcode_8_7
 .define opcodes_8_8_thru_8_f next, next, next, next, next, next, opcode_8_e, next
 
 opcode_8_dispatch_low:
-    .lobytes opcodes_8_0_thru_8_7
-    .lobytes opcodes_8_8_thru_8_f
+            .lobytes opcodes_8_0_thru_8_7
+            .lobytes opcodes_8_8_thru_8_f
 
 opcode_8_dispatch_high:
-    .hibytes opcodes_8_0_thru_8_7
-    .hibytes opcodes_8_8_thru_8_f
+            .hibytes opcodes_8_0_thru_8_7
+            .hibytes opcodes_8_8_thru_8_f

@@ -44,18 +44,18 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
 
 .proc build_chrome
             ldx #180
-			ldy #chrome_text_color				; color ram
-@1:			lda #0								; screen ram
-			sta chrome_origin - 1, x
-			sta chrome_origin + 179, x
-			tya				
-			sta chrome_color_origin - 1, x
-			sta chrome_color_origin + 179, x
-			dex
-			bne @1
+            ldy #chrome_text_color    ; color ram
+@1:         lda #0        ; screen ram
+            sta chrome_origin - 1, x
+            sta chrome_origin + 179, x
+            tya
+            sta chrome_color_origin - 1, x
+            sta chrome_color_origin + 179, x
+            dex
+            bne @1
 
-			lda #chrome_bgcolor
-			ldx #79
+            lda #chrome_bgcolor
+            ldx #79
 :           sta chrome_color_origin, x
             dex
             bpl :-
@@ -65,7 +65,7 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
             sta chrome_text_screen_origin, y
             lda chrome_line_2, y
             sta chrome_text_screen_origin + 40, y
-			lda chrome_line_3, y
+            lda chrome_line_3, y
             sta chrome_text_screen_origin + 80, y
             lda chrome_line_4, y
             sta chrome_text_screen_origin + 120, y
@@ -95,7 +95,7 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
             jsr sync_key_delay_indicator
             jsr sync_sound_indicator
             jsr sync_paused_indicator
-			rts
+            rts
 .endproc
 
 .code
@@ -105,107 +105,107 @@ chrome_text_color_origin := chrome_color_origin + chrome_text_origin
 ;; Y - offset
 ;; A - char
 .macro output_big_char
-			sta (zp0), y
-			ora #128
-			sta (zp2), y
+            sta (zp0), y
+            ora #128
+            sta (zp2), y
 .endmacro
 
 rom_title_origin = chrome_origin + guest_screen_offset_x + 7
 
 ;; A - rom index
 .proc display_rom_title
-			tax			; save rom index
-			tay
+            tax   ; save rom index
+            tay
 
-			store16 zp0, rom_title_origin
-			store16 zp2,(rom_title_origin + 40)
-			clc
-			lda bundle_index_low, y
-			adc #<BundleNode::title
-			sta zp4
-			lda bundle_index_high, y
-			adc #>BundleNode::title
-			sta zp5
-			
-			ldy #0
-			inx
-			jsr output_big_decimal			; show rom index + 1
-			
-			lda #47							; slash
-			output_big_char
-			iny
-			
-			ldx bundle_count
-			jsr output_big_decimal 
-			
-			lda #58							; colon
-			output_big_char
-			iny
-			lda #32							; space	
-			output_big_char
-			iny
-			
-		    ;; zp0:zp1 += y
-			clc
-			tya
-			adc zp0
-			sta zp0
-			lda #0
-			adc zp1
-			sta zp1
-			
-			clc
-			tya
-			adc zp2
-			sta zp2
-			lda #0
-			adc zp3
-			sta zp3
+            store16 zp0, rom_title_origin
+            store16 zp2,(rom_title_origin + 40)
+            clc
+            lda bundle_index_low, y
+            adc #<BundleNode::title
+            sta zp4
+            lda bundle_index_high, y
+            adc #>BundleNode::title
+            sta zp5
 
-			ldy #0
+            ldy #0
+            inx
+            jsr output_big_decimal   ; show rom index + 1
+
+            lda #47       ; slash
+            output_big_char
+            iny
+
+            ldx bundle_count
+            jsr output_big_decimal
+
+            lda #58       ; colon
+            output_big_char
+            iny
+            lda #32       ; space
+            output_big_char
+            iny
+
+              ;; zp0:zp1 += y
+            clc
+            tya
+            adc zp0
+            sta zp0
+            lda #0
+            adc zp1
+            sta zp1
+
+            clc
+            tya
+            adc zp2
+            sta zp2
+            lda #0
+            adc zp3
+            sta zp3
+
+            ldy #0
 @title_loop:
-			lda (zp4), y
-			output_big_char
-			iny
-			cpy #title_length
-			bne @title_loop
-			rts
+            lda (zp4), y
+            output_big_char
+            iny
+            cpy #title_length
+            bne @title_loop
+            rts
 .endproc
 
 ;; X - value
 ;; Y - next char position; return value contains new next char position
 .proc output_big_decimal
-			sty zp6
-			lda decimal_table_high, x
-			and #15
-			beq @tens
-			tay
-			lda decimal_digit_chars, y
-			ldy zp6
-			output_big_char
-			iny
-			sty zp6
-			
-@tens:		lda decimal_table_low, x
-			lsr a
-			lsr a
-			lsr a
-			lsr a
-			beq @ones
-			tay
-			lda decimal_digit_chars, y
-			ldy zp6
-			output_big_char	
-			iny
-			sty zp6
-@ones:		lda decimal_table_low, x
-			and #15
-			tay
-			lda decimal_digit_chars, y	
-			ldy zp6
-			output_big_char	
-			iny
-			rts
+            sty zp6
+            lda decimal_table_high, x
+            and #15
+            beq @tens
+            tay
+            lda decimal_digit_chars, y
+            ldy zp6
+            output_big_char
+            iny
+            sty zp6
+   
+@tens:      lda decimal_table_low, x
+            lsr a
+            lsr a
+            lsr a
+            lsr a
+            beq @ones
+            tay
+            lda decimal_digit_chars, y
+            ldy zp6
+            output_big_char
+            iny
+            sty zp6
+@ones:      lda decimal_table_low, x
+            and #15
+            tay
+            lda decimal_digit_chars, y
+            ldy zp6
+            output_big_char
+            iny
+            rts
 .endproc
 
 key_delay_indicator_color_addr := chrome_text_color_origin + 26
@@ -286,7 +286,7 @@ sound_indicator_addr := pixel_style_indicator_addr + 120
 .rodata
 
 decimal_digit_chars:
-			.byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
+            .byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
 
 .segment "INITDATA"
 

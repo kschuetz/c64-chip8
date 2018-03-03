@@ -36,11 +36,11 @@ chrome_origin = host_screen + 40 * (guest_screen_offset_y + guest_screen_physica
 chrome_color_origin = COLOR_RAM + 40 * (guest_screen_offset_y + guest_screen_physical_height + 1)
 
 .proc clear_ram
-			store16 zp0, guest_ram
-			ldy #$ff
-			ldx #$0f
-			lda #0
-			jmp fill
+            store16 zp0, guest_ram
+            ldy #$ff
+            ldx #$0f
+            lda #0
+            jmp fill
 .endproc
 
 .segment "HIGH"
@@ -49,5 +49,5 @@ chrome_color_origin = COLOR_RAM + 40 * (guest_screen_offset_y + guest_screen_phy
 ; This is much more than the 16 levels CHIP-8 calls for, but removes the need to validate the stack pointer,
 ; while adding some safety from rogue programs.
 
-stack_low:          .res 256    ; low bytes of return addresses
-stack_high:         .res 256    ; high bytes of return addresses
+stack_low:  .res 256    ; low bytes of return addresses
+stack_high: .res 256    ; high bytes of return addresses

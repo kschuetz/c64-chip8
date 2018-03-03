@@ -30,15 +30,15 @@ active_pixel_style:
 .segment "INITCODE"
 
 .proc init_charsets
-			jsr init_chrome_charset
-			jmp init_screen_charset
+            jsr init_chrome_charset
+            jmp init_screen_charset
 .endproc
 
 .proc init_chrome_charset
-			store16 zp0, chrome_charset_data
-			store16 zp2, chrome_charset
-			store16 zp4, $0800
-			jsr move_up
+            store16 zp0, chrome_charset_data
+            store16 zp2, chrome_charset
+            store16 zp4, $0800
+            jsr move_up
 
             ;; copy pixel style representatives
             ;; (chrome_charset characters 112..127)
@@ -51,7 +51,7 @@ active_pixel_style:
             dey
             bpl @loop
             rts
-.endproc	
+.endproc 
 
 ;; screen charset:
 ;;
@@ -79,11 +79,11 @@ active_pixel_style:
 .code
 
 .proc cycle_pixel_style
-             ldy active_pixel_style
-             iny
-             cpy #pixel_style_count
-             bcc @ok
-             ldy #0
+            ldy active_pixel_style
+            iny
+            cpy #pixel_style_count
+            bcc @ok
+            ldy #0
 @ok:         ; continue to load_pixel_style
 .endproc
 
@@ -108,12 +108,12 @@ active_pixel_style:
 ;; The Fx29 CPU instruction and some ROMs will depend on this.
 ;; Should be called on every reset after clearing RAM
 .proc load_font_set
-			ldy #79
-@loop:		lda font_set, y
-			sta guest_ram, y
-			dey
-			bpl @loop
-			rts
+            ldy #79
+@loop:      lda font_set, y
+            sta guest_ram, y
+            dey
+            bpl @loop
+            rts
 .endproc
 
 .rodata
@@ -157,4 +157,4 @@ font_set:
 .segment "INITDATA"
 
 chrome_charset_data:
-			.incbin "data/chrome-charset.bin"
+            .incbin "data/chrome-charset.bin"

@@ -74,21 +74,21 @@
 .endproc
 
 .proc init_vic
-			lda $dd02	          ; change VIC to bank 3
-			ora #3
-			sta $dd02
-			lda $dd00
-			and #$fc
-			sta $dd00
-			
-			switch_vic_mem host_screen, chrome_charset
+            lda $dd02           ; change VIC to bank 3
+            ora #3
+            sta $dd02
+            lda $dd00
+            and #$fc
+            sta $dd00
 
-			lda $d011
-			and #%10010000
-			ora #%00001011
-			sta $d011
+            switch_vic_mem host_screen, chrome_charset
 
-			jmp init_button_sprites
+            lda $d011
+            and #%10010000
+            ora #%00001011
+            sta $d011
+
+            jmp init_button_sprites
 .endproc
 
 .proc initialize_phase_2
@@ -106,22 +106,22 @@
 
             jsr init_random
             jsr init_timers
-			jsr init_graphics_tables
-			jsr build_decimal_table
-			jsr build_bundle_index
-			jsr init_core
-			jsr init_keyboard
-			jsr init_charsets
-			jsr init_colors
-			jsr init_buttons
-			jsr init_sound
-			
-			lda screen_fgcolor
-			jsr update_screen_color
-			jsr clear_screen
-			jsr build_screen_margins
-			jsr build_chrome
+            jsr init_graphics_tables
+            jsr build_decimal_table
+            jsr build_bundle_index
+            jsr init_core
+            jsr init_keyboard
+            jsr init_charsets
+            jsr init_colors
+            jsr init_buttons
+            jsr init_sound
 
-			lda #default_rom_index	
-			jmp reset                   ; at this point, everything in INITCODE and INITDATA is clobbered
+            lda screen_fgcolor
+            jsr update_screen_color
+            jsr clear_screen
+            jsr build_screen_margins
+            jsr build_chrome
+
+            lda #default_rom_index
+            jmp reset                   ; at this point, everything in INITCODE and INITDATA is clobbered
 .endproc

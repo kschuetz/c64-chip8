@@ -209,27 +209,27 @@ frame_counter:     .res 2
 .endmacro
 
 .proc setup_irq
-			sei
-			ldy #0
-			sty frame_counter
-			sty frame_counter + 1
-			ldy host_model
-            dey 			            ; host_model is 1..4
+            sei
+            ldy #0
+            sty frame_counter
+            sty frame_counter + 1
+            ldy host_model
+            dey                ; host_model is 1..4
             lda irq_entry_low, y
             sta IRQ_VECTOR
             lda irq_entry_high, y
             sta IRQ_VECTOR + 1
-			lda $d011
-			and #$7f
-			sta $d011
-			lda #0
-			sta $d012
-			lda #1
-			sta $d01a
-			lda #$7f
-			sta $dc0d
-			cli
-			rts
+            lda $d011
+            and #$7f
+            sta $d011
+            lda #0
+            sta $d012
+            lda #1
+            sta $d01a
+            lda #$7f
+            sta $dc0d
+            cli
+            rts
 .endproc
 
 define_irqs pal_63

@@ -59,4 +59,4 @@ title_screen_graphics_guest := $200 + title_screen_graphics_host - title_screen
 
 ;; This is the null at the end of the bundled roms linked-list
 bundle_end:
-	        .word 0
+            .word 0

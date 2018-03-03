@@ -21,22 +21,22 @@
 
 ;; zp0..7:  Temporary utility registers in zeropage.  Do not use in routines called by IRQ handlers.
 
-zp0:	    .res 1
-zp1:	    .res 1
-zp2:	    .res 1
-zp3:	    .res 1
-zp4:	    .res 1
-zp5:	    .res 1
-zp6:	    .res 1
-zp7:	    .res 1
+zp0:        .res 1
+zp1:        .res 1
+zp2:        .res 1
+zp3:        .res 1
+zp4:        .res 1
+zp5:        .res 1
+zp6:        .res 1
+zp7:        .res 1
 
 ;; irq_zp0..7:  Temporary utility registers in zeropage.  Only use in routines called by IRQ handlers.
 
-irq_zp0:	.res 1
-irq_zp1:	.res 1
-irq_zp2:	.res 1
-irq_zp3:	.res 1
-irq_zp4:	.res 1
-irq_zp5:	.res 1
-irq_zp6:	.res 1
-irq_zp7:	.res 1
+irq_zp0:    .res 1
+irq_zp1:    .res 1
+irq_zp2:    .res 1
+irq_zp3:    .res 1
+irq_zp4:    .res 1
+irq_zp5:    .res 1
+irq_zp6:    .res 1
+irq_zp7:    .res 1
